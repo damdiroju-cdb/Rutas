@@ -268,9 +268,9 @@ const PHONE = "34615849304";
 const LAB = {A:"Presencial",B:"WhatsApp",C:"Televenta"};
 const KEY = "ruta-manolo-borrego-v1";
 let sel = {};
-try { sel = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch(e) { sel = {}; }
+let SEL_FRESH = true; try { SEL_FRESH = localStorage.getItem(KEY)===null; sel = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch(e) { sel = {}; }
 const TKEY = KEY+"-temp"; let tmp = {};
-try { tmp = JSON.parse(localStorage.getItem(TKEY) || "{}") || {}; } catch(e) { tmp = {}; }
+let TMP_FRESH = true; try { TMP_FRESH = localStorage.getItem(TKEY)===null; tmp = JSON.parse(localStorage.getItem(TKEY) || "{}") || {}; } catch(e) { tmp = {}; }
 const QKEY = KEY+"-quin"; let quin = {};
 try { quin = JSON.parse(localStorage.getItem(QKEY) || "{}") || {}; } catch(e) { quin = {}; }
 const RKEY = KEY+"-rem"; let rem = {};
@@ -279,6 +279,8 @@ const MKEY = KEY+"-mv"; let mv = {};
 try { mv = JSON.parse(localStorage.getItem(MKEY) || "{}") || {}; } catch(e) { mv = {}; }
 const ALL = []; DATA.forEach((d,di)=>d.clients.forEach((c,i)=>ALL.push({c, k:di+"|"+i, od:di})));
 const BYK = {}; ALL.forEach(x=>BYK[x.k]=x);
+if (TMP_FRESH) ALL.forEach(x=>{ if (x.c.temp) tmp[x.k]=true; });
+if (SEL_FRESH) ALL.forEach(x=>{ if (x.c.pre && x.c.cur) sel[x.k]=x.c.cur; });
 const OCC = {}; ALL.forEach(x=>{ (OCC[x.c.cod] = OCC[x.c.cod] || []).push(x.k); });
 const effDay = k => (mv[k]!==undefined ? mv[k] : BYK[k].od);
 const ITEMS = di => ALL.filter(x=>effDay(x.k)===di && mv[x.k]===undefined).concat(ALL.filter(x=>mv[x.k]===di));
@@ -290,7 +292,7 @@ const DKEY = KEY+"-del"; let del = {};
 try { del = JSON.parse(localStorage.getItem(DKEY) || "{}") || {}; } catch(e) { del = {}; }
 const isDel = k => !!del[BYK[k].c.cod];
 const MOTIVOS = ["Cerrado / traspasado","Ya no compra","Ya no es cliente nuestro","Otro motivo"];
-Object.values(quin).forEach(p=>{ p.d2=p.d1; p.c1="A"; });
+Object.values(quin).forEach(p=>{ p.d2=p.d1; if(!p.c1) p.c1="A"; });
 const DIAS = ["L","M","X","J","V","S","D"], DIASL = ["lunes","martes","miércoles","jueves","viernes","sábado","domingo"];
 const MESES = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
 const MESESL = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
@@ -300,6 +302,11 @@ function weeksOfMonth(y,m){ const f=new Date(y,m,1); const s=new Date(y,m,1-((f.
 function dateFor(y,m,wk,wd){ const f=new Date(y,m,1); const off=(wd-((f.getDay()+6)%7)+7)%7; const day=1+off+7*(wk-1); if(day>new Date(y,m+1,0).getDate()) return null; return new Date(y,m,day); }
 function nextMonths(n){ const t=new Date(); const out=[]; for(let i=0;i<n;i++){ const d=new Date(t.getFullYear(), t.getMonth()+i, 1); out.push([d.getFullYear(), d.getMonth()]); } return out; }
 const fmt = d => DIAS[(d.getDay()+6)%7]+" "+d.getDate()+(d.getDate()<=7&&false?"":"")+" "+MESES[d.getMonth()];
+const CHL = {A:"🚗 Presencial", B:"💬 WhatsApp", C:"📞 Televenta"};
+function quinShort(p){ return p.c1==="A" ? `S${p.w1} presencial / S${p.w2} ${p.c2==="B"?"WhatsApp":"TV"}` : `${p.c1==="B"?"WhatsApp":"TV"} S${p.w1} y S${p.w2}`; }
+function quinLong(p){ return p.c1==="A" ? `S${p.w1} presencial + S${p.w2} ${p.c2==="B"?"WhatsApp":"televenta"} (${DIASL[p.d1]})` : `${p.c1==="B"?"pedido por WhatsApp":"llamada de televenta"} cada 15 días: S${p.w1} y S${p.w2} (${DIASL[p.d1]})`; }
+function quinFor(ch, old, dd){ const w1 = old ? Math.min(old.w1,old.w2) : 1, w2 = old ? Math.max(old.w1,old.w2) : 3; const d = old ? old.d1 : dd;
+  return ch==="A" ? {c1:"A", w1, d1:d, c2:(old && old.c1==="A") ? old.c2 : "C", w2, d2:d} : {c1:ch, w1, d1:d, c2:ch, w2, d2:d}; }
 function planText(p, y, m){ return [1,2].map(s=>{ const d=dateFor(y,m,p["w"+s],p["d"+s]); if(!d) return `${SHORT[p["c"+s]]}: no hay ${p["w"+s]}º ${DIASL[p["d"+s]]}`; return `${DIASL[p["d"+s]]} ${d.getDate()} ${SHORT[p["c"+s]]}`; }).join(" + "); }
 let day = 0; try { day = +(localStorage.getItem(KEY+"-day")||0) || 0; } catch(e){}
 if (day >= DATA.length) day = 0;
@@ -363,7 +370,7 @@ function counts(di){ const c={A:0,B:0,C:0,n:0,tot:0,rm:0,mvIn:0,del:0}; ITEMS(di
 function renderTop(){
   let A=0,B=0,C=0; DATA.forEach((d,di)=>{const c=counts(di);A+=c.A;B+=c.B;C+=c.C;});
   const n=A+B+C, total=totalAct();
-  const nt = Object.keys(tmp).filter(k=>BYK[k]&&sel[k]==="A"&&!rem[k]&&!isDel(k)).length;
+  const nt = Object.keys(tmp).filter(k=>BYK[k]&&tmp[k]&&!rem[k]&&!isDel(k)).length;
   const nq = Object.keys(quin).filter(k=>BYK[k]&&!rem[k]&&!isDel(k)).length;
   const nr = Object.keys(rem).length, nm = Object.keys(mv).filter(k=>BYK[k]&&!rem[k]&&!isDel(k)).length, nd = Object.keys(del).length;
   const ndp = Object.values(OCC).filter(o=>o.length>1).length;
@@ -401,29 +408,32 @@ function renderList(){
         <button type="button" class="btn-rec" data-rec="1">↩ Recuperar en el ${esc(DATA[cd].day.toLowerCase())}</button></div></article>`;
     }
     const dupBox = others.length ? `<div class="dup"><b>⚠ CLIENTE REPETIDO</b><p>También está el ${otherTxt}.</p><p>Si no tiene que estar este día, quítalo y se queda solo en el otro.</p><button type="button" class="btn-rm" data-rm="1">🗑 Quitar del ${esc(DATA[cd].day.toLowerCase())}</button></div>` : "";
-    const meta = [c.pob, "Cód. "+c.cod, c.pago, c.tel ? "Tel. "+c.tel : "", c.dias ? "Días ruta: "+c.dias : "", c.v ? "Ventas 26: "+c.v : ""].filter(Boolean).map(esc).map(s=>`<span>${s}</span>`).join("");
-    const now = c.cur ? `<div class="now">Ahora: <b class="${c.cur}">${LAB[c.cur]}</b></div>` : "";
-    const k2 = k, isT = v==="A" && tmp[k2];
-    const tempBox = v==="A" ? `<label class="temp ${isT?"on":""}"><input type="checkbox" data-temp="1" ${isT?"checked":""}><div><b>☀ CLIENTE DE TEMPORADA</b><span>Presencial solo de <strong>MARZO a SEPTIEMBRE</strong>. Se activa en marzo.</span></div></label>` : "";
+    const meta = [c.pob, "Cód. "+c.cod, c.pago, c.tel ? "Tel. "+c.tel : "", c.dias ? "Días ruta: "+c.dias : "", c.info || "", c.v ? "Ventas 26: "+c.v : ""].filter(Boolean).map(esc).map(s=>`<span>${s}</span>`).join("");
+    const now = c.cur ? `<div class="now">Ahora: <b class="${c.cur}">${LAB[c.cur]}</b>${c.curTxt&&c.curTxt!==LAB[c.cur]?` <span>(${esc(c.curTxt)})</span>`:""}</div>` : (c.curTxt ? `<div class="now">Ahora: <b>${esc(c.curTxt)}</b></div>` : "");
+    const k2 = k, isT = !!tmp[k2];
+    const tempBox = (v || isT) ? `<label class="temp ${isT?"on":""}"><input type="checkbox" data-temp="1" ${isT?"checked":""}><div><b>☀ CLIENTE DE TEMPORADA</b><span>Solo de <strong>MARZO a SEPTIEMBRE</strong>. Se activa en marzo.</span></div></label>` : "";
     const banner = isT ? `<div class="season"><b>☀ TEMPORADA: MARZO → SEPTIEMBRE</b><span>⚠ ACTIVAR EN MARZO · De octubre a febrero no se visita</span><div class="months">${["E","F","M","A","M","J","J","A","S","O","N","D"].map((m,j)=>`<i class="${j>=2&&j<=8?"in":""}">${m}</i>`).join("")}</div></div>` : "";
     const p = quin[k2];
-    const quinBox = v!=="A" ? "" : `<label class="quin ${p?"on":""}"><input type="checkbox" data-quin="1" ${p?"checked":""}><div><b>🔁 QUINCENAL</b><span>Visita presencial una semana y llamada o WhatsApp otra (S1 y S3, o S2 y S4)</span></div></label>`;
+    const QTXT = {A:"Visita presencial una semana y llamada o WhatsApp otra (S1 y S3, o S2 y S4)", B:"Pedido por WhatsApp cada 15 días (S1 y S3, o S2 y S4)", C:"Llamada de televenta cada 15 días (S1 y S3, o S2 y S4)"};
+    const quinBox = !v ? "" : `<label class="quin ${p?"on":""}"><input type="checkbox" data-quin="1" ${p?"checked":""}><div><b>🔁 QUINCENAL</b><span>${QTXT[v]}</span></div></label>`;
     let plan = "";
     if (p) {
-      const callLab = p.c2==="B" ? "💬 WhatsApp" : "📞 Llamada";
-      const PATS = [[1,3],[3,1],[2,4],[4,2]];
+      const isA = p.c1==="A";
+      const callLab = isA ? (p.c2==="B" ? "💬 WhatsApp" : "📞 Llamada") : CHL[p.c1];
+      const firstLab = isA ? "🚗 Presencial" : CHL[p.c1];
+      const PATS = isA ? [[1,3],[3,1],[2,4],[4,2]] : [[1,3],[2,4]];
       const pats = PATS.map(([a,b])=>{ const on = p.w1===a && p.w2===b;
-        const parts = [[a,"🚗 Presencial"],[b,callLab]].sort((x,y)=>x[0]-y[0]);
+        const parts = [[a,firstLab],[b,callLab]].sort((x,y)=>x[0]-y[0]);
         return `<button type="button" class="pat" data-pat="${a}-${b}" aria-pressed="${on}">${parts.map(([w,l])=>`<span><b>S${w}</b> ${l}</span>`).join("")}</button>`; }).join("");
       const ms = nextMonths(3);
-      const rows = ms.map(([y,m])=>{ const ev=[[dateFor(y,m,p.w1,p.d1),"A","🚗 Presencial"],[dateFor(y,m,p.w2,p.d2),p.c2,callLab]].filter(e=>e[0]).sort((x,y)=>x[0]-y[0]);
+      const rows = ms.map(([y,m])=>{ const ev=[[dateFor(y,m,p.w1,p.d1),p.c1,firstLab],[dateFor(y,m,p.w2,p.d2),p.c2,callLab]].filter(e=>e[0]).sort((x,y)=>x[0]-y[0]);
         return `<tr><td>${MESES[m]} ${String(y).slice(2)}</td>${ev.map(([d,k,l])=>`<td>${DIASL[p.d1]} ${d.getDate()}<span class="tag ${k}">${l}</span></td>`).join("")}</tr>`; }).join("");
       const okPat = PATS.some(([a,b])=>p.w1===a&&p.w2===b);
       plan = `<div class="plan">
         <div class="slot-h">¿Qué semanas?<em>Siempre en ${DIASL[p.d1]}, el día de la ruta</em></div>
         <div class="pats">${pats}</div>
-        ${okPat?"":`<div class="warn">⚠ Elige una de las 4 opciones.</div>`}
-        <div style="font-size:.8rem;color:var(--muted)">La semana sin visita, ¿cómo se hace el pedido?</div><div class="seg"><span>Pedido</span><button type="button" class="C" data-q="c2|C" aria-pressed="${p.c2==="C"}">📞 Llamada <small>Televenta</small></button><button type="button" class="B" data-q="c2|B" aria-pressed="${p.c2==="B"}">💬 WhatsApp <small>Pedido</small></button></div>
+        ${okPat?"":`<div class="warn">⚠ Elige una de las opciones.</div>`}
+        ${isA?`<div style="font-size:.8rem;color:var(--muted)">La semana sin visita, ¿cómo se hace el pedido?</div><div class="seg"><span>Pedido</span><button type="button" class="C" data-q="c2|C" aria-pressed="${p.c2==="C"}">📞 Llamada <small>Televenta</small></button><button type="button" class="B" data-q="c2|B" aria-pressed="${p.c2==="B"}">💬 WhatsApp <small>Pedido</small></button></div>`:""}
         <div class="dates"><b>📅 Fechas</b><table>${rows}</table><div style="color:var(--muted);font-size:.74rem;margin-top:4px">S1 = 1er ${DIASL[p.d1]} del mes · S2 = 2º · S3 = 3º · S4 = 4º</div></div></div>`;
     }
     const delBox = openDel===k
@@ -446,12 +456,12 @@ function summary(list, compact){
     const d = DATA[di]; const c = counts(di);
     lines.push("", `*${d.day}* (${c.n}/${c.tot})`);
     const T = "AT";
-    ["A","AT","B","C"].forEach(k=>{
-      const xs = ITEMS(di).map(it=>{const x=Object.assign({_k:it.k,_od:it.od},it.c); if(rem[it.k]||isDel(it.k)) return null; const s=sel[it.k], t=!!tmp[it.k]; if(k==="AT") return s==="A"&&t?x:null; if(k==="A") return s==="A"&&!t?x:null; return s===k?x:null;}).filter(Boolean);
+    ["A","B","C","T"].forEach(k=>{
+      const xs = ITEMS(di).map(it=>{const x=Object.assign({_k:it.k,_od:it.od},it.c); if(rem[it.k]||isDel(it.k)) return null; const s=sel[it.k], t=!!tmp[it.k]; x._s=s; if(k==="T") return t?x:null; return (!t && s===k)?x:null;}).filter(Boolean);
       if (!xs.length) return;
-      const lab = k==="AT" ? "☀ A Presencial TEMPORADA (marzo a septiembre, ACTIVAR EN MARZO)" : `${k} ${LAB[k]}`;
-      if (compact) lines.push(`${lab} (${xs.length}): ${xs.map(x=>{const p=quin[x._k]; return x.cod+(mv[x._k]!==undefined?` (🔀 antes ${DATA[x._od].day.slice(0,3)})`:"")+(p?` (🔁 S${p.w1} presencial / S${p.w2} ${p.c2==="B"?"WhatsApp":"TV"})`:"");}).join(", ")}`);
-      else { lines.push(`${lab} (${xs.length}):`); xs.forEach(x=>{ const p=quin[x._k]; lines.push(`- ${x.cod} ${x.n.replace(/^[*\s]+/,"").slice(0,26)}`+(mv[x._k]!==undefined?` 🔀 (antes ${DATA[x._od].day.toLowerCase()})`:"")+(p?`\n   🔁 QUINCENAL: S${p.w1} presencial + S${p.w2} ${p.c2==="B"?"WhatsApp":"televenta"} (${DIASL[p.d1]})\n   ${MESES[NM[1]]}: ${planText(p,NM[0],NM[1])}`:"")); }); }
+      const lab = k==="T" ? "☀ TEMPORADA (marzo a septiembre, ACTIVAR EN MARZO)" : `${k} ${LAB[k]}`;
+      if (compact) lines.push(`${lab} (${xs.length}): ${xs.map(x=>{const p=quin[x._k]; return x.cod+(k==="T"&&x._s?`[${x._s}]`:"")+(mv[x._k]!==undefined?` (🔀 antes ${DATA[x._od].day.slice(0,3)})`:"")+(p?` (🔁 ${quinShort(p)})`:"");}).join(", ")}`);
+      else { lines.push(`${lab} (${xs.length}):`); xs.forEach(x=>{ const p=quin[x._k]; lines.push(`- ${x.cod} ${x.n.replace(/^[*\s]+/,"").slice(0,26)}`+(k==="T"?` · ${x._s?LAB[x._s]:"sin canal"}`:"")+(mv[x._k]!==undefined?` 🔀 (antes ${DATA[x._od].day.toLowerCase()})`:"")+(p?`\n   🔁 QUINCENAL: ${quinLong(p)}\n   ${MESES[NM[1]]}: ${planText(p,NM[0],NM[1])}`:"")); }); }
     });
     const pend = c.tot - c.n; if (pend) lines.push(`Sin elegir: ${pend}`);
     const rms = ITEMS(di).filter(x=>rem[x.k]&&!isDel(x.k)).map(x=>x.c); if (rms.length) lines.push(`🗑 Quitados (repetidos) (${rms.length}): ${rms.map(x=>x.cod).join(", ")}`);
@@ -476,10 +486,10 @@ function buildWb(){
   ORDER.forEach(di=>{ const d=DATA[di]; ITEMS(di).forEach(({c,k,od})=>{
     if (isDel(k)) { if(!elim[c.cod]) elim[c.cod]={c, days:[]}; elim[c.cod].days.push(d.day); return; }
     if (rem[k]) { const keep = OCC[c.cod].filter(k3=>!rem[k3]).map(k3=>DATA[effDay(k3)].day); quit.push([d.day,c.cod,c.n.replace(/^[*\s]+/,""),c.pob,keep.join(", ")||"⚠ quitado de todos"]); return; }
-    const s=sel[k], p=quin[k], tt=s==="A"&&tmp[k];
-    rows.push({fill: !s?"N":(tt?"T":s), v:[d.day, mv[k]!==undefined?"Antes: "+DATA[od].day:"", isNaN(+c.cod)?c.cod:+c.cod, c.n.replace(/^[*\s]+/,""), c.pob, c.tel, c.pago, c.v,
+    const s=sel[k], p=quin[k], tt=!!tmp[k];
+    rows.push({fill: tt?"T":(!s?"N":s), v:[d.day, mv[k]!==undefined?"Antes: "+DATA[od].day:"", isNaN(+c.cod)?c.cod:+c.cod, c.n.replace(/^[*\s]+/,""), c.pob, c.tel, c.pago, c.v,
       s?LAB[s]:"SIN ASIGNAR", s?(p?"Quincenal":"Semanal"):"", tt?"SÍ · marzo a septiembre (activar en marzo)":"",
-      p?`S${p.w1} · ${p.w1}º ${DIASL[p.d1]} del mes`:"", p?`${p.c2==="B"?"WhatsApp":"Llamada"} · S${p.w2} · ${p.w2}º ${DIASL[p.d2]} del mes`:"", p?planText(p,NM[0],NM[1]):""]});
+      p&&p.c1==="A"?`S${p.w1} · ${p.w1}º ${DIASL[p.d1]} del mes`:"", p?(p.c1==="A"?`${p.c2==="B"?"WhatsApp":"Llamada"} · S${p.w2} · ${p.w2}º ${DIASL[p.d2]} del mes`:`${p.c1==="B"?"WhatsApp":"Llamada"} cada 15 días · S${p.w1} y S${p.w2} · ${DIASL[p.d1]}`):"", p?planText(p,NM[0],NM[1]):""]});
   }); });
   const border = {top:{style:"thin",color:{rgb:"A0A0A0"}},bottom:{style:"thin",color:{rgb:"A0A0A0"}},left:{style:"thin",color:{rgb:"A0A0A0"}},right:{style:"thin",color:{rgb:"A0A0A0"}}};
   const hs = {font:{bold:true,color:{rgb:"FFFFFF"},name:"Arial",sz:10},fill:{fgColor:{rgb:"1F3864"}},alignment:{vertical:"center",horizontal:"center",wrapText:true},border};
@@ -496,7 +506,7 @@ function buildWb(){
   XLSX.utils.book_append_sheet(wb, mk(H, rows.map(r=>r.v), [11,16,9,30,14,12,20,12,13,11,22,22,22,34], rows.map(r=>r.fill)), "Listado final");
   const R = [["Día","Presencial","WhatsApp","Televenta","Sin asignar","Quincenales","Temporada","Quitados","Eliminados","Llegan de otro día","Total final"]];
   const tot=[0,0,0,0,0,0,0,0,0,0];
-  ORDER.forEach(di=>{ const d=DATA[di]; const c=counts(di); const it=ITEMS(di).filter(x=>!rem[x.k]&&!isDel(x.k)); const nq=it.filter(x=>quin[x.k]).length; const nt=it.filter(x=>sel[x.k]==="A"&&tmp[x.k]).length;
+  ORDER.forEach(di=>{ const d=DATA[di]; const c=counts(di); const it=ITEMS(di).filter(x=>!rem[x.k]&&!isDel(x.k)); const nq=it.filter(x=>quin[x.k]).length; const nt=it.filter(x=>tmp[x.k]).length;
     const r=[c.A,c.B,c.C,c.tot-c.n,nq,nt,c.rm,c.del,c.mvIn,c.tot]; r.forEach((v,j)=>tot[j]+=v); R.push([d.day,...r]); });
   R.push(["TOTAL",...tot]);
   XLSX.utils.book_append_sheet(wb, mk(R[0], R.slice(1), [12,11,11,11,11,12,11,10,11,12,11]), "Resumen");
@@ -555,8 +565,7 @@ document.getElementById("list").addEventListener("click", e=>{
   const b=e.target.closest(".opts button"); if(!b) return;
   const card=b.closest(".card"); const key=card.dataset.i; const k=b.dataset.k;
   if (sel[key]===k) delete sel[key]; else sel[key]=k;
-  if (sel[key]!=="A") delete tmp[key];
-  if (quin[key] && sel[key]!=="A") { delete quin[key]; toast("Quincenal quitado: necesita visita presencial"); }
+  if (quin[key]) { if (sel[key]) quin[key] = quinFor(sel[key], quin[key]); else delete quin[key]; }
   save(); renderTop();
   if (onlyPend && sel[key]) setTimeout(renderList, 350); else rerenderCard(card);
 });
@@ -602,7 +611,7 @@ document.getElementById("list").addEventListener("click", e=>{
 document.getElementById("list").addEventListener("change", e=>{
   if (e.target.matches("input[data-quin]")) {
     const card=e.target.closest(".card"); const key=card.dataset.i;
-    if (e.target.checked) { const dd=dayDefault(effDay(key)); quin[key]={c1:"A",w1:1,d1:dd,c2:"C",w2:3,d2:dd}; sel[key]="A"; }
+    if (e.target.checked) { const dd=dayDefault(effDay(key)); quin[key]=quinFor(sel[key]||"A", null, dd); if(!sel[key]) sel[key]="A"; }
     else delete quin[key];
     save(); renderTop(); rerenderCard(card); return;
   }
