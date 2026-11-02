@@ -648,7 +648,7 @@ async function buildPDF(){
 }
 
 // ---------- contador de propuestas enviadas ----------
-const SHEET_URL="https://script.google.com/macros/s/AKfycbxiLDkb3SVgf3c9_1p5enCEPIpnVurMgH60f_ba0Iu0EFMi-b3bNM49FugkLld6rLAn/exec"; // URL de la aplicación web de Google Apps Script (hoja de David)
+const SHEET_URL="https://script.google.com/macros/s/AKfycbwXS7Xx-Ow-AUmQuEEVul2jAnN6sdjO8hP1RzL_n-D0IcJuwLLBsN31Gc5tPCo902J4/exec"; // URL de la aplicación web de Google Apps Script (hoja de David)
 function sentList(){return store('pnv_sent')||[]}
 const monthKey=d=>(d||'').slice(0,7);
 function paintCount(){const L=sentList(),mes=monthKey(new Date().toISOString());$('cntChip').hidden=false;$('cntChip').textContent='Enviadas: '+L.length;$('cntChip').title=L.filter(x=>monthKey(x.fecha)===mes).length+' este mes'}
@@ -706,7 +706,7 @@ $('ibBtn').addEventListener('click',async()=>{if(!deferred)return;deferred.promp
 $('ibX').addEventListener('click',()=>{put('pnv_ib_no','1');$('installBar').hidden=true});
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 // precios del día: los publica la oficina en la hoja de Google; aquí se aplican sobre la tarifa base
-const SHEET="https://script.google.com/macros/s/AKfycbxiLDkb3SVgf3c9_1p5enCEPIpnVurMgH60f_ba0Iu0EFMi-b3bNM49FugkLld6rLAn/exec";
+const SHEET="https://script.google.com/macros/s/AKfycbwXS7Xx-Ow-AUmQuEEVul2jAnN6sdjO8hP1RzL_n-D0IcJuwLLBsN31Gc5tPCo902J4/exec";
 const wre=/(?:(\d+)\s?[Xx]\s?)?(\d+(?:[.,]\d+)?)\s?(KGS|KG|K|GRS|GR|G|ML|CL|LTS|LT|L)(?![A-Za-z])/gi,WF={KG:1000,KGS:1000,K:1000,GR:1,GRS:1,G:1,ML:1,CL:10,LT:1000,LTS:1000,L:1000};
 function peso(d){const ms=[...String(d).matchAll(wre)];if(!ms.length)return[null,null];const m=ms[ms.length-1];return[m[0].replace(/\s/g,'').toUpperCase(),Math.round(WF[m[3].toUpperCase()]*parseFloat(m[2].replace(',','.'))*10)/10]}
 function undCaja(p,q,uf,desc){if(uf==='KG'||!p||p<0.01||!q)return null;const k=p/q;if(Math.abs(k-Math.round(k))<0.06&&Math.round(k)>=2)return Math.round(k);for(const m of String(desc).matchAll(/\d+/g)){const c=+m[0];if(c>=2&&c<=1000&&Math.abs(p/c-q)<=0.0051)return c}return null}
