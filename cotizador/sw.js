@@ -1,5 +1,5 @@
 // Cotizador Penalva – funciona sin cobertura con la última tarifa descargada
-const CACHE='cotizador-v2';
+const CACHE='cotizador-v3';
 const SHELL=['./','./index.html','./panel.html','./manifest.webmanifest','./img/icon-192.png','./img/icon-512.png','./img/apple-touch-icon.png',
  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js','https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>Promise.all(SHELL.map(u=>c.add(new Request(u,{mode:u.startsWith('http')?'no-cors':'same-origin'})).catch(()=>{}))))) ;self.skipWaiting()});

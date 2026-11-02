@@ -193,6 +193,10 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
 .g-arrow{position:fixed;left:50%;bottom:calc(6px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);font-size:44px;color:#fff;font-weight:700;text-shadow:0 2px 8px rgba(0,0,0,.5);animation:bob 1s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,10px)}}
 @media (prefers-reduced-motion:reduce){.g-arrow{animation:none}}
+.prev{display:flex;gap:8px;overflow-x:auto;max-height:240px}
+.prev img{height:220px;width:auto;border-radius:10px;border:1px solid var(--line);flex:none}
+.rec{display:inline-block;margin-left:6px;background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:1px 8px;font-size:11px;font-weight:600;vertical-align:2px}
+.dl{display:flex;flex-wrap:wrap;gap:6px}.dl .btn{flex:1;text-align:center;text-decoration:none;padding:10px;font-size:13.5px;color:var(--ink)}
 /* hojas */
 .modal{position:fixed;inset:0;background:rgba(10,15,25,.55);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px}
 .modal .box{background:var(--panel);border-radius:16px;max-width:460px;width:100%;padding:20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow);max-height:calc(100vh - 32px);overflow:auto}
@@ -631,21 +635,97 @@ $('pdfBtn').addEventListener('click',async()=>{
   if(!window.jspdf)return flash('No se ha podido cargar el generador de PDF. Recarga la página.','err');
   $('pdfBtn').disabled=true;flash('Preparando PDF…');
   try{const blob=await buildPDF();const fn=('Cotizacion_'+(cliLabel()||'cliente')+'_'+S.no).replace(/[^\wÁÉÍÓÚÑáéíóúñ\- ]+/g,'').replace(/\s+/g,'_').slice(0,90)+'.pdf';
-    logEnvio();showPdf(blob,fn);flash('PDF listo','ok');
+    let imgs=[];try{imgs=await buildImages()}catch(e){console.warn('imagen',e)}
+    logEnvio();showPdf(blob,fn,imgs);flash('Propuesta lista','ok');
   }catch(err){console.error(err);flash('Error al generar el PDF.','err')}finally{$('pdfBtn').disabled=false}
 });
-let PDFURL=null;
-function showPdf(blob,fn){
-  if(PDFURL)URL.revokeObjectURL(PDFURL);PDFURL=URL.createObjectURL(blob);
-  const file=new File([blob],fn,{type:'application/pdf'});
-  const canShare=!!(navigator.canShare&&navigator.canShare({files:[file]}));
-  $('cntBox').innerHTML=`<h3>PDF listo</h3><p class="mono" style="font-size:12px;overflow-wrap:anywhere">${esc(fn)}</p>
-   <div class="choice">${canShare?`<button type="button" id="shBtn"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg></span><span><b>Enviar al cliente</b><span class="tx">WhatsApp, correo…</span></span></button>`:''}
-   <a class="btn" style="text-align:center;text-decoration:none;padding:12px" href="${PDFURL}" download="${esc(fn)}">Descargar PDF</a>
-   <a class="btn" style="text-align:center;text-decoration:none;padding:12px" href="${PDFURL}" target="_blank" rel="noopener">Ver PDF</a></div>
+let PDFURL=null,IMGURLS=[];
+function showPdf(blob,fn,imgs){
+  if(PDFURL)URL.revokeObjectURL(PDFURL);PDFURL=URL.createObjectURL(blob);IMGURLS.forEach(u=>URL.revokeObjectURL(u));IMGURLS=imgs.map(b=>URL.createObjectURL(b));
+  const pdf=new File([blob],fn,{type:'application/pdf'});
+  const base=fn.replace(/\.pdf$/,'');
+  const jpgs=imgs.map((b,i)=>new File([b],base+(imgs.length>1?'_'+(i+1):'')+'.jpg',{type:'image/jpeg'}));
+  const can=f=>!!(navigator.canShare&&(()=>{try{return navigator.canShare({files:f})}catch(e){return false}})());
+  const both=can([...jpgs,pdf]),oneImg=can(jpgs),onePdf=can([pdf]);
+  const n=S.lines.length,rec=n<=8?'img':'pdf';
+  const txt='Le envío nuestra propuesta comercial. '+(REP.nom?('Un saludo, '+REP.nom+' · '+REP.tel):'');
+  const btn=(id,ico,t,d,star)=>`<button type="button" id="${id}"><span class="ic">${ico}</span><span><b>${t}${star?' <span class="rec">Recomendado</span>':''}</b><span class="tx">${d}</span></span></button>`;
+  $('cntBox').innerHTML=`<h3>Propuesta lista</h3><p>¿Cómo se la mandas al cliente?</p>
+   <div class="prev">${IMGURLS.map(u=>`<img src="${u}" alt="Vista previa de la imagen">`).join('')}</div>
+   <div class="choice">
+    ${both?btn('shBoth',SHARE_ICO,'Imagen + PDF','La imagen llama la atención y el PDF le queda para guardar o imprimir.',true):''}
+    ${oneImg?btn('shImg','<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>','Solo imagen','Se ve directamente en el chat. Ideal con pocos artículos.',!both&&rec==='img'):''}
+    ${onePdf?btn('shPdf','<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5"/></svg>','Solo PDF','Más formal. Mejor con muchos artículos o clientes nuevos.',!both&&rec==='pdf'):''}
+    ${!(both||oneImg||onePdf)?'<p class="tx" style="margin:0">Este navegador no deja compartir directamente: descarga la imagen o el PDF y mándalo desde WhatsApp.</p>':''}
+   </div>
+   <div class="dl">${IMGURLS.map((u,i)=>`<a class="btn" href="${u}" download="${esc(jpgs[i].name)}">Descargar imagen${IMGURLS.length>1?' '+(i+1):''}</a>`).join('')}<a class="btn" href="${PDFURL}" download="${esc(fn)}">Descargar PDF</a><a class="btn" href="${PDFURL}" target="_blank" rel="noopener">Ver PDF</a></div>
    <div class="acts"><button class="btn" type="button" data-close>Cerrar</button></div>`;
   $('cntModal').hidden=false;
-  const sb=$('shBtn');if(sb)sb.addEventListener('click',async()=>{try{await navigator.share({files:[file],title:'Propuesta comercial Penalva',text:'Le envío nuestra propuesta comercial. '+(REP.nom?('Un saludo, '+REP.nom+' · '+REP.tel):'')})}catch(e){}});
+  const go=files=>async()=>{try{await navigator.share({files,title:'Propuesta comercial Penalva',text:txt})}catch(e){}};
+  if($('shBoth'))$('shBoth').addEventListener('click',go([...jpgs,pdf]));
+  if($('shImg'))$('shImg').addEventListener('click',go(jpgs));
+  if($('shPdf'))$('shPdf').addEventListener('click',go([pdf]));
+}
+// ---------- imagen para WhatsApp: vertical, pensada para leerse en el móvil ----------
+function loadImg(src){return new Promise(res=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>res(null);im.src=src})}
+function wrap(ctx,text,maxW,maxLines){const words=String(text).split(/\s+/);const lines=[];let cur='';
+  for(const w of words){const t=cur?cur+' '+w:w;if(ctx.measureText(t).width>maxW&&cur){lines.push(cur);cur=w;if(lines.length===maxLines)break}else cur=t}
+  if(lines.length<maxLines&&cur)lines.push(cur);
+  if(lines.length===maxLines&&words.join(' ').length>lines.join(' ').length){let l=lines[maxLines-1];while(ctx.measureText(l+'…').width>maxW&&l.length)l=l.slice(0,-1);lines[maxLines-1]=l+'…'}
+  return lines}
+function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+async function buildImages(){
+  try{await document.fonts.ready}catch(e){}
+  const W=1080,P=56,BLUE='#1f4aa8',DEEP='#132f73',INK='#142036',MUT='#5b6880',LINE='#dbe2ec',SOFT='#f3f6fb',TINT='#e2eafb',RED='#d1262f';
+  const F=(w,s,f)=>`${w} ${s}px ${f==='d'?'"Barlow Condensed","Arial Narrow",sans-serif':'"Barlow",Arial,sans-serif'}`;
+  const all=S.lines.map(l=>({r:BY[l.c],n:net(BY[l.c],l.dto)})).sort((a,b)=>a.r.o-b.r.o);
+  const per=8,pages=[];for(let i=0;i<all.length;i+=per)pages.push(all.slice(i,i+per));
+  const logo=await loadImg(LOGO);const thumbs={};
+  for(const x of all){const s=IMG[x.r.c];if(s)thumbs[x.r.c]=await loadImg('data:image/jpeg;base64,'+s)}
+  const c=S.cli,cliName=S.tipo==='ex'?(c.nom||''):(c.com||c.raz||''),cliSub=S.tipo==='ex'?(c.cod?'Cliente '+c.cod:''):[c.raz&&c.com?c.raz:'',c.pob||''].filter(Boolean).join(' · ');
+  const out=[];
+  for(let pi=0;pi<pages.length;pi++){
+    const items=pages[pi],CARD=232,HEAD=pi===0?470:200,FOOT=280,H=HEAD+items.length*(CARD+20)+FOOT;
+    const cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');
+    x.fillStyle='#eef2f8';x.fillRect(0,0,W,H);
+    // cabecera
+    const g=x.createLinearGradient(0,0,W,HEAD-40);g.addColorStop(0,'#2c5fd1');g.addColorStop(1,DEEP);x.fillStyle=g;x.fillRect(0,0,W,HEAD-40);
+    x.fillStyle=RED;x.fillRect(0,HEAD-46,W,6);
+    if(logo){const lh=86,lw=lh*logo.width/logo.height;x.fillStyle='#fff';rr(x,P,40,lw+28,lh+24,18);x.fill();x.drawImage(logo,P+14,52,lw,lh)}
+    x.fillStyle='rgba(255,255,255,.85)';x.font=F(500,28);x.textAlign='right';
+    x.fillText('Nº '+S.no+(pages.length>1?'  ·  '+(pi+1)+'/'+pages.length:''),W-P,80);
+    x.fillText(new Date().toLocaleDateString('es-ES'),W-P,118);x.textAlign='left';
+    if(pi===0){
+      x.fillStyle='#fff';x.font=F(700,84,'d');x.fillText('Propuesta comercial',P,250);
+      x.font=F(600,44);x.fillText(wrap(x,cliName||'Para usted',W-2*P,1)[0],P,322);
+      x.font=F(400,30);x.fillStyle='rgba(255,255,255,.8)';if(cliSub)x.fillText(wrap(x,cliSub,W-2*P,1)[0],P,368);
+    }else{x.fillStyle='#fff';x.font=F(700,56,'d');x.fillText('Propuesta comercial (cont.)',P,170)}
+    // artículos
+    let y=HEAD;
+    for(const it of items){
+      x.fillStyle='#fff';rr(x,P-16,y,W-2*(P-16),CARD,24);x.fill();x.strokeStyle=LINE;x.lineWidth=2;x.stroke();
+      const ph=176,px=P+8,py=y+(CARD-ph)/2;x.fillStyle='#fff';rr(x,px,py,ph,ph,16);x.fill();x.strokeStyle=LINE;x.stroke();
+      const im=thumbs[it.r.c];if(im){const sc=Math.min((ph-16)/im.width,(ph-16)/im.height),iw=im.width*sc,ih=im.height*sc;x.drawImage(im,px+(ph-iw)/2,py+(ph-ih)/2,iw,ih)}
+      const tx=px+ph+28,tw=W-P-tx-250;
+      x.fillStyle=INK;x.font=F(600,34);const dl=wrap(x,cleanDesc(it.r.d),tw+230,2);dl.forEach((l,i)=>x.fillText(l,tx,y+58+i*40));
+      x.fillStyle=MUT;x.font=F(400,26);
+      const meta=[it.r.c,fmtLbl(it.r.f),it.r.k?it.r.k+' und/caja':'',it.r.w||''].filter(Boolean).join('  ·  ');x.fillText(wrap(x,meta,tw,1)[0],tx,y+58+dl.length*40+10);
+      // precio
+      const pr=it.r.p==null?'Consultar':eur(it.n.f),pu=pUnit(it.r,it.n.u);
+      x.textAlign='right';x.fillStyle=BLUE;x.font=F(700,66,'d');x.fillText(pr,W-P,y+CARD-52);
+      x.fillStyle=MUT;x.font=F(500,26);x.fillText((fmtLbl(it.r.f)==='Kilo'?'el kilo':'la '+fmtLbl(it.r.f).toLowerCase())+(pu!=='—'?'  ·  '+pu:''),W-P,y+CARD-20);x.textAlign='left';
+      y+=CARD+20;
+    }
+    // pie
+    y+=10;x.fillStyle='#fff';rr(x,P-16,y,W-2*(P-16),FOOT-50,24);x.fill();
+    x.fillStyle=MUT;x.font=F(600,24);x.fillText('SU CONTACTO COMERCIAL',P+8,y+48);
+    x.fillStyle=INK;x.font=F(700,40);x.fillText(REP.nom||'',P+8,y+96);x.font=F(500,34);x.fillStyle=BLUE;x.fillText(REP.tel||'',P+8,y+140);
+    const notas=[];if(S.opts.iva==='sin')notas.push('Precios sin IVA');if(S.opts.iva==='con')notas.push('IVA incluido');if(S.opts.val)notas.push('Válida hasta '+fmtDate(S.opts.val));
+    x.textAlign='right';x.fillStyle=MUT;x.font=F(400,26);notas.forEach((t,i)=>x.fillText(t,W-P,y+96+i*38));x.textAlign='left';
+    x.fillStyle=MUT;x.font=F(400,22);x.fillText(COMPANY.name+' · '+COMPANY.city,P,H-26);
+    out.push(await new Promise(res=>cv.toBlob(res,'image/jpeg',0.9)));
+  }
+  return out;
 }
 async function buildPDF(){
   const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});
