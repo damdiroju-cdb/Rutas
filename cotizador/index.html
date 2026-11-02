@@ -533,6 +533,13 @@ function repRender(){const ok=REP.nom&&REP.tel;$('repChip').textContent=ok?REP.n
 const REPS=['Abraam','Antonio Aguado','Antonio Ayala','Avidad','Batseva','David Díaz','David Guadix','Jorge','Jose Manuel Herrera','Juanma Cabrerizo','Juanma Nordwik','Manolo Borrego','Nacho Penalva','Sebastián'];
 $('rSel').innerHTML='<option value="">Elige tu nombre…</option>'+REPS.map(n=>`<option>${n}</option>`).join('')+'<option value="__otro">Otro…</option>';
 $('rSel').addEventListener('change',()=>{$('rNomWrap').hidden=$('rSel').value!=='__otro'});
+// enlace personal: ?c=nombre-del-comercial
+const slug=t=>norm(t).toLowerCase().replace(/[^a-z0-9]+/g,'-');
+const PRESET={'David Díaz':{tel:'682 390 990',mail:'daviddiaz@nordwik.com'}};
+let LINKED=null;
+(function(){try{const c=new URLSearchParams(location.search).get('c');if(!c)return;const nm=REPS.find(n=>slug(n)===c.toLowerCase());if(!nm)return;LINKED=nm;
+  if(REP.nom!==nm){REP={nom:nm,tel:'',mail:''}}const p=PRESET[nm];if(p){REP.tel=REP.tel||p.tel;REP.mail=REP.mail||p.mail}store('pnv_rep',REP)}catch(e){}})();
+if(LINKED){$('rSel').disabled=true}
 function repOpen(){const known=REPS.includes(REP.nom);$('rSel').value=REP.nom?(known?REP.nom:'__otro'):'';$('rNomWrap').hidden=!(REP.nom&&!known);$('rNom').value=REP.nom||'';$('rTel').value=REP.tel||'';$('rMail').value=REP.mail||'';$('repModal').hidden=false;$('rNom').focus()}
 $('repChip').addEventListener('click',repOpen);$('repCancel').addEventListener('click',()=>$('repModal').hidden=true);
 $('repForm').addEventListener('submit',e=>{e.preventDefault();const nm=$('rSel').value==='__otro'?$('rNom').value.trim():$('rSel').value;if(!nm){$('rSel').focus();return}REP={nom:nm,tel:$('rTel').value.trim(),mail:$('rMail').value.trim()};store('pnv_rep',REP);repRender();$('repModal').hidden=true});
@@ -637,6 +644,7 @@ paintCount();
 $('logoImg').src=LOGO;$('nRef').textContent=R.length.toLocaleString('es-ES');
 fillFam();fillSub();loadForm();repRender();renderSaved();renderProp();
 document.body.dataset.view='cat';setMode('con');sizeBars();$('startModal').hidden=false;
+if(LINKED&&!REP.tel){$('startModal').hidden=true;repOpen();$('repModal').querySelector('p').textContent='Hola, '+LINKED.split(' ')[0]+'. Pon tu teléfono una sola vez: saldrá en los PDF como contacto del cliente.';$('repForm').addEventListener('submit',()=>{if(REP.tel)$('startModal').hidden=false},{once:true})}
 window.setImgs=j=>{IMG=j||{};
   document.querySelectorAll('.thumb[data-ti]').forEach(el=>{const s=IMG[el.dataset.ti];if(s){el.classList.remove('no');el.removeAttribute('data-ti');el.innerHTML=`<img loading="lazy" alt="" src="data:image/jpeg;base64,${s}">`}});};
 };
@@ -655,6 +663,8 @@ async function open(pin){
   window.TARIFA=data;$('lockModal').hidden=true;put('pnv_pin',pin);window.startApp();
   dec(k,'fotos.bin').then(j=>window.setImgs(j)).catch(()=>{});
 }
+let hk=null;try{const m=location.hash.match(/k=([^&]+)/);if(m){hk=decodeURIComponent(m[1]);history.replaceState(null,'',location.pathname+location.search)}}catch(e){}
+if(hk){try{await open(hk);return}catch(e){}}
 const saved=get('pnv_pin');
 if(saved){try{await open(saved);return}catch(e){put('pnv_pin',null)}}
 $('lockForm').addEventListener('submit',async e=>{e.preventDefault();$('lockBtn').disabled=true;$('lockMsg').className='msg';$('lockMsg').textContent='Abriendo…';
