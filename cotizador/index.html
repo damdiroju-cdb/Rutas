@@ -172,6 +172,27 @@ a.btn{color:var(--ink)}
 body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 .installbar img{border-radius:10px;flex:none}
 .ib-t{flex:1;min-width:0}.ib-t>b{display:block;font-size:14.5px}.ib-t>span{display:block;font-size:12.5px;color:var(--muted)}.ib-t>span b{color:var(--ink)}
+/* guía de instalación */
+.guide{position:fixed;inset:0;z-index:90;background:rgba(10,20,45,.72);display:flex;align-items:flex-start;justify-content:center;padding:calc(16px + env(safe-area-inset-top,0px)) 14px calc(70px + env(safe-area-inset-bottom,0px));overflow:auto}
+.g-box{background:var(--panel);border-radius:18px;max-width:440px;width:100%;padding:18px;display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow)}
+.g-head{display:flex;gap:14px;align-items:center}
+.g-head img{border-radius:15px;flex:none}
+.g-head b{display:block;font-family:var(--display);font-size:26px;line-height:1.05}
+.g-head span{display:block;color:var(--muted);font-size:14.5px;margin-top:3px}
+.g-body{display:flex;flex-direction:column;gap:10px}
+.g-big{padding:16px;font-size:18px}
+.g-note{margin:0;color:var(--muted);font-size:14px;text-align:center}
+.g-warn{margin:0;background:#fff4e0;color:#7a4a00;border-radius:10px;padding:10px 12px;font-size:15px}
+.g-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.g-steps li{display:flex;gap:12px;align-items:flex-start;font-size:16.5px;line-height:1.35}
+.g-n{width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-weight:700;flex:none;font-size:16px}
+.g-mock{margin-top:8px;display:flex;width:fit-content;align-items:center;gap:10px;border:1px solid var(--line);background:var(--soft);border-radius:10px;padding:8px 12px;color:var(--accent)}
+.g-mock.row{display:flex;color:var(--ink)}
+.g-mock.row svg{color:var(--ink)}
+.g-foot{display:flex;gap:8px}.g-foot .btn{flex:1;padding:12px}
+.g-arrow{position:fixed;left:50%;bottom:calc(6px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);font-size:44px;color:#fff;font-weight:700;text-shadow:0 2px 8px rgba(0,0,0,.5);animation:bob 1s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,10px)}}
+@media (prefers-reduced-motion:reduce){.g-arrow{animation:none}}
 /* hojas */
 .modal{position:fixed;inset:0;background:rgba(10,15,25,.55);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px}
 .modal .box{background:var(--panel);border-radius:16px;max-width:460px;width:100%;padding:20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow);max-height:calc(100vh - 32px);overflow:auto}
@@ -359,6 +380,33 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
 </div>
 
 <div id="splash" class="splash"><div class="sp-in"><img src="img/icon-192.png" alt="" width="96" height="96"><b>Cotizador Penalva</b><span>Cargando la tarifa…</span><i></i></div></div>
+<div class="guide" id="guide" hidden>
+  <div class="g-box">
+    <div class="g-head"><img src="img/icon-192.png" alt="" width="64" height="64"><div><b>Instala tu Cotizador</b><span>Para tenerlo en el móvil como una app más. Solo se hace una vez.</span></div></div>
+    <div id="gA" class="g-body" hidden>
+      <button class="btn primary g-big" type="button" id="gInstall">Instalar ahora</button>
+      <p class="g-note">Te saldrá un aviso: pulsa <b>Instalar</b>. Luego busca el icono azul en tu pantalla.</p>
+    </div>
+    <ol id="gIos" class="g-steps" hidden>
+      <li><span class="g-n">1</span><div>Toca el botón <b>Compartir</b> de la barra de abajo<div class="g-mock"><svg width="22" height="26" viewBox="0 0 13 15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 1v9M3 4.5 6.5 1 10 4.5M3 7H1.5v7h10V7H10"/></svg></div></div></li>
+      <li><span class="g-n">2</span><div>Baja un poco y toca <b>Añadir a pantalla de inicio</b><div class="g-mock row"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/></svg><span>Añadir a pantalla de inicio</span></div></div></li>
+      <li><span class="g-n">3</span><div>Arriba a la derecha, toca <b>Añadir</b>. ¡Listo!</div></li>
+    </ol>
+    <div id="gIosOther" class="g-body" hidden>
+      <p class="g-warn">En iPhone solo se puede instalar desde <b>Safari</b> (la brújula azul).</p>
+      <ol class="g-steps"><li><span class="g-n">1</span><div>Toca <b>Copiar enlace</b></div></li><li><span class="g-n">2</span><div>Abre <b>Safari</b>, toca la barra de arriba, <b>pega</b> y entra</div></li><li><span class="g-n">3</span><div>Ahí te saldrán los pasos para instalarlo</div></li></ol>
+      <button class="btn primary g-big" type="button" id="gCopy">Copiar enlace</button>
+    </div>
+    <ol id="gAnd" class="g-steps" hidden>
+      <li id="gWv" hidden><span class="g-n">0</span><div>Primero toca los <b>tres puntitos</b> de arriba y elige <b>Abrir en Chrome</b> (o «Abrir en el navegador»)<div class="g-mock"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></div></div></li>
+      <li><span class="g-n">1</span><div>Toca los <b>tres puntitos</b> de arriba a la derecha<div class="g-mock"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></div></div></li>
+      <li><span class="g-n">2</span><div>Toca <b>Instalar aplicación</b> o <b>Añadir a pantalla de inicio</b><div class="g-mock row"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/></svg><span>Añadir a pantalla de inicio</span></div></div></li>
+      <li><span class="g-n">3</span><div>Confirma con <b>Instalar</b> o <b>Añadir</b>. ¡Listo!</div></li>
+    </ol>
+    <div class="g-foot"><button class="btn" type="button" id="gLater">Más tarde</button><button class="btn" type="button" id="gDone">Ya la tengo instalada</button></div>
+  </div>
+  <div class="g-arrow" id="gArrow" hidden aria-hidden="true">↓</div>
+</div>
 <div class="installbar" id="installBar" hidden><img src="img/icon-192.png" alt="" width="40" height="40"><div class="ib-t"><b>Tenlo como app en tu móvil</b><span id="ibText">Un toque y se abre, aunque no tengas cobertura.</span></div><button class="btn primary" type="button" id="ibBtn">Instalar</button><button class="x" type="button" id="ibX" aria-label="Ahora no">×</button></div>
 <div class="modal" id="lockModal" hidden>
   <form class="box" id="lockForm">
@@ -692,18 +740,35 @@ async function open(pin){
   dec(k,'fotos.bin').then(j=>window.setImgs(j)).catch(()=>{});
 }
 let hk=null;try{const m=location.hash.match(/k=([^&]+)/);if(m)hk=decodeURIComponent(m[1])}catch(e){}
-let deferred=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;setupInstall()});
-function setupInstall(){
-  const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
-  if(standalone||get('pnv_ib_no')||!window.TARIFA)return;
-  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent),bar=$('installBar');
-  if(deferred){$('ibText').textContent='Un toque y se abre, aunque no tengas cobertura.';$('ibBtn').hidden=false}
-  else if(ios){$('ibText').innerHTML='Pulsa <b>Compartir</b> <svg width="13" height="15" viewBox="0 0 13 15" fill="none" stroke="currentColor" stroke-width="1.6" style="vertical-align:-2px"><path d="M6.5 1v9M3 4.5 6.5 1 10 4.5M2 7H1v7h11V7h-1"/></svg> y luego <b>Añadir a pantalla de inicio</b>.';$('ibBtn').hidden=true}
-  else return;
-  setTimeout(()=>{bar.hidden=false},2500);
+let deferred=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;if(!$('guide').hidden)showGuide()});
+const UA=navigator.userAgent,IOS=/iphone|ipad|ipod/i.test(UA)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const IOS_SAFARI=IOS&&/safari/i.test(UA)&&!/crios|fxios|edgios|opios|gsa\/|fban|fbav|instagram|whatsapp|line\//i.test(UA);
+const ANDROID=/android/i.test(UA),WEBVIEW=ANDROID&&(/; wv\)/.test(UA)||/fban|fbav|instagram|whatsapp/i.test(UA));
+const isStandalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+let hidden=[];
+function showGuide(){
+  const g=$('guide');['gA','gIos','gIosOther','gAnd'].forEach(id=>$(id).hidden=true);$('gArrow').hidden=true;
+  if(deferred&&!WEBVIEW)$('gA').hidden=false;
+  else if(IOS&&IOS_SAFARI){$('gIos').hidden=false;$('gArrow').hidden=/ipad/i.test(UA)}
+  else if(IOS)$('gIosOther').hidden=false;
+  else{$('gAnd').hidden=false;$('gWv').hidden=!WEBVIEW}
+  // la guía va primero: el resto de ventanas esperan
+  hidden=['startModal','repModal'].filter(id=>!$(id).hidden);hidden.forEach(id=>$(id).hidden=true);
+  g.hidden=false;
 }
-$('ibBtn').addEventListener('click',async()=>{if(!deferred)return;deferred.prompt();try{await deferred.userChoice}catch(e){}deferred=null;$('installBar').hidden=true});
-$('ibX').addEventListener('click',()=>{put('pnv_ib_no','1');$('installBar').hidden=true});
+function closeGuide(){$('guide').hidden=true;hidden.forEach(id=>$(id).hidden=false);hidden=[]}
+function setupInstall(){
+  if(isStandalone()||!window.TARIFA)return;
+  if(get('pnv_inst_done')){return}
+  showGuide();
+}
+$('gInstall').addEventListener('click',async()=>{if(!deferred)return;deferred.prompt();let ok=false;try{ok=(await deferred.userChoice).outcome==='accepted'}catch(e){}deferred=null;if(ok){put('pnv_inst_done','1');closeGuide()}else showGuide()});
+$('gCopy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(location.href);$('gCopy').textContent='Copiado. Ahora ábrelo en Safari'}catch(e){$('gCopy').textContent='Mantén pulsada la barra de arriba y copia'}});
+$('gLater').addEventListener('click',()=>{closeGuide();setTimeout(()=>{$('ibText').textContent='Un toque y se abre, aunque no tengas cobertura.';$('installBar').hidden=false},4000)});
+$('ibBtn').addEventListener('click',()=>{$('installBar').hidden=true;showGuide()});
+$('ibX').addEventListener('click',()=>{$('installBar').hidden=true});
+$('gDone').addEventListener('click',()=>{put('pnv_inst_done','1');closeGuide()});
+addEventListener('appinstalled',()=>{put('pnv_inst_done','1');closeGuide()});
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 // precios del día: los publica la oficina en la hoja de Google; aquí se aplican sobre la tarifa base
 const SHEET="https://script.google.com/macros/s/AKfycbwXS7Xx-Ow-AUmQuEEVul2jAnN6sdjO8hP1RzL_n-D0IcJuwLLBsN31Gc5tPCo902J4/exec";
