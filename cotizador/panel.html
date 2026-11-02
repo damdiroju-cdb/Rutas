@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#1f4aa8">
+<link rel="manifest" href="panel.webmanifest">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="img/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Panel">
 <title>Panel de propuestas · Penalva</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
@@ -171,7 +176,7 @@ function render(){
   $('tLast').innerHTML=L.map(r=>`<tr><td class="sub num">${fd(r.t)}</td><td>${esc(r.comercial)}</td><td>${esc(r.cliente)} ${r.tipo==='Futuro cliente'?'<span class="pill new">Nuevo</span>':''}</td><td class="n">${esc(r.articulos)}</td><td class="hide-m mono">${esc(r.no)}</td></tr>`).join('')||`<tr><td colspan="5" class="empty">Ninguna propuesta ${PERLBL[PER]}.</td></tr>`;
 }
 function renderLinks(){
-  $('tLinks').innerHTML=REPS.map(n=>{const u=linkFor(n);const wa='https://wa.me/?text='+encodeURIComponent('Hola '+n.split(' ')[0]+', este es tu cotizador de Penalva. Guárdalo en el móvil: '+u);
+  $('tLinks').innerHTML=REPS.map(n=>{const u=linkFor(n);const wa='https://wa.me/?text='+encodeURIComponent('Hola '+n.split(' ')[0]+', este es tu cotizador de Penalva: '+u+' Ábrelo y pulsa «Instalar» (en iPhone: Compartir → Añadir a pantalla de inicio) y lo tendrás como una app más del móvil.');
     return `<tr><td><b>${esc(n)}</b><div class="url">${esc(u)}</div></td><td><div class="acts"><button class="btn sm" type="button" data-copy="${esc(u)}">Copiar</button><a class="btn sm" href="${esc(wa)}" target="_blank" rel="noopener">WhatsApp</a></div></td></tr>`}).join('');
 }
 $('tLinks').addEventListener('click',async e=>{const b=e.target.closest('[data-copy]');if(!b)return;try{await navigator.clipboard.writeText(b.dataset.copy);toast('Enlace copiado')}catch(err){toast('No se pudo copiar: mantén pulsado el enlace')}});
@@ -191,6 +196,7 @@ $('reload').addEventListener('click',async()=>{$('reload').disabled=true;try{awa
 $('lockForm').addEventListener('submit',async e=>{e.preventDefault();$('lockBtn').disabled=true;$('lockMsg').className='msg';$('lockMsg').textContent='Cargando…';
   try{await enter($('tok').value.trim())}catch(err){$('lockMsg').className='msg err';$('lockMsg').textContent=err.message==='clave'?'Clave incorrecta.':'No se han podido leer los datos de la hoja. Revisa la conexión o que el script esté actualizado.'}finally{$('lockBtn').disabled=false}});
 (async()=>{const t=get('pnv_panel');if(t){try{await enter(t);return}catch(e){}}$('tok').focus()})();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 setInterval(()=>{if(!$('app').hidden&&document.visibilityState==='visible')load(get('pnv_panel')).catch(()=>{})},120000);
 })();
 </script>
