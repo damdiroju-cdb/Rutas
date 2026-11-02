@@ -95,7 +95,7 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
   <form id="lockForm">
     <h3>Actualizar precios</h3>
     <p class="muted" style="margin:0">Escribe la clave de oficina. Solo se pide la primera vez en este ordenador.</p>
-    <input type="password" id="key" aria-label="Clave" required>
+    <input type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" id="key" aria-label="Clave" required>
     <div class="msg" id="lockMsg"></div>
     <button class="btn primary" type="submit">Entrar</button>
   </form>
@@ -120,7 +120,7 @@ async function loadCurrent(){
 }
 async function enter(k){KEY=k;await loadCurrent();put('pnv_key_precios',k);$('lock').hidden=true;$('app').hidden=false}
 $('lockForm').addEventListener('submit',async e=>{e.preventDefault();$('lockMsg').className='msg';$('lockMsg').textContent='Comprobando…';
-  try{await enter($('key').value.trim())}catch(err){$('lockMsg').className='msg err';$('lockMsg').textContent=err.message==='clave'?'Clave incorrecta.':'No se puede conectar con la hoja. Revisa la conexión.'}});
+  try{await enter($('key').value.replace(/\s+/g,''))}catch(err){$('lockMsg').className='msg err';$('lockMsg').textContent=err.message==='clave'?'Clave incorrecta.':'No se puede conectar con la hoja. Revisa la conexión.'}});
 (async()=>{const k=get('pnv_key_precios');if(k){try{await enter(k);return}catch(e){}}$('key').focus()})();
 
 // ---- lectura del PDF (mismas columnas que el informe del programa) ----

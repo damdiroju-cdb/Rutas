@@ -127,7 +127,7 @@ tr.zero td{color:var(--muted)}
   <form id="lockForm">
     <h3>Panel de propuestas</h3>
     <p>Escribe la clave del panel. Solo te la pedirá la primera vez en este dispositivo.</p>
-    <input type="password" id="tok" aria-label="Clave del panel" autocomplete="current-password" required>
+    <input type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" id="tok" aria-label="Clave del panel" autocomplete="current-password" required>
     <div class="msg" id="lockMsg"></div>
     <button class="btn primary" type="submit" id="lockBtn" style="justify-content:center;padding:12px">Entrar</button>
   </form>
