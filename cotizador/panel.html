@@ -196,7 +196,9 @@ async function enter(tok){await load(tok);put('pnv_panel',tok);$('lock').hidden=
 $('reload').addEventListener('click',async()=>{$('reload').disabled=true;try{await load(get('pnv_panel'));toast('Datos actualizados')}catch(e){toast('No se han podido cargar los datos')}finally{$('reload').disabled=false}});
 $('lockForm').addEventListener('submit',async e=>{e.preventDefault();$('lockBtn').disabled=true;$('lockMsg').className='msg';$('lockMsg').textContent='Cargando…';
   try{await enter($('tok').value.trim())}catch(err){$('lockMsg').className='msg err';$('lockMsg').textContent=err.message==='clave'?'Clave incorrecta.':'No se han podido leer los datos de la hoja. Revisa la conexión o que el script esté actualizado.'}finally{$('lockBtn').disabled=false}});
-(async()=>{const t=get('pnv_panel');if(t){try{await enter(t);return}catch(e){}}$('tok').focus()})();
+(async()=>{let ht=null;try{const m=location.hash.match(/t=([^&]+)/);if(m)ht=decodeURIComponent(m[1])}catch(e){}
+  if(ht){try{await enter(ht);return}catch(e){}}
+  const t=get('pnv_panel');if(t){try{await enter(t);return}catch(e){}}$('tok').focus()})();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 setInterval(()=>{if(!$('app').hidden&&document.visibilityState==='visible')load(get('pnv_panel')).catch(()=>{})},120000);
 })();
