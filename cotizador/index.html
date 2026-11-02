@@ -22,7 +22,7 @@
 :root[data-theme="dark"]{--bg:#0e141f;--panel:#162033;--ink:#e6ebf3;--muted:#98a5bb;--line:#29354a;--soft:#1b2639;--accent:#7aa2ff;--accent-ink:#0b1220;--accent-soft:#1d2d4d;--red:#ff6b72;--ok:#4fc58a;--warn:#e8a94a;--shadow:0 10px 30px rgba(0,0,0,.5);color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-html,body{height:100%}
+html,body{min-height:100%}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.4}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
 button,input,select,textarea{font:inherit;color:inherit}
@@ -56,8 +56,20 @@ body[data-mode=cot] main{grid-template-columns:minmax(0,1fr) 470px}
 body[data-mode=con] aside{display:none}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;min-width:0}
 
-.filters{display:grid;grid-template-columns:2fr 1.1fr 1.5fr;gap:8px;padding:12px;border-bottom:1px solid var(--line)}
-.filters .row2{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.searchbar{position:sticky;top:var(--hdr,61px);z-index:8;background:var(--panel);border-bottom:1px solid var(--line);padding:12px;border-radius:12px 12px 0 0;display:flex;flex-direction:column;gap:8px}
+.sbox{display:flex;align-items:center;gap:10px;background:var(--bg);border:2px solid var(--accent);border-radius:12px;padding:0 12px;color:var(--accent)}
+.sbox input[type=search]{border:0;background:transparent;font-size:19px;font-weight:500;padding:13px 0;outline:none;color:var(--ink)}
+.sbox input::-webkit-search-cancel-button{display:none}
+.qclear{border:0;background:var(--line);color:var(--ink);width:28px;height:28px;border-radius:50%;font-size:18px;line-height:1;cursor:pointer;flex:none}
+.sbmeta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-height:20px}
+.sbmeta .count{margin-left:0}
+.linkbtn{margin-left:auto;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:4px 12px;font-size:13px;cursor:pointer;color:var(--muted)}
+.linkbtn.on{border-color:var(--accent);color:var(--accent);font-weight:600}
+.filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.hint{padding:34px 18px 40px;text-align:center;color:var(--muted)}
+.hint b{display:block;color:var(--ink);font-family:var(--display);font-size:22px;margin-bottom:6px}
+.hint .chips{justify-content:center;margin-top:14px}
+mark{background:var(--accent-soft);color:inherit;border-radius:3px;padding:0 1px}
 .field{display:flex;flex-direction:column;gap:3px;min-width:0}
 .field label,.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600}
 input[type=text],input[type=search],input[type=tel],input[type=email],input[type=number],input[type=date],select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;min-width:0;width:100%}
@@ -74,7 +86,7 @@ input[type=search]{font-size:16px}
 .thead,.item{display:grid;grid-template-columns:var(--cols);gap:0 12px;align-items:center;padding:8px 14px}
 .cols{--cols:56px 70px minmax(0,1fr) 64px 64px 72px 96px 100px}
 body[data-mode=cot] .cols{--cols:24px 52px 66px minmax(0,1fr) 60px 58px 64px 88px 92px}
-.thead{position:sticky;top:calc(env(safe-area-inset-top,0px) + 61px);z-index:6;background:var(--panel);border-bottom:2px solid var(--line);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;padding-block:9px}
+.thead{position:sticky;top:calc(var(--hdr,61px) + var(--sbh,90px));z-index:6;background:var(--panel);border-bottom:2px solid var(--line);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;padding-block:9px}
 .r{text-align:right}
 .grp{background:var(--soft);font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.03em;padding:6px 14px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:baseline;color:var(--accent)}
 .grp small{font-family:var(--body);font-weight:400;color:var(--muted);font-size:12px;letter-spacing:0}
@@ -170,6 +182,7 @@ a.btn{color:var(--ink)}
 .tabbar{display:none}
 @media (max-width:1100px){body[data-mode=cot] main{grid-template-columns:minmax(0,1fr) 400px}}
 @media (max-width:980px){
+  .filters{grid-template-columns:1fr 1fr}
   body[data-mode=cot] main{grid-template-columns:minmax(0,1fr);padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
   aside{position:static;max-height:none}
   body[data-view=cat] aside{display:none}
@@ -201,6 +214,7 @@ a.btn{color:var(--ink)}
   .item.on .cell{background:var(--panel)}
   .logo img{height:26px}.logo{height:34px}
   .brand h1{font-size:18px}
+  .brand h1{visibility:hidden}
   .mode{order:3;width:100%}
   .mode button{flex:1}
   .rep-chip{max-width:150px;font-size:12px;padding:5px 10px}
@@ -228,22 +242,14 @@ a.btn{color:var(--ink)}
 
 <main>
   <section class="card" id="catalog" aria-label="Artículos">
-    <div class="filters">
-      <div class="field q"><label for="q">Buscar artículo</label><input type="search" id="q" placeholder="Nombre, código o peso (magnum, 640128, 1kg…)" autocomplete="off" enterkeyhint="search"></div>
-      <div class="field"><label for="fFam">Familia</label><select id="fFam"></select></div>
-      <div class="field"><label for="fSub">Subfamilia</label><select id="fSub"></select></div>
-      <div class="row2">
-        <div class="seg" id="fFmt" role="group" aria-label="Formato">
-          <button type="button" data-v="" aria-pressed="true">Todo</button><button type="button" data-v="CJ" aria-pressed="false">Caja</button><button type="button" data-v="UN" aria-pressed="false">Unidad</button><button type="button" data-v="KG" aria-pressed="false">Kilo</button>
-        </div>
-        <select id="fPeso" class="small-sel" aria-label="Peso o volumen">
-          <option value="">Cualquier peso</option><option value="0-250">Hasta 250 g/ml</option><option value="250-1000">250 g – 1 kg</option><option value="1000-5000">1 – 5 kg/l</option><option value="5000-1e9">Más de 5 kg/l</option>
-        </select>
-        <select id="fSort" class="small-sel" aria-label="Ordenar">
-          <option value="tarifa">Por familias</option><option value="nombre">Nombre A–Z</option><option value="codigo">Código</option><option value="precioA">Precio ↑</option><option value="precioD">Precio ↓</option><option value="peso">Peso ↑</option>
-        </select>
-        <label class="chk-inline" id="fSelWrap" hidden><input type="checkbox" id="fSel"> Solo los marcados</label>
-        <span class="count" id="count"></span>
+    <div class="searchbar" id="searchbar">
+      <div class="sbox"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="q" placeholder="¿Qué buscas? Ej.: magnum, pollo, aceite…" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Buscar artículo"><button type="button" id="qClear" class="qclear" aria-label="Borrar búsqueda" hidden>×</button></div>
+      <div class="sbmeta"><span class="count" id="count"></span><label class="chk-inline" id="fSelWrap" hidden><input type="checkbox" id="fSel"> Solo los elegidos</label><button type="button" class="linkbtn" id="filtBtn" aria-expanded="false">Filtros</button></div>
+      <div class="filters" id="filters" hidden>
+        <div class="field"><label for="fFam">Familia</label><select id="fFam"></select></div>
+        <div class="field"><label for="fSub">Subfamilia</label><select id="fSub"></select></div>
+        <div class="field"><label>Formato</label><div class="seg" id="fFmt" role="group" aria-label="Formato"><button type="button" data-v="" aria-pressed="true">Todo</button><button type="button" data-v="CJ" aria-pressed="false">Caja</button><button type="button" data-v="UN" aria-pressed="false">Unidad</button><button type="button" data-v="KG" aria-pressed="false">Kilo</button></div></div>
+        <div class="field"><label for="fPeso">Peso</label><select id="fPeso"><option value="">Cualquiera</option><option value="0-250">Hasta 250 g/ml</option><option value="250-1000">250 g – 1 kg</option><option value="1000-5000">1 – 5 kg/l</option><option value="5000-1e9">Más de 5 kg/l</option></select></div>
       </div>
     </div>
     <div class="thead cols" id="thead"></div>
@@ -348,7 +354,8 @@ const T=window.TARIFA||{fams:[],subs:[],rows:[]};
 const $=id=>document.getElementById(id);
 const COMPANY={name:"Penalva Alimentación, S.A.",city:"Churriana de la Vega (Granada)"};
 // fila: [código,desc,formato,precio,ud.precio unit,precio unit,familia,subfamilia,peso,pesoN,foto,und/caja]
-const R=T.rows.map((r,i)=>({c:r[0],d:r[1],f:r[2],p:r[3],u:r[4],q:r[5],fa:r[6],su:r[7],w:r[8],wn:r[9],hi:r[10],k:r[11],o:i,n:norm(r[1]+' '+r[0]+' '+(r[8]||''))}));
+const R=T.rows.map((r,i)=>({c:r[0],d:r[1],f:r[2],p:r[3],u:r[4],q:r[5],fa:r[6],su:r[7],w:r[8],wn:r[9],hi:r[10],k:r[11],o:i,n:norm(r[1]+' '+r[0]+' '+(r[8]||'')),ws:norm(r[1]).split(/[^A-Z0-9]+/).filter(Boolean)}));
+R.forEach(r=>{r.fw=r.ws.find(w=>!/^\d+$/.test(w))||''});
 const BY={};R.forEach(r=>BY[r.c]=r);
 let IMG={};
 function norm(s){return String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/\s+/g,' ')}
@@ -378,7 +385,7 @@ const save=()=>store('pnv_cur2',S);
 const lineOf=c=>S.lines.find(l=>l.c===c);
 
 function setMode(m){MODE=m;document.body.dataset.mode=m;segSet('modeSeg',m);$('fSelWrap').hidden=m!=='cot';if(m!=='cot'){F.onlySel=false;$('fSel').checked=false}setView('cat');renderHead();renderList(true)}
-document.querySelectorAll('[data-start]').forEach(b=>b.addEventListener('click',()=>{$('startModal').hidden=true;setMode(b.dataset.start)}));
+document.querySelectorAll('[data-start]').forEach(b=>b.addEventListener('click',()=>{$('startModal').hidden=true;setMode(b.dataset.start);sizeBars();setTimeout(()=>$('q').focus(),50)}));
 
 const F={q:'',fam:'',sub:'',fmt:'',peso:'',sort:'tarifa',onlySel:false};
 function fillFam(){$('fFam').innerHTML='<option value="">Todas</option>'+T.fams.map((f,i)=>`<option value="${i}">${esc(famName(i))}</option>`).join('')}
@@ -388,8 +395,10 @@ function fillSub(){
   $('fSub').innerHTML='<option value="">Todas</option>'+opts.map(([k,n])=>`<option value="${k}">${esc(subName(k))} (${n})</option>`).join('');
   if(F.sub!==''&&!subs.has(+F.sub))F.sub='';$('fSub').value=F.sub;
 }
+function toks(){return norm(F.q).trim().split(/[^A-Z0-9]+/).filter(Boolean)}
+function hasFilter(){return F.fam!==''||F.sub!==''||F.fmt||F.peso||F.onlySel}
 function filtered(){
-  const toks=norm(F.q).trim().split(' ').filter(Boolean);
+  const T=toks();
   let lo=0,hi=Infinity;if(F.peso)[lo,hi]=F.peso.split('-').map(Number);
   const sel=new Set(S.lines.map(l=>l.c));
   const out=R.filter(r=>{
@@ -398,39 +407,52 @@ function filtered(){
     if(F.fmt&&fmtLbl(r.f)!==fmtLbl(F.fmt))return false;
     if(F.peso&&!(r.wn!=null&&r.wn>lo&&r.wn<=hi))return false;
     if(F.onlySel&&!sel.has(r.c))return false;
-    for(const t of toks)if(!r.n.includes(t))return false;
+    for(const t of T)if(!(r.c.startsWith(t)||r.ws.some(w=>w.startsWith(t))))return false;
     return true});
-  const nm=r=>cleanDesc(r.d);
-  const by={nombre:(a,b)=>nm(a).localeCompare(nm(b),'es'),codigo:(a,b)=>a.c.localeCompare(b.c),precioA:(a,b)=>(a.p??1e9)-(b.p??1e9),precioD:(a,b)=>(b.p??-1)-(a.p??-1),peso:(a,b)=>(a.wn??1e12)-(b.wn??1e12),tarifa:(a,b)=>a.o-b.o}[F.sort];
-  return out.sort(by);
+  if(!T.length){F.sort='tarifa';return out.sort((a,b)=>a.o-b.o)}
+  F.sort='rel';const t0=T[0],nm=r=>cleanDesc(r.d).replace(/^\d+\s+/,'');
+  const rank=r=>r.c.startsWith(t0)?0:r.fw.startsWith(t0)?0:1;
+  return out.sort((a,b)=>rank(a)-rank(b)||nm(a).localeCompare(nm(b),'es'));
 }
+function hl(text){const T=toks();if(!T.length)return esc(text);
+  return text.split(/(\s+)/).map(w=>{const n=norm(w);const t=T.find(t=>n.startsWith(t));if(!t||!w.trim())return esc(w);const k=t.length;return '<mark>'+esc(w.slice(0,k))+'</mark>'+esc(w.slice(k))}).join('')}
 function renderHead(){$('thead').innerHTML=(MODE==='cot'?'<span></span>':'')+'<span>Foto</span><span>Código</span><span>Descripción</span><span>Formato</span><span class="r">Und/caja</span><span>Peso</span><span class="r">Precio</span><span class="r">Precio und.</span>'}
 let CUR=[],shown=0;const PAGE=80;
 function renderList(reset){
-  if(reset){CUR=filtered();shown=0;$('list').innerHTML='';$('count').textContent=CUR.length.toLocaleString('es-ES')+' artículos'}
+  if(reset){$('qClear').hidden=!F.q;
+    if(!toks().length&&!hasFilter()){CUR=[];shown=0;$('count').textContent='';$('thead').hidden=true;
+      $('list').innerHTML=`<div class="hint"><b>Escribe lo que buscas</b>Te salen al momento todos los artículos que empiezan por esa palabra.<div class="chips">${['Magnum','Cornetto','Pollo','Aceite','Pan','Gamba','Patata','Tarrina'].map(w=>`<button type="button" data-try="${w}">${w}</button>`).join('')}</div></div>`;return}
+    $('thead').hidden=false;CUR=filtered();shown=0;$('list').innerHTML='';$('count').textContent=CUR.length.toLocaleString('es-ES')+(CUR.length===1?' artículo':' artículos')}
   let html='';const end=Math.min(CUR.length,shown+PAGE);let prev=shown>0?CUR[shown-1]:null;
   for(let i=shown;i<end;i++){const r=CUR[i];
     if(F.sort==='tarifa'&&(!prev||prev.su!==r.su))html+=`<div class="grp">${esc(subName(r.su))}<small>${esc(famName(r.fa))}</small></div>`;
     html+=itemHTML(r);prev=r}
   const old=$('more');if(old)old.remove();
   $('list').insertAdjacentHTML('beforeend',html);shown=end;
-  if(!CUR.length)$('list').innerHTML='<div class="empty-st"><b>No hay artículos con esos filtros</b>Prueba con otra palabra o quita algún filtro.</div>';
+  if(!CUR.length)$('list').innerHTML=`<div class="empty-st"><b>Nada empieza por «${esc(F.q.trim())}»</b>Prueba con otra palabra, con menos letras o con el código.</div>`;
   else if(shown<CUR.length){$('list').insertAdjacentHTML('beforeend','<div class="more" id="more">Cargando más…</div>');io.observe($('more'))}
 }
 function thumb(r){const s=IMG[r.c];return s?`<div class="thumb"><img loading="lazy" alt="" src="data:image/jpeg;base64,${s}"></div>`:`<div class="thumb no" data-ti="${r.c}">${r.hi?'':'sin foto'}</div>`}
 function itemHTML(r){
   const l=lineOf(r.c),on=!!l,d=l&&pct(l.dto);
-  return `<div class="item cols${on?' on':''}" data-c="${r.c}" role="button" tabindex="0">${MODE==='cot'?'<span class="ck" aria-hidden="true">✓</span>':''}<div class="c-img">${thumb(r)}</div><div class="c-code">${r.c}</div><div class="c-desc">${esc(r.d)}${MODE==='cot'&&d?`<span class="dt">−${d.toLocaleString('es-ES')} %</span>`:''}</div><div class="data"><div class="cell"><span class="k">Formato</span><span>${esc(fmtLbl(r.f))}</span></div><div class="cell r"><span class="k">Und/caja</span><span class="num">${undC(r)}</span></div><div class="cell"><span class="k">Peso</span><span>${esc(r.w||'—')}</span></div><div class="cell r hl"><span class="k">Precio</span><b class="c-p num">${eur(r.p)}</b></div><div class="cell r"><span class="k">Precio und.</span><span class="num">${pUnit(r,r.q)}</span></div></div></div>`}
+  return `<div class="item cols${on?' on':''}" data-c="${r.c}" role="button" tabindex="0">${MODE==='cot'?'<span class="ck" aria-hidden="true">✓</span>':''}<div class="c-img">${thumb(r)}</div><div class="c-code">${r.c}</div><div class="c-desc">${hl(r.d)}${MODE==='cot'&&d?`<span class="dt">−${d.toLocaleString('es-ES')} %</span>`:''}</div><div class="data"><div class="cell"><span class="k">Formato</span><span>${esc(fmtLbl(r.f))}</span></div><div class="cell r"><span class="k">Und/caja</span><span class="num">${undC(r)}</span></div><div class="cell"><span class="k">Peso</span><span>${esc(r.w||'—')}</span></div><div class="cell r hl"><span class="k">Precio</span><b class="c-p num">${eur(r.p)}</b></div><div class="cell r"><span class="k">Precio und.</span><span class="num">${pUnit(r,r.q)}</span></div></div></div>`}
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){io.unobserve(e.target);renderList(false)}}),{rootMargin:'600px'});
 function refreshItem(c){const it=$('list').querySelector(`.item[data-c="${c}"]`);if(it)it.outerHTML=itemHTML(BY[c])}
 
 $('list').addEventListener('click',e=>{const it=e.target.closest('.item');if(it)openProduct(it.dataset.c)});
 $('list').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('item')){e.preventDefault();openProduct(e.target.dataset.c)}});
-$('q').addEventListener('input',debounce(()=>{F.q=$('q').value;renderList(true)},150));
+$('q').addEventListener('input',debounce(()=>{F.q=$('q').value;renderList(true);window.scrollTo(0,0)},120));
+$('q').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('q').blur()}});
+$('qClear').addEventListener('click',()=>{$('q').value='';F.q='';renderList(true);$('q').focus()});
+$('list').addEventListener('click',e=>{const b=e.target.closest('[data-try]');if(!b)return;e.stopPropagation();$('q').value=b.dataset.try;F.q=b.dataset.try;renderList(true)},true);
+$('filtBtn').addEventListener('click',()=>{const f=$('filters');f.hidden=!f.hidden;$('filtBtn').setAttribute('aria-expanded',String(!f.hidden));sizeBars()});
+function paintFilt(){const n=[F.fam!=='',F.sub!=='',!!F.fmt,!!F.peso].filter(Boolean).length;$('filtBtn').textContent=n?'Filtros ('+n+')':'Filtros';$('filtBtn').classList.toggle('on',n>0)}
+['fFam','fSub','fPeso'].forEach(id=>$(id).addEventListener('change',paintFilt));$('fFmt').addEventListener('click',()=>setTimeout(paintFilt));
+function sizeBars(){const h=document.querySelector('header.top').getBoundingClientRect().height,sb=$('searchbar').getBoundingClientRect().height;document.documentElement.style.setProperty('--hdr','calc(env(safe-area-inset-top,0px) + '+Math.round(h)+'px)');document.documentElement.style.setProperty('--sbh',Math.round(sb)+'px')}
+addEventListener('resize',sizeBars);
 $('fFam').addEventListener('change',()=>{F.fam=$('fFam').value;fillSub();F.sub=$('fSub').value;renderList(true)});
 $('fSub').addEventListener('change',()=>{F.sub=$('fSub').value;renderList(true)});
 $('fPeso').addEventListener('change',()=>{F.peso=$('fPeso').value;renderList(true)});
-$('fSort').addEventListener('change',()=>{F.sort=$('fSort').value;renderList(true)});
 $('fSel').addEventListener('change',()=>{F.onlySel=$('fSel').checked;renderList(true)});
 segBind('fFmt',v=>{F.fmt=v;renderList(true)});
 segBind('modeSeg',v=>setMode(v));
@@ -614,7 +636,7 @@ paintCount();
 
 $('logoImg').src=LOGO;$('nRef').textContent=R.length.toLocaleString('es-ES');
 fillFam();fillSub();loadForm();repRender();renderSaved();renderProp();
-document.body.dataset.view='cat';setMode('con');$('startModal').hidden=false;
+document.body.dataset.view='cat';setMode('con');sizeBars();$('startModal').hidden=false;
 window.setImgs=j=>{IMG=j||{};
   document.querySelectorAll('.thumb[data-ti]').forEach(el=>{const s=IMG[el.dataset.ti];if(s){el.classList.remove('no');el.removeAttribute('data-ti');el.innerHTML=`<img loading="lazy" alt="" src="data:image/jpeg;base64,${s}">`}});};
 };
