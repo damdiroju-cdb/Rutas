@@ -281,7 +281,7 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
   <div class="logo"><img id="logoImg" alt="Nordwik"></div>
   <div class="brand">
     <h1>Cotizador Penalva</h1>
-    <div class="sub"><span id="tarDate">Tarifa 2026</span> · <span id="nRef"></span> referencias · v7</div>
+    <div class="sub"><span id="tarDate">Tarifa 2026</span> · <span id="nRef"></span> referencias · v8</div>
   </div>
   <div class="mode" id="modeSeg" role="group" aria-label="Modo">
     <button type="button" data-v="con" aria-pressed="true">Consulta</button><button type="button" data-v="cot" aria-pressed="false">Cotización</button>
@@ -376,7 +376,7 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
 <div class="modal" id="repModal" hidden>
   <form class="box" id="repForm">
     <h3>Tus datos de comercial</h3>
-    <p>Salen en cada PDF como contacto del cliente. Se guardan solo en este dispositivo. <span style="opacity:.6">(versión 7)</span></p>
+    <p>Salen en cada PDF como contacto del cliente. Se guardan solo en este dispositivo. <span style="opacity:.6">(versión 8)</span></p>
     <div class="field"><label for="rSel">Comercial</label><select id="rSel" required><option value="">Elige tu nombre…</option></select></div><div class="field" id="rNomWrap" hidden><label for="rNom">Nombre y apellidos</label><input type="text" id="rNom"></div>
     <div class="field"><label for="rTel">Teléfono</label><input type="tel" id="rTel" required></div>
     <div class="field"><label for="rMail">Email (opcional)</label><input type="email" id="rMail"></div>
@@ -648,14 +648,14 @@ function showPdf(blob,fn,imgs){
   const jpgs=imgs.map((b,i)=>new File([b],base+(imgs.length>1?'_'+(i+1):'')+'.jpg',{type:'image/jpeg'}));
   const can=f=>!!(navigator.canShare&&(()=>{try{return navigator.canShare({files:f})}catch(e){return false}})());
   const oneImg=can(jpgs),onePdf=can([pdf]),both=oneImg&&onePdf;
-  const n=S.lines.length,rec=n<=8?'img':'pdf';
+  const n=S.lines.length,rec=n<=14?'img':'pdf';
   const txt='Le envío nuestra propuesta comercial. '+(REP.nom?('Un saludo, '+REP.nom+' · '+REP.tel):'');
   const btn=(id,ico,t,d,star)=>`<button type="button" id="${id}"><span class="ic">${ico}</span><span><b>${t}${star?' <span class="rec">Recomendado</span>':''}</b><span class="tx">${d}</span></span></button>`;
   $('cntBox').innerHTML=`<h3>Propuesta lista</h3><p>¿Cómo se la mandas al cliente?</p>
    <div class="prev">${IMGURLS.map(u=>`<img src="${u}" alt="Vista previa de la imagen">`).join('')}</div>
    <div class="choice">
     ${both?btn('shBoth','<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>','Imagen + PDF','Primero manda la imagen; al volver, un toque más y manda el PDF.',true):''}
-    ${oneImg?btn('shImg','<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>','Solo imagen','Se ve directamente en el chat. Ideal con pocos artículos.',!both&&rec==='img'):''}
+    ${oneImg?btn('shImg','<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>','Solo imagen','Se ve directamente en el chat. Ideal hasta 14 artículos.',!both&&rec==='img'):''}
     ${onePdf?btn('shPdf','<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5"/></svg>','Solo PDF','Más formal. Mejor con muchos artículos o clientes nuevos.',!both&&rec==='pdf'):''}
     ${!(both||oneImg||onePdf)?'<p class="tx" style="margin:0">Este navegador no deja compartir directamente: descarga la imagen o el PDF y mándalo desde WhatsApp.</p>':''}
    </div>
@@ -683,13 +683,13 @@ async function buildImages(){
   const W=1080,P=56,BLUE='#1f4aa8',DEEP='#132f73',INK='#142036',MUT='#5b6880',LINE='#dbe2ec',SOFT='#f3f6fb',TINT='#e2eafb',RED='#d1262f';
   const F=(w,s,f)=>`${w} ${s}px ${f==='d'?'"Barlow Condensed","Arial Narrow",sans-serif':'"Barlow",Arial,sans-serif'}`;
   const all=S.lines.map(l=>({r:BY[l.c],n:net(BY[l.c],l.dto)})).sort((a,b)=>a.r.o-b.r.o);
-  const per=8,pages=[];for(let i=0;i<all.length;i+=per)pages.push(all.slice(i,i+per));
+  const per=14,pages=[];for(let i=0;i<all.length;i+=per)pages.push(all.slice(i,i+per));
   const logo=await loadImg(LOGO);const thumbs={};
   for(const x of all){const s=IMG[x.r.c];if(s)thumbs[x.r.c]=await loadImg('data:image/jpeg;base64,'+s)}
   const c=S.cli,cliName=S.tipo==='ex'?(c.nom||''):(c.com||c.raz||''),cliSub=S.tipo==='ex'?(c.cod?'Cliente '+c.cod:''):[c.raz&&c.com?c.raz:'',c.pob||''].filter(Boolean).join(' · ');
   const out=[];
   for(let pi=0;pi<pages.length;pi++){
-    const items=pages[pi],CARD=232,HEAD=pi===0?470:200,FOOT=280,H=HEAD+items.length*(CARD+20)+FOOT;
+    const items=pages[pi],CARD=212,HEAD=pi===0?470:300,FOOT=280,H=HEAD+items.length*(CARD+20)+FOOT;
     const cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');
     x.fillStyle='#eef2f8';x.fillRect(0,0,W,H);
     // cabecera
@@ -703,7 +703,7 @@ async function buildImages(){
       x.fillStyle='#fff';x.font=F(700,84,'d');x.fillText('Propuesta comercial',P,250);
       x.font=F(600,44);x.fillText(wrap(x,cliName||'Para usted',W-2*P,1)[0],P,322);
       x.font=F(400,30);x.fillStyle='rgba(255,255,255,.8)';if(cliSub)x.fillText(wrap(x,cliSub,W-2*P,1)[0],P,368);
-    }else{x.fillStyle='#fff';x.font=F(700,56,'d');x.fillText('Propuesta comercial (cont.)',P,170)}
+    }else{x.fillStyle='#fff';x.font=F(700,54,'d');x.fillText('Propuesta comercial · continuación',P,222)}
     // artículos
     let y=HEAD;
     for(const it of items){
