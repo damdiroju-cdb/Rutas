@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#1f4aa8">
+<title>Actualizar precios · Penalva</title>
+<link rel="icon" type="image/png" href="img/icon-192.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: una columna; paso 1 subir PDF, paso 2 revisar cambios, paso 3 publicar */
+:root{--bg:#eef2f8;--panel:#fff;--ink:#142036;--muted:#5b6880;--line:#dbe2ec;--soft:#f3f6fb;--accent:#1f4aa8;--accent-ink:#fff;--accent-soft:#e2eafb;--ok:#1b7a49;--ok-soft:#e7f5ee;--red:#cf2530;--red-soft:#fdecec;--warn:#a1620b;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;--body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#0e141f;--panel:#162033;--ink:#e6ebf3;--muted:#98a5bb;--line:#29354a;--soft:#1b2639;--accent:#7aa2ff;--accent-ink:#0b1220;--accent-soft:#1d2d4d;--ok:#4fc58a;--ok-soft:#173326;--red:#ff6b72;--red-soft:#3a1d22;--warn:#e8a94a;color-scheme:dark}}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45}
+button,input{font:inherit;color:inherit}
+header{background:var(--panel);border-bottom:1px solid var(--line);padding:calc(12px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:12px}
+header img{width:40px;height:40px;border-radius:10px}
+header h1{font-family:var(--display);font-size:23px;margin:0;line-height:1.05}
+header h1 small{display:block;font-family:var(--body);font-weight:400;font-size:13px;color:var(--muted)}
+main{max-width:860px;margin:0 auto;padding:18px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}
+.step{display:flex;gap:10px;align-items:baseline;margin:0 0 10px}
+.step i{font-style:normal;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex:none}
+.step b{font-family:var(--display);font-size:21px;letter-spacing:.01em}
+.muted{color:var(--muted)}
+.drop{border:2px dashed var(--line);border-radius:12px;padding:26px 16px;text-align:center;cursor:pointer;background:var(--soft)}
+.drop:hover,.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop b{display:block;font-size:17px;margin-bottom:4px}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:10px 16px;cursor:pointer;font-weight:600}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.prog{height:8px;background:var(--soft);border-radius:4px;overflow:hidden;margin-top:12px}
+.prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:6px 0 14px}
+.stats div{background:var(--soft);border-radius:10px;padding:10px 12px}
+.stats span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600}
+.stats b{font-family:var(--display);font-size:30px;line-height:1.1;font-variant-numeric:tabular-nums}
+.tw{overflow-x:auto;max-height:420px;overflow-y:auto;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{position:sticky;top:0;background:var(--panel);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:2px solid var(--line);white-space:nowrap}
+td{padding:7px 10px;border-bottom:1px solid var(--line)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mono{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.up{color:var(--red);font-weight:600}.down{color:var(--ok);font-weight:600}
+.tag{display:inline-block;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:600}
+.tag.new{background:var(--ok-soft);color:var(--ok)}.tag.gone{background:var(--red-soft);color:var(--red)}
+.msg{font-size:14px;min-height:1.2em}.msg.err{color:var(--red)}.msg.ok{color:var(--ok);font-weight:600}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.lock{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
+.lock form{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;max-width:400px;width:100%;display:flex;flex-direction:column;gap:12px}
+.lock h3{font-family:var(--display);font-size:26px;margin:0}
+.lock input{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;font-size:17px}
+.current{display:flex;gap:10px;align-items:center;background:var(--accent-soft);border-radius:10px;padding:10px 14px}
+@media (max-width:640px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header><img src="img/icon-192.png" alt=""><h1>Actualizar precios<small>Cotizador Penalva</small></h1></header>
+
+<main id="app" hidden>
+  <div class="current"><span>Precios publicados ahora:</span><b id="curInfo">…</b></div>
+
+  <section class="card">
+    <div class="step"><i>1</i><b>Sube la tarifa en PDF</b></div>
+    <p class="muted" style="margin:0 0 12px">La misma de siempre: «Tarifa de Precios con Imágenes» del programa, guardada en PDF.</p>
+    <label class="drop" id="drop" for="file"><b>Toca para elegir el PDF</b><span class="muted">o arrástralo aquí</span></label>
+    <input type="file" id="file" accept="application/pdf,.pdf" hidden>
+    <div id="progWrap" hidden><div class="prog"><i id="prog"></i></div><p class="muted" id="progTxt" style="margin:8px 0 0"></p></div>
+    <p class="msg" id="readMsg"></p>
+  </section>
+
+  <section class="card" id="review" hidden>
+    <div class="step"><i>2</i><b>Revisa los cambios</b></div>
+    <div class="stats">
+      <div><span>Artículos leídos</span><b id="sTot">0</b></div>
+      <div><span>Suben de precio</span><b id="sUp">0</b></div>
+      <div><span>Bajan de precio</span><b id="sDown">0</b></div>
+      <div><span>Nuevos / quitados</span><b id="sNew">0</b></div>
+    </div>
+    <div class="tw"><table><thead><tr><th>Código</th><th>Artículo</th><th class="n">Antes</th><th class="n">Ahora</th><th class="n">Cambio</th></tr></thead><tbody id="tChg"></tbody></table></div>
+    <p class="muted" id="noChg" hidden>No hay cambios de precio respecto a lo publicado.</p>
+  </section>
+
+  <section class="card" id="pub" hidden>
+    <div class="step"><i>3</i><b>Publica</b></div>
+    <p class="muted" style="margin:0 0 12px">Los comerciales verán los precios nuevos la próxima vez que abran la app (con cobertura).</p>
+    <div class="row"><button class="btn primary" type="button" id="pubBtn">Publicar precios</button><span class="msg" id="pubMsg"></span></div>
+  </section>
+</main>
+
+<div class="lock" id="lock">
+  <form id="lockForm">
+    <h3>Actualizar precios</h3>
+    <p class="muted" style="margin:0">Escribe la clave de oficina. Solo se pide la primera vez en este ordenador.</p>
+    <input type="password" id="key" aria-label="Clave" required>
+    <div class="msg" id="lockMsg"></div>
+    <button class="btn primary" type="submit">Entrar</button>
+  </form>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+(function(){
+const SHEET_URL="https://script.google.com/macros/s/AKfycbxiLDkb3SVgf3c9_1p5enCEPIpnVurMgH60f_ba0Iu0EFMi-b3bNM49FugkLld6rLAn/exec";
+const WORKER="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+const $=id=>document.getElementById(id);
+const get=k=>{try{return localStorage.getItem(k)}catch(e){return null}},put=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const eur=v=>v==null?'—':v.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:4})+' €';
+let KEY=null,CUR=null,NEW=null;
+
+async function api(params){const u=SHEET_URL+'?'+new URLSearchParams(params)+'&_='+Date.now();const r=await fetch(u);return r.json()}
+async function loadCurrent(){
+  const j=await api({accion:'precios',k:KEY});
+  if(j.error)throw new Error(j.error);
+  CUR=j;$('curInfo').textContent=j.fecha?(new Date(j.fecha).toLocaleString('es-ES',{dateStyle:'short',timeStyle:'short'})+' · '+(j.rows||[]).length+' artículos'):'todavía no se ha subido ninguna tarifa (la app usa la del 28/10)';
+}
+async function enter(k){KEY=k;await loadCurrent();put('pnv_key_precios',k);$('lock').hidden=true;$('app').hidden=false}
+$('lockForm').addEventListener('submit',async e=>{e.preventDefault();$('lockMsg').className='msg';$('lockMsg').textContent='Comprobando…';
+  try{await enter($('key').value.trim())}catch(err){$('lockMsg').className='msg err';$('lockMsg').textContent=err.message==='clave'?'Clave incorrecta.':'No se puede conectar con la hoja. Revisa la conexión.'}});
+(async()=>{const k=get('pnv_key_precios');if(k){try{await enter(k);return}catch(e){}}$('key').focus()})();
+
+// ---- lectura del PDF (mismas columnas que el informe del programa) ----
+async function workerBlob(){const t=await (await fetch(WORKER)).text();return URL.createObjectURL(new Blob([t],{type:'text/javascript'}))}
+const COLS=[['code',0,60],['desc',60,238],['fmt',238,300],['price',300,352],['ufmt',352,400],['uprice',400,480]];
+async function parsePdf(buf,onProg){
+  pdfjsLib.GlobalWorkerOptions.workerSrc=await workerBlob();
+  const pdf=await pdfjsLib.getDocument({data:buf}).promise;const rows=[];let fam='',sub='';
+  for(let n=1;n<=pdf.numPages;n++){
+    const page=await pdf.getPage(n),H=page.view[3],tc=await page.getTextContent();
+    const items=tc.items.filter(it=>it.str&&it.str.trim()).map(it=>({x:it.transform[4],y:H-it.transform[5],w:it.width,s:it.str}));
+    const lines=[];items.sort((a,b)=>a.y-b.y||a.x-b.x);
+    for(const it of items){const L=lines.find(l=>Math.abs(l.y-it.y)<2.5);if(L)L.items.push(it);else lines.push({y:it.y,items:[it]})}
+    for(const L of lines){
+      const its=L.items.sort((a,b)=>a.x-b.x);
+      const col={};for(const [k,a,b] of COLS)col[k]=its.filter(i=>i.x>=a&&i.x<b).map(i=>i.s).join(' ').replace(/\s+/g,' ').trim();
+      const full=its.filter(i=>i.x<480).map(i=>i.s).join(' ').replace(/\s+/g,' ').trim();
+      if(/^\d{4,7}$/.test(col.code)){
+        const num=v=>{const x=parseFloat(String(v).replace(/,/g,''));return isFinite(x)?x:null};
+        rows.push([col.code,col.desc,col.fmt,num(col.price),col.ufmt,num(col.uprice),fam,sub]);
+      }else{const m=full.match(/^([A-Z0-9]+) - (.+)$/);if(m&&its[0].x<60&&!/^Codigo/.test(full)){if(m[1].length===1){fam=full;sub=''}else sub=full}}
+    }
+    onProg(n,pdf.numPages);
+  }
+  return rows;
+}
+async function handle(file){
+  if(!file)return;$('readMsg').className='msg';$('readMsg').textContent='';$('review').hidden=true;$('pub').hidden=true;
+  $('progWrap').hidden=false;$('prog').style.width='0';$('progTxt').textContent='Leyendo '+file.name+'…';
+  try{
+    const rows=await parsePdf(await file.arrayBuffer(),(n,t)=>{$('prog').style.width=(n/t*100)+'%';$('progTxt').textContent='Página '+n+' de '+t});
+    if(rows.length<200)throw new Error('pocos');
+    NEW=rows;review();$('readMsg').className='msg ok';$('readMsg').textContent='Leídos '+rows.length.toLocaleString('es-ES')+' artículos de '+file.name;
+  }catch(e){console.error(e);$('readMsg').className='msg err';$('readMsg').textContent=e.message==='pocos'?'Este PDF no parece la tarifa: casi no tiene artículos. Comprueba que sea «Tarifa de Precios con Imágenes».':'No se ha podido leer el PDF. Prueba a guardarlo otra vez desde el programa.'}
+  finally{$('progWrap').hidden=true}
+}
+function review(){
+  const old=new Map((CUR&&CUR.rows||[]).map(r=>[String(r[0]),r]));const hasOld=old.size>0;
+  const chg=[];let up=0,down=0,nw=0;
+  for(const r of NEW){const o=old.get(r[0]);if(!o){if(hasOld){nw++;chg.push({r,tag:'new'})}continue}
+    if(o[3]!==r[3]){const d=(o[3]&&r[3])?(r[3]-o[3])/o[3]*100:null;if(r[3]>o[3])up++;else down++;chg.push({r,o,d})}}
+  const codes=new Set(NEW.map(r=>r[0]));const gone=hasOld?[...old.values()].filter(o=>!codes.has(String(o[0]))):[];gone.forEach(o=>chg.push({r:o,tag:'gone'}));
+  $('sTot').textContent=NEW.length.toLocaleString('es-ES');$('sUp').textContent=up;$('sDown').textContent=down;$('sNew').textContent=(hasOld?nw:'–')+' / '+(hasOld?gone.length:'–');
+  chg.sort((a,b)=>Math.abs(b.d||0)-Math.abs(a.d||0));
+  $('tChg').innerHTML=chg.slice(0,500).map(c=>`<tr><td class="mono">${esc(c.r[0])}</td><td>${esc(c.r[1])} ${c.tag==='new'?'<span class="tag new">Nuevo</span>':c.tag==='gone'?'<span class="tag gone">Ya no está</span>':''}</td><td class="n">${c.o?eur(c.o[3]):c.tag==='gone'?eur(c.r[3]):'—'}</td><td class="n">${c.tag==='gone'?'—':eur(c.r[3])}</td><td class="n ${c.d>0?'up':c.d<0?'down':''}">${c.d==null?'':(c.d>0?'+':'')+c.d.toFixed(1).replace('.',',')+' %'}</td></tr>`).join('');
+  $('noChg').hidden=chg.length>0||!hasOld;$('review').hidden=!(chg.length||!hasOld);if(!hasOld){$('review').hidden=false;$('tChg').innerHTML='<tr><td colspan="5" class="muted">Primera subida: se publicará la tarifa completa.</td></tr>'}
+  $('pub').hidden=false;$('pubMsg').textContent='';$('pubBtn').disabled=false;
+}
+$('file').addEventListener('change',e=>handle(e.target.files[0]));
+const drop=$('drop');['dragover','dragenter'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add('over')}));
+['dragleave','drop'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove('over')}));
+drop.addEventListener('drop',e=>handle(e.dataTransfer.files[0]));
+
+$('pubBtn').addEventListener('click',async()=>{
+  if(!NEW)return;$('pubBtn').disabled=true;$('pubMsg').className='msg';$('pubMsg').textContent='Publicando…';
+  const fecha=new Date().toISOString();
+  try{
+    await fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({accion:'precios',clave:KEY,fecha,rows:NEW})});
+    let ok=false;for(let i=0;i<6&&!ok;i++){await new Promise(r=>setTimeout(r,1500));await loadCurrent();ok=CUR.fecha===fecha}
+    if(!ok)throw new Error('sin confirmar');
+    $('pubMsg').className='msg ok';$('pubMsg').textContent='Publicado. '+NEW.length.toLocaleString('es-ES')+' artículos con precio al día.';NEW=null;$('review').hidden=true;
+  }catch(e){$('pubMsg').className='msg err';$('pubMsg').textContent='No se ha confirmado la publicación. Vuelve a pulsar «Publicar precios».';$('pubBtn').disabled=false}
+});
+})();
+</script>
+</body>
+</html>

@@ -255,7 +255,7 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
   <div class="logo"><img id="logoImg" alt="Nordwik"></div>
   <div class="brand">
     <h1>Cotizador Penalva</h1>
-    <div class="sub">Tarifa 2026 · <span id="nRef"></span> referencias</div>
+    <div class="sub"><span id="tarDate">Tarifa 2026</span> · <span id="nRef"></span> referencias</div>
   </div>
   <div class="mode" id="modeSeg" role="group" aria-label="Modo">
     <button type="button" data-v="con" aria-pressed="true">Consulta</button><button type="button" data-v="cot" aria-pressed="false">Cotización</button>
@@ -637,7 +637,7 @@ async function buildPDF(){
     didDrawPage:d=>{if(d.pageNumber>1){doc.setFillColor(...BLUE);doc.rect(0,0,W,4,'F')}}
   });
   let yy=doc.lastAutoTable.finalY+7;
-  const notas=[];if(S.opts.iva==='sin')notas.push('Precios sin IVA.');if(S.opts.iva==='con')notas.push('Precios con IVA incluido.');if(S.opts.val)notas.push('Oferta válida hasta el '+fmtDate(S.opts.val)+'.');
+  const notas=[];if(T.fecha)notas.push('Precios según tarifa del '+new Date(T.fecha).toLocaleDateString('es-ES')+'.');if(S.opts.iva==='sin')notas.push('Precios sin IVA.');if(S.opts.iva==='con')notas.push('Precios con IVA incluido.');if(S.opts.val)notas.push('Oferta válida hasta el '+fmtDate(S.opts.val)+'.');
   const obs=(S.opts.notas||'').trim();
   if(obs||notas.length){doc.setFontSize(9);const txt=doc.splitTextToSize([notas.join(' '),obs].filter(Boolean).join('\n'),W-2*M-10);const h=10+txt.length*4.4;if(yy+h>278){doc.addPage();doc.setFillColor(...BLUE);doc.rect(0,0,W,4,'F');yy=16}
     doc.setFillColor(...SOFT);doc.roundedRect(M,yy,W-2*M,h,2.5,2.5,'F');doc.setFontSize(7.5);doc.setFont('helvetica','bold');doc.setTextColor(...BLUE);doc.text('CONDICIONES',M+5,yy+6);doc.setFont('helvetica','normal');doc.setTextColor(...INK);doc.setFontSize(9);doc.text(txt,M+5,yy+11.5)}
@@ -668,7 +668,7 @@ $('cntChip').addEventListener('click',()=>{
 $('cntModal').addEventListener('click',e=>{if(e.target===$('cntModal')||e.target.closest('[data-close]'))$('cntModal').hidden=true});
 paintCount();
 
-$('logoImg').src=LOGO;$('nRef').textContent=R.length.toLocaleString('es-ES');
+$('logoImg').src=LOGO;if(T.fecha){$('tarDate').textContent='Precios del '+new Date(T.fecha).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}$('nRef').textContent=R.length.toLocaleString('es-ES');
 fillFam();fillSub();loadForm();repRender();renderSaved();renderProp();
 document.body.dataset.view='cat';setMode('con');sizeBars();$('startModal').hidden=false;
 if(LINKED&&!REP.tel){$('startModal').hidden=true;repOpen();$('repModal').querySelector('p').textContent='Hola, '+LINKED.split(' ')[0]+'. Pon tu teléfono una sola vez: saldrá en los PDF como contacto del cliente.';$('repForm').addEventListener('submit',()=>{if(REP.tel)$('startModal').hidden=false},{once:true})}
@@ -687,6 +687,7 @@ async function key(pin){const km=await crypto.subtle.importKey('raw',new TextEnc
 async function dec(k,url){const buf=new Uint8Array(await (await fetch(url,{cache:'no-cache'})).arrayBuffer());const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:buf.slice(0,12)},k,buf.slice(12));return JSON.parse(new TextDecoder().decode(pt))}
 async function open(pin){
   const k=await key(pin);const data=await dec(k,'tarifa.bin');
+  await prices(data,pin);
   window.TARIFA=data;$('lockModal').hidden=true;put('pnv_pin',pin);window.startApp();unsplash();setupInstall();
   dec(k,'fotos.bin').then(j=>window.setImgs(j)).catch(()=>{});
 }
@@ -704,6 +705,27 @@ function setupInstall(){
 $('ibBtn').addEventListener('click',async()=>{if(!deferred)return;deferred.prompt();try{await deferred.userChoice}catch(e){}deferred=null;$('installBar').hidden=true});
 $('ibX').addEventListener('click',()=>{put('pnv_ib_no','1');$('installBar').hidden=true});
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+// precios del día: los publica la oficina en la hoja de Google; aquí se aplican sobre la tarifa base
+const SHEET="https://script.google.com/macros/s/AKfycbxiLDkb3SVgf3c9_1p5enCEPIpnVurMgH60f_ba0Iu0EFMi-b3bNM49FugkLld6rLAn/exec";
+const wre=/(?:(\d+)\s?[Xx]\s?)?(\d+(?:[.,]\d+)?)\s?(KGS|KG|K|GRS|GR|G|ML|CL|LTS|LT|L)(?![A-Za-z])/gi,WF={KG:1000,KGS:1000,K:1000,GR:1,GRS:1,G:1,ML:1,CL:10,LT:1000,LTS:1000,L:1000};
+function peso(d){const ms=[...String(d).matchAll(wre)];if(!ms.length)return[null,null];const m=ms[ms.length-1];return[m[0].replace(/\s/g,'').toUpperCase(),Math.round(WF[m[3].toUpperCase()]*parseFloat(m[2].replace(',','.'))*10)/10]}
+function undCaja(p,q,uf,desc){if(uf==='KG'||!p||p<0.01||!q)return null;const k=p/q;if(Math.abs(k-Math.round(k))<0.06&&Math.round(k)>=2)return Math.round(k);for(const m of String(desc).matchAll(/\d+/g)){const c=+m[0];if(c>=2&&c<=1000&&Math.abs(p/c-q)<=0.0051)return c}return null}
+function applyPrices(T,P){
+  if(!P||!Array.isArray(P.rows)||P.rows.length<500)return;
+  const base=new Map(T.rows.map(r=>[r[0],r]));
+  const idx=(arr,name)=>{if(!name)return 0;let i=arr.indexOf(name);if(i<0){arr.push(name);i=arr.length-1}return i};
+  T.rows=P.rows.map(p=>{const code=String(p[0]),b=base.get(code),desc=p[1]||(b&&b[1])||'';const [w,wn]=peso(desc);
+    let k=undCaja(p[3],p[5],p[4],desc);if(k==null&&b&&b[3]===p[3])k=b[11];
+    return[code,desc,p[2],p[3],p[4],p[5],p[6]?idx(T.fams,p[6]):(b?b[6]:0),p[7]?idx(T.subs,p[7]):(b?b[7]:0),w,wn,b?b[10]:0,k]});
+  T.fecha=P.fecha;
+}
+async function prices(T,pin){
+  let P=null;try{P=JSON.parse(get('pnv_precios')||'null')}catch(e){}
+  try{const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),4000);
+    const j=await (await fetch(SHEET+'?accion=precios&k='+encodeURIComponent(pin)+'&_='+Date.now(),{signal:ctl.signal})).json();clearTimeout(t);
+    if(j&&j.fecha&&Array.isArray(j.rows)&&(!P||j.fecha!==P.fecha)){P=j;put('pnv_precios',JSON.stringify(j))}}catch(e){}
+  try{applyPrices(T,P)}catch(e){console.warn('precios',e)}
+}
 const unsplash=()=>{const sp=$('splash');sp.classList.add('out');setTimeout(()=>sp.remove(),400)};
 if(hk){try{await open(hk);return}catch(e){}}
 const saved=get('pnv_pin');
