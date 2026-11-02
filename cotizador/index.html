@@ -636,8 +636,8 @@ $('pdfBtn').addEventListener('click',async()=>{
   $('pdfBtn').disabled=true;flash('Preparando PDF…');
   try{const blob=await buildPDF();const fn=('Cotizacion_'+(cliLabel()||'cliente')+'_'+S.no).replace(/[^\wÁÉÍÓÚÑáéíóúñ\- ]+/g,'').replace(/\s+/g,'_').slice(0,90)+'.pdf';
     let imgs=[];try{imgs=await buildImages()}catch(e){console.warn('imagen',e)}
-    logEnvio();showPdf(blob,fn,imgs);flash('Propuesta lista','ok');
-  }catch(err){console.error(err);flash('Error al generar el PDF.','err')}finally{$('pdfBtn').disabled=false}
+    logEnvio();try{showPdf(blob,fn,imgs)}catch(e){console.error(e);try{showPdf(blob,fn,[])}catch(e2){}}flash('Propuesta lista','ok');
+  }catch(err){console.error(err);flash('Error al generar el PDF: '+((err&&err.message)||err)+'. Haz una captura y mándasela a David.','err')}finally{$('pdfBtn').disabled=false}
 });
 let PDFURL=null,IMGURLS=[];
 function showPdf(blob,fn,imgs){
@@ -735,7 +735,8 @@ async function buildPDF(){
   const dims={};if(fotos)for(const x of lines){const s=IMG[x.r.c];if(s)dims[x.r.c]=await imgDims('data:image/jpeg;base64,'+s)}
   const logoD=await imgDims(LOGO);
   doc.setFillColor(...BLUE);doc.rect(0,0,W,4,'F');
-  const lh=15,lw=logoD?lh*logoD.w/logoD.h:52;doc.addImage(LOGO,'JPEG',M,10,lw,lh);
+  const lh=15,lw=logoD?lh*logoD.w/logoD.h:52;try{doc.addImage(LOGO,'JPEG',M,10,lw,lh)}catch(e){}
+  if(typeof doc.autoTable!=='function')throw new Error('falta el módulo de tablas (recarga la app con cobertura)');
   doc.setFont('helvetica','bold');doc.setFontSize(20);doc.setTextColor(...INK);doc.text('Propuesta comercial',W-M,17,{align:'right'});
   doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...MUT);
   doc.text(`Nº ${S.no}  ·  ${new Date().toLocaleDateString('es-ES')}`+(S.opts.val?`  ·  Válida hasta ${fmtDate(S.opts.val)}`:''),W-M,23,{align:'right'});
@@ -761,7 +762,7 @@ async function buildPDF(){
     didParseCell:d=>{if(d.section==='head'){const i=d.column.index-off;if(i===3)d.cell.styles.halign='center';if(i>=5)d.cell.styles.halign='right'}if(d.section==='body'&&meta[d.row.index]===null)d.cell.styles.minCellHeight=0},
     didDrawCell:d=>{if(!fotos||d.section!=='body'||d.column.index!==0)return;const code=meta[d.row.index];if(!code)return;const s=IMG[code],dm=dims[code];if(!s||!dm)return;
       const w2=d.cell.width-3,h2=d.cell.height-3,sc=Math.min(w2/dm.w,h2/dm.h),iw=dm.w*sc,ih=dm.h*sc;
-      doc.addImage('data:image/jpeg;base64,'+s,'JPEG',d.cell.x+(d.cell.width-iw)/2,d.cell.y+(d.cell.height-ih)/2,iw,ih)},
+      try{doc.addImage('data:image/jpeg;base64,'+s,'JPEG',d.cell.x+(d.cell.width-iw)/2,d.cell.y+(d.cell.height-ih)/2,iw,ih)}catch(e){console.warn('foto',code,e)}},
     didDrawPage:d=>{if(d.pageNumber>1){doc.setFillColor(...BLUE);doc.rect(0,0,W,4,'F')}}
   });
   let yy=doc.lastAutoTable.finalY+7;
