@@ -614,7 +614,7 @@ async function buildPDF(){
 }
 
 // ---------- contador de propuestas enviadas ----------
-const SHEET_URL=""; // URL de la aplicación web de Google Apps Script (hoja de David)
+const SHEET_URL="https://script.google.com/macros/s/AKfycbyLs2I-DMjHz42-0sS_vyDAYNMc9nIJvzzS0yU2X1sT64zlKT8TOFAGRW7YftK7KIUj/exec"; // URL de la aplicación web de Google Apps Script (hoja de David)
 function sentList(){return store('pnv_sent')||[]}
 const monthKey=d=>(d||'').slice(0,7);
 function paintCount(){const L=sentList(),mes=monthKey(new Date().toISOString());$('cntChip').hidden=false;$('cntChip').textContent='Enviadas: '+L.length;$('cntChip').title=L.filter(x=>monthKey(x.fecha)===mes).length+' este mes'}
