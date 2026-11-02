@@ -243,7 +243,7 @@ a.btn{color:var(--ink)}
 <main>
   <section class="card" id="catalog" aria-label="Artículos">
     <div class="searchbar" id="searchbar">
-      <div class="sbox"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="q" placeholder="¿Qué buscas? Ej.: magnum, pollo, aceite…" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Buscar artículo"><button type="button" id="qClear" class="qclear" aria-label="Borrar búsqueda" hidden>×</button></div>
+      <div class="sbox"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="q" placeholder="Nombre o código: magnum, pollo, 640128…" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Buscar artículo"><button type="button" id="qClear" class="qclear" aria-label="Borrar búsqueda" hidden>×</button></div>
       <div class="sbmeta"><span class="count" id="count"></span><label class="chk-inline" id="fSelWrap" hidden><input type="checkbox" id="fSel"> Solo los elegidos</label><button type="button" class="linkbtn" id="filtBtn" aria-expanded="false">Filtros</button></div>
       <div class="filters" id="filters" hidden>
         <div class="field"><label for="fFam">Familia</label><select id="fFam"></select></div>
@@ -410,10 +410,12 @@ function filtered(){
     for(const t of T)if(!(r.c.startsWith(t)||r.ws.some(w=>w.startsWith(t))))return false;
     return true});
   if(!T.length){F.sort='tarifa';return out.sort((a,b)=>a.o-b.o)}
+  if(T.length===1&&/^\d{3,}$/.test(T[0])){const byCode=out.filter(r=>r.c.startsWith(T[0]));if(byCode.length){F.sort='rel';return byCode.sort((a,b)=>a.c.localeCompare(b.c))}}
   F.sort='rel';const t0=T[0],nm=r=>cleanDesc(r.d).replace(/^\d+\s+/,'');
   const rank=r=>r.c.startsWith(t0)?0:r.fw.startsWith(t0)?0:1;
   return out.sort((a,b)=>rank(a)-rank(b)||nm(a).localeCompare(nm(b),'es'));
 }
+function hlCode(c){const T=toks();const t=T.find(t=>/^\d+$/.test(t)&&c.startsWith(t));return t?'<mark>'+t+'</mark>'+c.slice(t.length):c}
 function hl(text){const T=toks();if(!T.length)return esc(text);
   return text.split(/(\s+)/).map(w=>{const n=norm(w);const t=T.find(t=>n.startsWith(t));if(!t||!w.trim())return esc(w);const k=t.length;return '<mark>'+esc(w.slice(0,k))+'</mark>'+esc(w.slice(k))}).join('')}
 function renderHead(){$('thead').innerHTML=(MODE==='cot'?'<span></span>':'')+'<span>Foto</span><span>Código</span><span>Descripción</span><span>Formato</span><span class="r">Und/caja</span><span>Peso</span><span class="r">Precio</span><span class="r">Precio und.</span>'}
@@ -435,7 +437,7 @@ function renderList(reset){
 function thumb(r){const s=IMG[r.c];return s?`<div class="thumb"><img loading="lazy" alt="" src="data:image/jpeg;base64,${s}"></div>`:`<div class="thumb no" data-ti="${r.c}">${r.hi?'':'sin foto'}</div>`}
 function itemHTML(r){
   const l=lineOf(r.c),on=!!l,d=l&&pct(l.dto);
-  return `<div class="item cols${on?' on':''}" data-c="${r.c}" role="button" tabindex="0">${MODE==='cot'?'<span class="ck" aria-hidden="true">✓</span>':''}<div class="c-img">${thumb(r)}</div><div class="c-code">${r.c}</div><div class="c-desc">${hl(r.d)}${MODE==='cot'&&d?`<span class="dt">−${d.toLocaleString('es-ES')} %</span>`:''}</div><div class="data"><div class="cell"><span class="k">Formato</span><span>${esc(fmtLbl(r.f))}</span></div><div class="cell r"><span class="k">Und/caja</span><span class="num">${undC(r)}</span></div><div class="cell"><span class="k">Peso</span><span>${esc(r.w||'—')}</span></div><div class="cell r hl"><span class="k">Precio</span><b class="c-p num">${eur(r.p)}</b></div><div class="cell r"><span class="k">Precio und.</span><span class="num">${pUnit(r,r.q)}</span></div></div></div>`}
+  return `<div class="item cols${on?' on':''}" data-c="${r.c}" role="button" tabindex="0">${MODE==='cot'?'<span class="ck" aria-hidden="true">✓</span>':''}<div class="c-img">${thumb(r)}</div><div class="c-code">${hlCode(r.c)}</div><div class="c-desc">${hl(r.d)}${MODE==='cot'&&d?`<span class="dt">−${d.toLocaleString('es-ES')} %</span>`:''}</div><div class="data"><div class="cell"><span class="k">Formato</span><span>${esc(fmtLbl(r.f))}</span></div><div class="cell r"><span class="k">Und/caja</span><span class="num">${undC(r)}</span></div><div class="cell"><span class="k">Peso</span><span>${esc(r.w||'—')}</span></div><div class="cell r hl"><span class="k">Precio</span><b class="c-p num">${eur(r.p)}</b></div><div class="cell r"><span class="k">Precio und.</span><span class="num">${pUnit(r,r.q)}</span></div></div></div>`}
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){io.unobserve(e.target);renderList(false)}}),{rootMargin:'600px'});
 function refreshItem(c){const it=$('list').querySelector(`.item[data-c="${c}"]`);if(it)it.outerHTML=itemHTML(BY[c])}
 
