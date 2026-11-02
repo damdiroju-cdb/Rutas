@@ -121,7 +121,9 @@ async function loadCurrent(){
 async function enter(k){KEY=k;await loadCurrent();put('pnv_key_precios',k);$('lock').hidden=true;$('app').hidden=false}
 $('lockForm').addEventListener('submit',async e=>{e.preventDefault();$('lockMsg').className='msg';$('lockMsg').textContent='Comprobando…';
   try{await enter($('key').value.replace(/\s+/g,''))}catch(err){$('lockMsg').className='msg err';$('lockMsg').textContent=err.message==='clave'?'Clave incorrecta.':'No se puede conectar con la hoja. Revisa la conexión.'}});
-(async()=>{const k=get('pnv_key_precios');if(k){try{await enter(k);return}catch(e){}}$('key').focus()})();
+(async()=>{let hk=null;try{const m=location.hash.match(/k=([^&]+)/);if(m)hk=decodeURIComponent(m[1])}catch(e){}
+  if(hk){try{await enter(hk);history.replaceState(null,'',location.pathname);return}catch(e){}}
+  const k=get('pnv_key_precios');if(k){try{await enter(k);return}catch(e){}}$('key').focus()})();
 
 // ---- lectura del PDF (mismas columnas que el informe del programa) ----
 async function workerBlob(){const t=await (await fetch(WORKER)).text();return URL.createObjectURL(new Blob([t],{type:'text/javascript'}))}
