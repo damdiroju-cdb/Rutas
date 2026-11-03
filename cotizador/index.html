@@ -281,7 +281,7 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
   <div class="logo"><img id="logoImg" alt="Nordwik"></div>
   <div class="brand">
     <h1>Cotizador Penalva</h1>
-    <div class="sub"><span id="tarDate">Tarifa 2026</span> · <span id="nRef"></span> referencias · v10</div>
+    <div class="sub"><span id="tarDate">Tarifa 2026</span> · <span id="nRef"></span> referencias · v11</div>
   </div>
   <div class="mode" id="modeSeg" role="group" aria-label="Modo">
     <button type="button" data-v="con" aria-pressed="true">Consulta</button><button type="button" data-v="cot" aria-pressed="false">Cotización</button>
@@ -376,7 +376,7 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
 <div class="modal" id="repModal" hidden>
   <form class="box" id="repForm">
     <h3>Tus datos de comercial</h3>
-    <p>Salen en cada PDF como contacto del cliente. Se guardan solo en este dispositivo. <span style="opacity:.6">(versión 10)</span></p>
+    <p>Salen en cada PDF como contacto del cliente. Se guardan solo en este dispositivo. <span style="opacity:.6">(versión 11)</span></p>
     <div class="field"><label for="rSel">Comercial</label><select id="rSel" required><option value="">Elige tu nombre…</option></select></div><div class="field" id="rNomWrap" hidden><label for="rNom">Nombre y apellidos</label><input type="text" id="rNom"></div>
     <div class="field"><label for="rTel">Teléfono</label><input type="tel" id="rTel" required></div>
     <div class="field"><label for="rMail">Email (opcional)</label><input type="email" id="rMail"></div>
@@ -857,7 +857,12 @@ $('ibBtn').addEventListener('click',()=>{$('installBar').hidden=true;showGuide()
 $('ibX').addEventListener('click',()=>{$('installBar').hidden=true});
 $('gDone').addEventListener('click',()=>{put('pnv_inst_done','1');closeGuide()});
 addEventListener('appinstalled',()=>{put('pnv_inst_done','1');closeGuide()});
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{try{r.update()}catch(e){}}).catch(()=>{});
+// auto-actualización: al abrir o volver a la app, mira si hay versión nueva y se recarga sola
+const APPV=11;
+async function checkUpd(){if(!$('cntModal').hidden)return;try{const t=await (await fetch('index.html?_='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const APPV=(\d+);/);
+  if(m&&+m[1]>APPV){try{const r=await navigator.serviceWorker.getRegistration();if(r)await r.update()}catch(e){}if(!sessionStorage.getItem('pnv_upd'+m[1])){sessionStorage.setItem('pnv_upd'+m[1],'1');location.reload()}}}catch(e){}}
+setTimeout(checkUpd,2500);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkUpd()});
 // precios del día: los publica la oficina en la hoja de Google; aquí se aplican sobre la tarifa base
 const SHEET="https://script.google.com/macros/s/AKfycbwXS7Xx-Ow-AUmQuEEVul2jAnN6sdjO8hP1RzL_n-D0IcJuwLLBsN31Gc5tPCo902J4/exec";
 const wre=/(?:(\d+)\s?[Xx]\s?)?(\d+(?:[.,]\d+)?)\s?(KGS|KG|K|GRS|GR|G|ML|CL|LTS|LT|L)(?![A-Za-z])/gi,WF={KG:1000,KGS:1000,K:1000,GR:1,GRS:1,G:1,ML:1,CL:10,LT:1000,LTS:1000,L:1000};
