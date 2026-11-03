@@ -281,7 +281,7 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
   <div class="logo"><img id="logoImg" alt="Nordwik"></div>
   <div class="brand">
     <h1>Cotizador Penalva</h1>
-    <div class="sub"><span id="tarDate">Tarifa 2026</span> · <span id="nRef"></span> referencias · v8</div>
+    <div class="sub"><span id="tarDate">Tarifa 2026</span> · <span id="nRef"></span> referencias · v9</div>
   </div>
   <div class="mode" id="modeSeg" role="group" aria-label="Modo">
     <button type="button" data-v="con" aria-pressed="true">Consulta</button><button type="button" data-v="cot" aria-pressed="false">Cotización</button>
@@ -376,7 +376,7 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
 <div class="modal" id="repModal" hidden>
   <form class="box" id="repForm">
     <h3>Tus datos de comercial</h3>
-    <p>Salen en cada PDF como contacto del cliente. Se guardan solo en este dispositivo. <span style="opacity:.6">(versión 8)</span></p>
+    <p>Salen en cada PDF como contacto del cliente. Se guardan solo en este dispositivo. <span style="opacity:.6">(versión 9)</span></p>
     <div class="field"><label for="rSel">Comercial</label><select id="rSel" required><option value="">Elige tu nombre…</option></select></div><div class="field" id="rNomWrap" hidden><label for="rNom">Nombre y apellidos</label><input type="text" id="rNom"></div>
     <div class="field"><label for="rTel">Teléfono</label><input type="tel" id="rTel" required></div>
     <div class="field"><label for="rMail">Email (opcional)</label><input type="email" id="rMail"></div>
@@ -455,11 +455,13 @@ let S=store('pnv_cur2');
 function blank(){return{no:newNo(),tipo:'ex',cli:{},lines:[],opts:{fotos:true,val:addDays(30),iva:'sin',notas:''}}}
 function newNo(){const d=new Date(),p=n=>String(n).padStart(2,'0');return 'P'+String(d.getFullYear()).slice(2)+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes())}
 function addDays(n){const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)}
-if(!S||!Array.isArray(S.lines))S=blank();
+if(!S||!Array.isArray(S.lines)||S.sent)S=blank();
 S.lines=S.lines.filter(l=>BY[l.c]).map(l=>({c:l.c,dto:l.dto||''}));
 let REP=store('pnv_rep')||{};
 let MODE='con';
 const save=()=>store('pnv_cur2',S);
+function freshQuote(){const old=S.lines.map(l=>l.c);S=blank();save();loadForm();renderProp();old.forEach(refreshItem);['pdModal','cntModal'].forEach(id=>$(id).hidden=true);setView('cat');$('startModal').hidden=false}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&S.sent&&Date.now()-S.sent>10*60*1000)freshQuote()});
 const lineOf=c=>S.lines.find(l=>l.c===c);
 
 function setMode(m){MODE=m;document.body.dataset.mode=m;segSet('modeSeg',m);$('fSelWrap').hidden=m!=='cot';if(m!=='cot'){F.onlySel=false;$('fSel').checked=false}setView('cat');renderHead();renderList(true)}
@@ -606,7 +608,7 @@ function renderSaved(){const L=savedList();$('savedSum').textContent=L.length?St
   $('saved').innerHTML=L.length?L.map((p,i)=>`<div class="sv"><span><b class="mono">${esc(p.no)}</b> · ${esc(p.label||'Sin cliente')} · ${p.lines.length} art.</span><button class="btn" type="button" data-load="${i}">Abrir</button><button class="x" type="button" aria-label="Borrar" data-rm="${i}">×</button></div>`).join(''):'<div style="color:var(--muted);font-size:13px">Pulsa «Guardar» y tendrás aquí tus cotizaciones en este dispositivo.</div>'}
 $('saveBtn').addEventListener('click',()=>{const L=savedList();const rec=JSON.parse(JSON.stringify(S));rec.label=cliLabel();const i=L.findIndex(p=>p.no===S.no);if(i>=0)L[i]=rec;else L.unshift(rec);store('pnv_saved2',L.slice(0,40));renderSaved();flash('Cotización '+S.no+' guardada en este dispositivo','ok')});
 $('saved').addEventListener('click',e=>{const L=savedList();const a=e.target.closest('[data-load]'),b=e.target.closest('[data-rm]');
-  if(a){S=JSON.parse(JSON.stringify(L[+a.dataset.load]));delete S.label;save();loadForm();renderProp();renderList(true);flash('Abierta la cotización '+S.no,'ok')}
+  if(a){S=JSON.parse(JSON.stringify(L[+a.dataset.load]));delete S.label;delete S.sent;save();loadForm();renderProp();renderList(true);flash('Abierta la cotización '+S.no,'ok')}
   if(b){L.splice(+b.dataset.rm,1);store('pnv_saved2',L);renderSaved()}});
 $('newBtn').addEventListener('click',()=>{const old=S.lines.map(l=>l.c);S=blank();save();loadForm();renderProp();old.forEach(refreshItem);flash('Nueva cotización '+S.no,'ok')});
 function repRender(){const ok=REP.nom&&REP.tel;$('repChip').textContent=ok?REP.nom:'Pon tus datos';$('repChip').classList.toggle('empty',!ok)}
@@ -788,6 +790,7 @@ function paintCount(){const L=sentList(),mes=monthKey(new Date().toISOString());
 function logEnvio(){
   const rec={no:S.no,fecha:new Date().toISOString(),cliente:cliLabel(),tipo:S.tipo==='ex'?'Cliente':'Futuro cliente',articulos:S.lines.length,comercial:REP.nom||'',tel:REP.tel||''};
   const L=sentList().filter(x=>x.no!==rec.no);L.unshift(rec);store('pnv_sent',L.slice(0,500));paintCount();
+  S.sent=Date.now();save();try{const G=savedList(),cp=JSON.parse(JSON.stringify(S));delete cp.sent;cp.label=cliLabel();const k=G.findIndex(p=>p.no===S.no);if(k>=0)G[k]=cp;else G.unshift(cp);store('pnv_saved2',G.slice(0,40));renderSaved()}catch(e){}
   if(SHEET_URL){try{fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(rec)}).catch(()=>{})}catch(e){}}
 }
 function fmtDT(iso){try{return new Date(iso).toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'2-digit'})}catch(e){return''}}
