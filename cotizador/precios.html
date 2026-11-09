@@ -78,7 +78,7 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
       <div><span>Artículos leídos</span><b id="sTot">0</b></div>
       <div><span>Suben de precio</span><b id="sUp">0</b></div>
       <div><span>Bajan de precio</span><b id="sDown">0</b></div>
-      <div><span>Nuevos / quitados</span><b id="sNew">0</b></div>
+      <div><span>Nuevos / desactivados</span><b id="sNew">0</b></div>
     </div>
     <div class="tw"><table><thead><tr><th>Código</th><th>Artículo</th><th class="n">Antes</th><th class="n">Ahora</th><th class="n">Cambio</th></tr></thead><tbody id="tChg"></tbody></table></div>
     <p class="muted" id="noChg" hidden>No hay cambios de precio respecto a lo publicado.</p>
@@ -167,7 +167,7 @@ function review(){
   const codes=new Set(NEW.map(r=>r[0]));const gone=hasOld?[...old.values()].filter(o=>!codes.has(String(o[0]))):[];gone.forEach(o=>chg.push({r:o,tag:'gone'}));
   $('sTot').textContent=NEW.length.toLocaleString('es-ES');$('sUp').textContent=up;$('sDown').textContent=down;$('sNew').textContent=(hasOld?nw:'–')+' / '+(hasOld?gone.length:'–');
   chg.sort((a,b)=>Math.abs(b.d||0)-Math.abs(a.d||0));
-  $('tChg').innerHTML=chg.slice(0,500).map(c=>`<tr><td class="mono">${esc(c.r[0])}</td><td>${esc(c.r[1])} ${c.tag==='new'?'<span class="tag new">Nuevo</span>':c.tag==='gone'?'<span class="tag gone">Ya no está</span>':''}</td><td class="n">${c.o?eur(c.o[3]):c.tag==='gone'?eur(c.r[3]):'—'}</td><td class="n">${c.tag==='gone'?'—':eur(c.r[3])}</td><td class="n ${c.d>0?'up':c.d<0?'down':''}">${c.d==null?'':(c.d>0?'+':'')+c.d.toFixed(1).replace('.',',')+' %'}</td></tr>`).join('');
+  $('tChg').innerHTML=chg.slice(0,500).map(c=>`<tr><td class="mono">${esc(c.r[0])}</td><td>${esc(c.r[1])} ${c.tag==='new'?'<span class="tag new">Nuevo</span>':c.tag==='gone'?'<span class="tag gone">Producto desactivado temporalmente</span>':''}</td><td class="n">${c.o?eur(c.o[3]):c.tag==='gone'?eur(c.r[3]):'—'}</td><td class="n">${c.tag==='gone'?'—':eur(c.r[3])}</td><td class="n ${c.d>0?'up':c.d<0?'down':''}">${c.d==null?'':(c.d>0?'+':'')+c.d.toFixed(1).replace('.',',')+' %'}</td></tr>`).join('');
   $('noChg').hidden=chg.length>0||!hasOld;$('review').hidden=!(chg.length||!hasOld);if(!hasOld){$('review').hidden=false;$('tChg').innerHTML='<tr><td colspan="5" class="muted">Primera subida: se publicará la tarifa completa.</td></tr>'}
   $('pub').hidden=false;$('pubMsg').textContent='';$('pubBtn').disabled=false;
 }
