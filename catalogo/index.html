@@ -2548,11 +2548,12 @@ a{color:#B93A24}
   ui(); setTimeout(ui,60); setTimeout(ui,400);
   if(window.ResizeObserver){ new ResizeObserver(scale).observe(document.getElementById('book')); }
   window.addEventListener('resize',function(){ fit(); setTimeout(ui,80); });
-  document.getElementById('prev').onclick=function(){book.flipPrev();};
+  function goPrev(){ var i=book.getCurrentPageIndex(); if(i<=0) return; if(MOB){ try{ book.flip(i-1,'top'); }catch(err){} setTimeout(function(){ if(book.getCurrentPageIndex()!==i-1){ book.turnToPage(i-1); ui(); } },800); } else book.flipPrev(); }
+  document.getElementById('prev').onclick=function(){goPrev();};
   document.getElementById('next').onclick=function(){book.flipNext();};
-  document.getElementById('sprev').onclick=function(e){e.stopPropagation();book.flipPrev();};
+  document.getElementById('sprev').onclick=function(e){e.stopPropagation();goPrev();};
   document.getElementById('snext').onclick=function(e){e.stopPropagation();book.flipNext();};
-  document.addEventListener('keydown',function(ev){ if(ev.key==='ArrowRight')book.flipNext(); if(ev.key==='ArrowLeft')book.flipPrev(); });
+  document.addEventListener('keydown',function(ev){ if(ev.key==='ArrowRight')book.flipNext(); if(ev.key==='ArrowLeft')goPrev(); });
   setTimeout(function(){ var h=document.getElementById('hint'); if(h) h.style.opacity='0.6'; },4000);
 })();
 </script>
