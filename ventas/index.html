@@ -11,7 +11,11 @@
 <meta property="og:image" content="https://damdiroju-cdb.github.io/Rutas/ventas/cuadro-wa.jpg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:type" content="website"><meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="../cotizador/img/icon-192.png">
+<link rel="icon" href="img/icon-192.png">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ventas Penalva">
 <style>
 :root{--red:#D2000F;--blue:#0067B1;--blue2:#00518c;--ink:#14213d;--mut:#5b6474;--line:#e3e7ee;--soft:#f4f6fa;--ok:#1a9c4b;--okbg:#e7f6ec;--ko:#c2410c;--kobg:#fff1e8;--wa:#25D366}
 *{box-sizing:border-box}
@@ -99,6 +103,7 @@ ol.howto{padding-left:20px;margin:6px 0}ol.howto li{margin:4px 0}
 <body>
 <header>
   <div class="hrow"><img src="../catalogo/penalva_blanco.png" alt="Penalva"><img class="nw" src="../catalogo/nordwik_blanco.png" alt="Nordwik"><h1 id="hTitle">Cuadro de ventas<small id="hSub"></small></h1></div>
+  <div class="hrow" style="justify-content:flex-end;margin-top:6px"><button id="instBtn" class="btn sm" style="background:rgba(255,255,255,.18);border-color:transparent;color:#fff" hidden>📌 Ponerlo en mi escritorio</button></div>
   <nav id="nav" role="tablist">
     <button data-v="res" aria-selected="true">📊 Resumen</button>
     <button data-v="cli" aria-selected="false">👥 Clientes</button>
@@ -187,7 +192,7 @@ function iniciar(){
   else{calcular();$('hSub').textContent=`Ventas del ${NV.fmtD(ST.inicio)} al ${NV.fmtD(AG.last.hasta)}`}
   // comercial: por enlace ?c=slug
   const reps=ST?[...new Set(ST.cli.filter(c=>!NV.fuera(c)).map(repOf))].sort((a,b)=>a===NOREP?1:b===NOREP?-1:a.localeCompare(b,'es')):[];
-  const want=params.get('c');
+  if(params.get('c'))put('pnv_vrep',params.get('c'));const want=params.get('c')||(ADMIN?null:get('pnv_vrep'));
   if(want){const r=reps.find(x=>NV.slug(x)===want)||reps.find(x=>NV.slug(x).includes(want));if(r)REP=r}
   const reps2=reps;$('fRep').innerHTML=`<option value="">Todos los comerciales</option>`+reps.map(r=>`<option${r===REP?' selected':''}>${esc(r)}</option>`).join('');
   pintar();
@@ -379,6 +384,34 @@ function enlaces(){
   ${reps.map(n=>row(n,base+'?c='+NV.slug(n)+'#v='+dk,ST.reps[n])).join('')}
   </tbody></table></div>${reps.length?'':'<div class="msg in">Cuando cargues el listado de clientes con su comercial, aquí saldrá el enlace de cada uno.</div>'}</div>`;
 }
+
+// ---- icono en el escritorio / pantalla de inicio ----
+let DEFER=null;
+const instalada=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();DEFER=e});
+window.addEventListener('appinstalled',()=>{$('instBtn').hidden=true;toast('¡Listo! Ya lo tienes en el escritorio ✔')});
+function atajo(){
+  const dk=get('pnv_vdash')||(DASH?encodeURIComponent(NV.b64url(DASH)):'');
+  const rep=REP&&REP!==NOREP?'?c='+NV.slug(REP):'';
+  const url=NV.LINK_BASE+'ventas/'+(ADMIN?'':rep+(dk?'#v='+dk:''));
+  const txt='[InternetShortcut]\r\nURL='+url+'\r\nIconIndex=0\r\nIconFile='+NV.LINK_BASE+'ventas/img/icon.ico\r\n';
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'application/octet-stream'}));a.download='Cuadro de ventas Penalva.url';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
+}
+async function instalar(){
+  if(DEFER){DEFER.prompt();const r=await DEFER.userChoice.catch(()=>({}));DEFER=null;if(r&&r.outcome==='accepted')return}
+  const ua=navigator.userAgent,ios=/iPhone|iPad|iPod/.test(ua),and=/Android/.test(ua);
+  $('mbox').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:flex-start"><h2>📌 Ponerlo en el escritorio</h2><button class="btn sm" id="mclose">✕</button></div>
+  ${ios?`<ol class="howto" style="font-size:17px"><li>Abre esta página en <b>Safari</b>.</li><li>Toca el botón <b>Compartir</b> (el cuadrado con la flecha hacia arriba ⬆️).</li><li>Baja y toca <b>«Añadir a pantalla de inicio»</b>.</li><li>Toca <b>«Añadir»</b>. Te sale el icono azul en el móvil.</li></ol>`:
+  and?`<ol class="howto" style="font-size:17px"><li>Toca los <b>tres puntitos ⋮</b> de arriba a la derecha de Chrome.</li><li>Toca <b>«Instalar aplicación»</b> o <b>«Añadir a pantalla de inicio»</b>.</li><li>Toca <b>«Instalar»</b>. Te sale el icono azul en el móvil.</li></ol>`:
+  `<p><b>Opción 1 (la mejor):</b> en Chrome o Edge, toca el iconito de <b>instalar</b> 🖥️⬇️ que sale a la derecha de la barra de direcciones, o menú ⋮ → <b>«Enviar, guardar y compartir» → «Instalar página como aplicación»</b> (en Edge: ⋯ → <b>Aplicaciones → Instalar este sitio como aplicación</b>). Te queda el icono en el escritorio y se abre como un programa.</p>
+  <p><b>Opción 2:</b> descarga un acceso directo y arrástralo al escritorio.</p><div class="acts"><button class="btn pri big" id="dlUrl">⬇️ Descargar acceso directo</button></div>`}
+  <p class="sub">Entra directo, sin clave, y siempre con los datos del último lunes.</p>`;
+  $('modal').hidden=false;
+  if($('dlUrl'))$('dlUrl').onclick=atajo;
+}
+$('instBtn').onclick=instalar;
+if(!instalada())$('instBtn').hidden=false;
 arrancar();
 })();
 </script>
