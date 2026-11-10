@@ -219,6 +219,14 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
 .dl{display:flex;flex-wrap:wrap;gap:6px}.dl .btn{flex:1;text-align:center;text-decoration:none;padding:10px;font-size:13.5px;color:var(--ink)}
 /* hojas */
 .modal{position:fixed;inset:0;background:rgba(10,15,25,.55);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px}
+#newsModal{z-index:300}
+#newsModal .box{max-width:460px;max-height:calc(100vh - 32px);overflow:auto}
+.nw-tag{display:inline-block;background:#D2000F;color:#fff;font-weight:800;font-size:13px;letter-spacing:.06em;border-radius:999px;padding:4px 12px;margin-bottom:8px}
+.nw-list{list-style:none;margin:12px 0 16px;padding:0;display:flex;flex-direction:column;gap:12px}
+.nw-list li{display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.4}
+.nw-list .n{flex:none;width:30px;height:30px;border-radius:50%;background:#0067B1;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}
+.nw-list b{display:block;font-size:15.5px;margin-bottom:2px}
+.nw-go{appearance:none;width:100%;min-height:58px;border:none;border-radius:14px;background:#1F8F4E;color:#fff;font:800 17px system-ui,sans-serif;cursor:pointer;padding:10px 14px}
 .modal .box{background:var(--panel);border-radius:16px;max-width:460px;width:100%;padding:20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow);max-height:calc(100vh - 32px);overflow:auto}
 .modal h3{font-family:var(--display);font-size:24px;margin:0;line-height:1.1}
 .modal p{margin:0;color:var(--muted);font-size:14px}
@@ -309,7 +317,7 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
   <div class="logo"><img id="logoImg" alt="Nordwik"></div>
   <div class="brand">
     <h1>Cotizador Penalva</h1>
-    <div class="sub"><span id="tarDate">Tarifa 2026</span> · <span id="nRef"></span> referencias · v11</div>
+    <div class="sub"><span id="tarDate">Tarifa 2026</span> · <span id="nRef"></span> referencias · <span id="appVer"></span></div>
   </div>
   <div class="mode" id="modeSeg" role="group" aria-label="Modo">
     <button type="button" data-v="con" aria-pressed="true">Consulta</button><button type="button" data-v="cot" aria-pressed="false">Cotización</button>
@@ -413,6 +421,7 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
   </form>
 </div>
 
+<div class="modal" id="newsModal" hidden role="dialog" aria-modal="true" aria-labelledby="nwTitle"><div class="box" id="newsBox"></div></div>
 <div id="splash" class="splash"><div class="sp-in"><img src="img/icon-192.png" alt="" width="96" height="96"><b>Cotizador Penalva</b><span>Cargando la tarifa…</span><i></i></div></div>
 <div class="guide" id="guide" hidden>
   <div class="g-box">
@@ -877,6 +886,26 @@ paintCount();
 $('logoImg').src=LOGO;if(T.fecha){$('tarDate').textContent='Precios del '+new Date(T.fecha).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}$('nRef').textContent=R.length.toLocaleString('es-ES');
 fillFam();fillSub();loadForm();repRender();renderSaved();renderProp();
 document.body.dataset.view='cat';setMode('con');sizeBars();$('startModal').hidden=false;
+// ---------- novedades: se enseñan una sola vez por versión ----------
+// Para la próxima versión: cambia APP_VER y la lista NOVEDADES. Volverá a salir una vez a todos.
+const APP_VER='V0.2';
+const NOVEDADES=[
+ ['Fotos más grandes y nítidas','Hemos mejorado todas las fotos. Toca un artículo y verás la foto en grande. Si tocas la foto, se ve a pantalla completa.'],
+ ['Buscador más listo','Encuentra el artículo aunque lo escribas en plural, con alguna falta o sin tildes. Por ejemplo: «croquetas», «mahonesa», «kechup».'],
+ ['Todo se guarda solo','Cada cambio que haces en una cotización se guarda al momento. Si se cierra la app, al volver la tienes igual.'],
+ ['Tus cotizaciones, siempre a mano','Arriba de la cotización tienes «Buscar cotización de un cliente» y «Todas las cotizaciones». Desde ahí puedes seguir con ella, modificarla y volver a enviarla, o descargarla al teléfono u ordenador.'],
+ ['Enviar, más fácil','Tienes el botón «Enviar» arriba y abajo de la cotización. Al enviar solo eliges dos cosas: Imagen o PDF.']
+];
+$('appVer').textContent=APP_VER.toLowerCase();
+function showNews(){
+  if(store('pnv_novedades')===APP_VER)return;
+  $('newsBox').innerHTML=`<span class="nw-tag">NUEVA ACTUALIZACIÓN · ${APP_VER}</span><h3 id="nwTitle" style="margin:0 0 4px">Hemos mejorado tu cotizador</h3><p style="margin:0;color:var(--muted)">Esto es lo nuevo:</p>
+   <ol class="nw-list">${NOVEDADES.map((x,i)=>`<li><span class="n">${i+1}</span><span><b>${esc(x[0])}</b>${esc(x[1])}</span></li>`).join('')}</ol>
+   <button type="button" class="nw-go" id="nwGo">Tocar aquí para seguir trabajando con normalidad</button>`;
+  $('newsModal').hidden=false;
+  $('nwGo').addEventListener('click',()=>{store('pnv_novedades',APP_VER);$('newsModal').hidden=true});
+}
+showNews();
 if(LINKED&&!REP.tel){$('startModal').hidden=true;repOpen();$('repModal').querySelector('p').textContent='Hola, '+LINKED.split(' ')[0]+'. Pon tu teléfono una sola vez: saldrá en los PDF como contacto del cliente.';$('repForm').addEventListener('submit',()=>{if(REP.tel)$('startModal').hidden=false},{once:true})}
 window.setImgs=j=>{IMG=j||{};
   document.querySelectorAll('.thumb[data-ti]').forEach(el=>{const s=IMG[el.dataset.ti];if(s){el.classList.remove('no');el.removeAttribute('data-ti');el.innerHTML=`<img loading="lazy" alt="" src="data:image/jpeg;base64,${s}">`}});};
