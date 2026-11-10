@@ -211,6 +211,15 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
 .choice .tx{color:var(--muted);font-size:13.5px}
 .pd-head{display:flex;gap:14px;align-items:center}
 .pd-head .thumb{width:96px;height:96px;border-radius:10px}
+.pd-photo{width:100%;height:min(62vw,300px);background:#fff;border:1px solid var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:zoom-in;padding:6px;box-sizing:border-box}
+.pd-photo img{max-width:100%;max-height:100%;object-fit:contain}
+.pd-hint{font-size:12.5px;color:var(--muted);text-align:center;margin:4px 0 10px}
+#zv{position:fixed;inset:0;z-index:200;background:#fff;display:flex;flex-direction:column}
+#zv[hidden]{display:none}
+#zv .zb{display:flex;justify-content:flex-end;padding:calc(10px + env(safe-area-inset-top,0px)) 12px 10px}
+#zv .zb button{appearance:none;border:none;background:#D2000F;color:#fff;border-radius:999px;height:48px;padding:0 22px;font:800 16px system-ui,sans-serif;cursor:pointer}
+#zv .zi{flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;padding:10px}
+#zv img{max-width:100%;max-height:100%;object-fit:contain}
 .pd-head .d{font-weight:600;font-size:17px;line-height:1.25}
 .pd-head .c{font-family:var(--mono);color:var(--muted);font-size:13px;margin-top:3px}
 .pd-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
@@ -371,6 +380,7 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
 </div>
 
 <div class="modal" id="pdModal" hidden><div class="box" id="pdBox"></div></div>
+<div id="zv" hidden role="dialog" aria-modal="true" aria-label="Foto en grande"><div class="zb"><button type="button" id="zvX">Cerrar foto</button></div><div class="zi"><img id="zvImg" alt="Foto del producto"></div></div>
 <div class="modal" id="cntModal" hidden><div class="box wide" id="cntBox"></div></div>
 
 <div class="modal" id="repModal" hidden>
@@ -476,6 +486,13 @@ function fillSub(){
   if(F.sub!==''&&!subs.has(+F.sub))F.sub='';$('fSub').value=F.sub;
 }
 function toks(){return norm(F.q).trim().split(/[^A-Z0-9]+/).filter(Boolean)}
+function lev(a,b,mx){if(Math.abs(a.length-b.length)>mx)return mx+1;let p=[];for(let j=0;j<=b.length;j++)p[j]=j;for(let i=1;i<=a.length;i++){let c=[i],mn=i;for(let j=1;j<=b.length;j++){c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));if(c[j]<mn)mn=c[j]}if(mn>mx)return mx+1;p=c}return p[b.length]}
+// 2 = empieza igual · 1 = plural/singular o una letra mal · 0 = no
+function wm(w,t){if(w.startsWith(t))return 2;if(/^\d+$/.test(t))return 0;
+  if(t.length>=4&&w.length>=3&&t.startsWith(w)&&t.length-w.length<=2)return 1;
+  if(t.length>=4){const mx=t.length>=8?2:1;if(lev(w.slice(0,t.length),t,mx)<=mx||lev(w,t,mx)<=mx)return 1}
+  return 0}
+const tokScore=(r,t)=>r.c.startsWith(t)?2:r.ws.reduce((m,w)=>Math.max(m,wm(w,t)),0);
 function hasFilter(){return F.fam!==''||F.sub!==''||F.fmt||F.peso||F.onlySel}
 function filtered(){
   const T=toks();
@@ -487,17 +504,17 @@ function filtered(){
     if(F.fmt&&fmtLbl(r.f)!==fmtLbl(F.fmt))return false;
     if(F.peso&&!(r.wn!=null&&r.wn>lo&&r.wn<=hi))return false;
     if(F.onlySel&&!sel.has(r.c))return false;
-    for(const t of T)if(!(r.c.startsWith(t)||r.ws.some(w=>w.startsWith(t))))return false;
+    let sc=0;for(const t of T){const k=tokScore(r,t);if(!k)return false;sc+=k}r._sc=sc;
     return true});
   if(!T.length){F.sort='tarifa';return out.sort((a,b)=>a.o-b.o)}
   if(T.length===1&&/^\d{3,}$/.test(T[0])){const byCode=out.filter(r=>r.c.startsWith(T[0]));if(byCode.length){F.sort='rel';return byCode.sort((a,b)=>a.c.localeCompare(b.c))}}
   F.sort='rel';const t0=T[0],nm=r=>cleanDesc(r.d).replace(/^\d+\s+/,'');
   const rank=r=>r.c.startsWith(t0)?0:r.fw.startsWith(t0)?0:1;
-  return out.sort((a,b)=>rank(a)-rank(b)||nm(a).localeCompare(nm(b),'es'));
+  return out.sort((a,b)=>(b._sc||0)-(a._sc||0)||rank(a)-rank(b)||nm(a).localeCompare(nm(b),'es'));
 }
 function hlCode(c){const T=toks();const t=T.find(t=>/^\d+$/.test(t)&&c.startsWith(t));return t?'<mark>'+t+'</mark>'+c.slice(t.length):c}
 function hl(text){const T=toks();if(!T.length)return esc(text);
-  return text.split(/(\s+)/).map(w=>{const n=norm(w);const t=T.find(t=>n.startsWith(t));if(!t||!w.trim())return esc(w);const k=t.length;return '<mark>'+esc(w.slice(0,k))+'</mark>'+esc(w.slice(k))}).join('')}
+  return text.split(/(\s+)/).map(w=>{const n=norm(w);const t=T.find(t=>n.startsWith(t));if(!w.trim())return esc(w);if(!t){return T.some(t=>wm(n.replace(/[^A-Z0-9]/g,''),t))?'<mark>'+esc(w)+'</mark>':esc(w)}const k=t.length;return '<mark>'+esc(w.slice(0,k))+'</mark>'+esc(w.slice(k))}).join('')}
 function renderHead(){$('thead').innerHTML=(MODE==='cot'?'<span></span>':'')+'<span>Foto</span><span>Código</span><span>Descripción</span><span>Formato</span><span class="r">Und/caja</span><span>Peso</span><span class="r">Precio</span><span class="r">Precio und.</span>'}
 let CUR=[],shown=0;const PAGE=80;
 function renderList(reset){
@@ -550,7 +567,8 @@ function gridHTML(r,dto){const n=net(r,dto),has=pct(dto)>0;return `<div class="p
  ${has?`<div class="wide"><span>Tarifa</span><b class="num">${eur(r.p)}</b></div>`:''}</div>`}
 function openProduct(c){
   const r=BY[c],l=lineOf(c);
-  const head=`<div class="pd-head">${thumb(r)}<div style="min-width:0"><div class="d">${esc(r.d)}</div><div class="c">${r.c} · ${esc(subName(r.su))}</div></div></div>`;
+  const big=IMG[c]?`<div class="pd-photo" data-zoom="${c}"><img alt="Foto de ${esc(cleanDesc(r.d))}" src="../fotos/${c}.jpg"></div><div class="pd-hint">Toca la foto para verla en grande</div>`:'';
+  const head=big+`<div class="pd-head">${big?'':thumb(r)}<div style="min-width:0"><div class="d">${esc(r.d)}</div><div class="c">${r.c} · ${esc(subName(r.su))}</div></div></div>`;
   if(MODE==='con'){
     $('pdBox').innerHTML=head+gridHTML(r,0)+`<div class="acts"><button class="btn" type="button" data-pd="close">Cerrar</button><button class="btn primary" type="button" data-pd="tocot">Añadir a cotización</button></div>`;
   }else{
@@ -564,7 +582,12 @@ function openProduct(c){
     $('pdDto').addEventListener('input',upd);upd();
   }
   $('pdBox').dataset.c=c;$('pdModal').hidden=false;
+  const pi=$('pdBox').querySelector('.pd-photo img');
+  if(pi)pi.onerror=()=>{pi.onerror=null;pi.src='data:image/jpeg;base64,'+IMG[c]};
 }
+$('pdBox').addEventListener('click',e=>{const ph=e.target.closest('.pd-photo');if(!ph)return;const im=ph.querySelector('img');$('zvImg').src=im.src;$('zv').hidden=false});
+$('zvX').addEventListener('click',()=>{$('zv').hidden=true});
+$('zv').addEventListener('click',e=>{if(e.target.id==='zv'||e.target.classList.contains('zi'))$('zv').hidden=true});
 $('pdModal').addEventListener('click',e=>{
   if(e.target===$('pdModal')){$('pdModal').hidden=true;return}
   const b=e.target.closest('[data-pd]');if(!b)return;const c=$('pdBox').dataset.c,a=b.dataset.pd;
@@ -573,7 +596,7 @@ $('pdModal').addEventListener('click',e=>{
   if(a==='ok'){const v=$('pdDto').value,d=pct(v)?String(pct(v)):'';const l=lineOf(c);if(l)l.dto=d;else S.lines.push({c,dto:d});save();$('pdModal').hidden=true;renderProp();refreshItem(c);flash((l?'Actualizado: ':'Añadido: ')+cleanDesc(BY[c].d)+(d?' (−'+d+' %)':''),'ok')}
   if(a==='del'){S.lines=S.lines.filter(x=>x.c!==c);save();$('pdModal').hidden=true;renderProp();refreshItem(c)}
 });
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){['pdModal','repModal','cntModal'].forEach(id=>$(id).hidden=true)}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('zv').hidden){$('zv').hidden=true;return}['pdModal','repModal','cntModal'].forEach(id=>$(id).hidden=true)}});
 
 // cotización
 function renderProp(){
