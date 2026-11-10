@@ -171,7 +171,7 @@ function calcular(){
   AG={last,tot,totp,ult,ultp,antes,nper:P.length};
 }
 const repOf=c=>c.com||NOREP;
-function visibles(){if(!ST)return[];return ST.cli.map((c,i)=>i).filter(i=>(AG.tot[i]>0.005||AG.ult[i]>0.005||AG.antes[i]>0.005)&&(!REP||repOf(ST.cli[i])===REP))}
+function visibles(){if(!ST)return[];return ST.cli.map((c,i)=>i).filter(i=>!NV.fuera(ST.cli[i])&&(AG.tot[i]>0.005||AG.ult[i]>0.005||AG.antes[i]>0.005)&&(!REP||repOf(ST.cli[i])===REP))}
 const pidio=i=>AG.ult[i]>0.005;
 const habitual=i=>AG.nper>1?AG.antes[i]>0.005:AG.tot[i]>0.005;
 
@@ -181,10 +181,10 @@ function iniciar(){
   if(!ST){$('hSub').textContent='Todavía no hay datos cargados';VIEW=ADMIN?'car':'res'}
   else{calcular();$('hSub').textContent=`Ventas del ${NV.fmtD(ST.inicio)} al ${NV.fmtD(AG.last.hasta)}`}
   // comercial: por enlace ?c=slug
-  const reps=ST?[...new Set(ST.cli.map(repOf))].sort((a,b)=>a===NOREP?1:b===NOREP?-1:a.localeCompare(b,'es')):[];
+  const reps=ST?[...new Set(ST.cli.filter(c=>!NV.fuera(c)).map(repOf))].sort((a,b)=>a===NOREP?1:b===NOREP?-1:a.localeCompare(b,'es')):[];
   const want=params.get('c');
   if(want){const r=reps.find(x=>NV.slug(x)===want)||reps.find(x=>NV.slug(x).includes(want));if(r)REP=r}
-  $('fRep').innerHTML=`<option value="">Todos los comerciales</option>`+reps.map(r=>`<option${r===REP?' selected':''}>${esc(r)}</option>`).join('');
+  const reps2=reps;$('fRep').innerHTML=`<option value="">Todos los comerciales</option>`+reps.map(r=>`<option${r===REP?' selected':''}>${esc(r)}</option>`).join('');
   pintar();
 }
 $('fRep').onchange=e=>{REP=e.target.value;pintar()};

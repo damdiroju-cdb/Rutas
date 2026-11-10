@@ -13,7 +13,9 @@ const SHEET='https://script.google.com/macros/s/AKfycbwXS7Xx-Ow-AUmQuEEVul2jAnN6
 NV.INICIO='2026-08-01';
 NV.CENTRAL='615849304';
 // comerciales conocidos (nombre → móvil). Se pueden cambiar desde el panel.
-NV.REPS={'Antonio Aguado':'609253986','Abraham Megias':'627483661','David Sierra':'625400548','Jorge Ortega':'685330838','Antonio Ayala':'615849309','Jose Manuel Herrera':'695229073','Jose Manuel Avidad':'664549032','Juan Manuel Cabrerizo':'655334450','Juan Manuel Martin':'615849308','Manuel Borrego':'627483672','Sebastián Doncel':'656392838','David Díaz':'615849304','David Guadix':'','Juanma Nordwik':''};
+NV.REPS={'Antonio Aguado':'609253986','Abraham Megias':'627483661','David Sierra':'625400548','Jorge Ortega':'685330838','Antonio Ayala':'615849309','Jose Manuel Herrera':'695229073','Jose Manuel Avidad':'664549032','Juan Manuel Cabrerizo':'655334450','Juan Manuel Martin':'615849308','Manuel Borrego':'627483672','Sebastián Doncel':'656392838','David Díaz':'615849304','David Guadix':'625400548','Juanma Nordwik':'615849308'};
+// fuera de nuestro canal: grandes cuentas, cadenas y distribuidores (códigos 990000 en adelante) y el 0
+NV.fuera=c=>{const n=parseInt(c.c,10);return n===0||n>=990000};
 
 // ---------- utilidades ----------
 const b64=u=>{let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s)};
@@ -186,6 +188,7 @@ NV.construir=async(st,K,T)=>{
   const ck=b64url(K.cat);
   for(let ci=0;ci<st.cli.length;ci++){
     const c=st.cli[ci];
+    if(NV.fuera(c))continue;
     if(!c.id){const x=await NV.idCliente(K,c.c);c.id=x.id;c.k=x.k}
     const it=(per[ci]||[]).map(k=>{const ai=k%100000,a=st.arts[ai];return[a[0],Math.round(tot.get(k)[0]*100)/100,Math.round((ult.get(k)||0)*100)/100,a[1]]}).filter(x=>x[1]>0.005).sort((a,b)=>b[1]-a[1]);
     const body={c:c.c,n:c.n,wa:NV.waCliente(st,c),com:c.com||'',desde:st.inicio,hasta:last?last.hasta:null,ult:last&&P.length>1?[last.desde,last.hasta]:null,it,ck};
