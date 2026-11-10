@@ -2624,7 +2624,7 @@ a{color:#B93A24}
 <div class="fp-foot">
 <label>Tu negocio<input id="fp-neg" placeholder="Nombre del establecimiento" autocomplete="organization"></label>
 <label>Comentario (opcional)<input id="fp-obs" placeholder="Ej.: consumo semanal, cuándo pasar…"></label>
-<div class="fp-row"><button class="fp-sec" id="fp-copy">Copiar lista</button><a class="fp-send dis" id="fp-send" href="#" target="_blank" rel="noopener"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a9 9 0 0 1-13.4 7.9L3 21l1.2-4.4A9 9 0 1 1 21 12z"></path></svg>Pedir cotización</a></div>
+<div class="fp-row"><button class="fp-sec" id="fp-copy">Copiar lista</button><a class="fp-send dis" id="fp-send" href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a9 9 0 0 1-13.4 7.9L3 21l1.2-4.4A9 9 0 1 1 21 12z"></path></svg>Pedir cotización</a></div>
 </div></div></div>
 <script>
 (function(){
@@ -2665,6 +2665,7 @@ a{color:#B93A24}
   function upd(){ var a=$('fp-send'); a.classList.toggle('dis',!fav.length); a.href='https://wa.me/'+tel+'?text='+encodeURIComponent(msg()); }
   $('fp-neg').addEventListener('input',function(){ try{ localStorage.setItem(K+'_neg',this.value); }catch(e){} upd(); });
   $('fp-obs').addEventListener('input',upd);
+  $('fp-send').addEventListener('click',function(e){ if(!fav.length){ e.preventDefault(); toast('Marca antes algún artículo con ♥'); return; } this.href='https://wa.me/'+tel+'?text='+encodeURIComponent(msg()); });
   function open(){ render(); $('fp').classList.add('open'); }
   function close(){ $('fp').classList.remove('open'); }
   $('cart').onclick=open; $('fp-x').onclick=close;
