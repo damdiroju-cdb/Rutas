@@ -13,7 +13,7 @@ const SHEET='https://script.google.com/macros/s/AKfycbwXS7Xx-Ow-AUmQuEEVul2jAnN6
 NV.INICIO='2026-08-01';
 NV.CENTRAL='615849304';
 // comerciales conocidos (nombre → móvil). Se pueden cambiar desde el panel.
-NV.REPS={'Antonio Aguado':'609253986','Abraham Megias':'627483661','David Sierra':'625400548','Jorge Ortega':'685330838','Antonio Ayala':'615849309','Jose Manuel Herrera':'695229073','Jose Manuel Avidad':'664549032','Juan Manuel Cabrerizo':'655334450','Juan Manuel Martin':'615849308','Manuel Borrego':'627483672','Sebastián Doncel':'656392838','David Díaz':'615849304'};
+NV.REPS={'Antonio Aguado':'609253986','Abraham Megias':'627483661','David Sierra':'625400548','Jorge Ortega':'685330838','Antonio Ayala':'615849309','Jose Manuel Herrera':'695229073','Jose Manuel Avidad':'664549032','Juan Manuel Cabrerizo':'655334450','Juan Manuel Martin':'615849308','Manuel Borrego':'627483672','Sebastián Doncel':'656392838','David Díaz':'615849304','David Guadix':'','Juanma Nordwik':''};
 
 // ---------- utilidades ----------
 const b64=u=>{let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s)};
@@ -77,17 +77,17 @@ NV.leerVentas=ab=>{
 // Listado de clientes: código, nombre, comercial, móvil, población (columnas por nombre)
 NV.leerClientes=ab=>{
   const R=sheetRows(ab);
-  const pats={c:/^(c[oó]d|cd\b|n[ºo°]?\s*cli|cliente$)/i,n:/(nombre|raz[oó]n|descrip|cliente)/i,com:/(comercial|vendedor|agente|represent|ruta)/i,tel:/(m[oó]vil|tel[eé]f|whats|celular)/i,pob:/(poblaci|localidad|municipio|ciudad)/i};
+  const pats={c:/^(c[oó]d|cd\b|n[ºo°]?\s*cli|cliente$)/i,n:/(nombre|raz[oó]n|descrip|cliente)/i,com:/(comercial|vendedor|agente|represent|ruta)/i,tel:/(m[oó]vil|tel[eé]f|whats|celular)/i,pob:/(poblaci|localidad|municipio|ciudad)/i,canal:/^canal/i,dia:/^d[ií]a/i};
   let h=-1,col={};
   for(let i=0;i<Math.min(R.length,15)&&h<0;i++){const r=(R[i]||[]).map(v=>String(v??'').replace('_x0001_','').trim());const cc={};
-    r.forEach((v,j)=>{if(!v)return;for(const k of['c','com','tel','pob','n']){if(cc[k]==null&&pats[k].test(v)&&!Object.values(cc).includes(j)){cc[k]=j;break}}});
+    r.forEach((v,j)=>{if(!v)return;for(const k of['c','com','tel','pob','canal','dia','n']){if(cc[k]==null&&pats[k].test(v)&&!Object.values(cc).includes(j)){cc[k]=j;break}}});
     if(cc.c!=null&&(cc.com!=null||cc.tel!=null)){h=i;col=cc}}
   if(h<0)throw new Error('No encuentro las columnas. El listado tiene que traer, como mínimo, el código de cliente y el comercial o el móvil.');
   const out=[];
   for(let i=h+1;i<R.length;i++){const r=R[i];if(!r)continue;const c=parseInt(String(r[col.c]??'').replace(/\D/g,''),10);if(isNaN(c))continue;
     const tels=[col.tel].concat(r.map((v,j)=>j).filter(j=>j!==col.tel&&/(tel|m[oó]vil)/i.test(String((R[h]||[])[j]??'')))).filter(j=>j!=null);
     let tel='';for(const j of tels){tel=NV.tel(r[j]);if(/^[67]/.test(tel))break}
-    out.push({c:String(c),n:col.n!=null?String(r[col.n]??'').trim():'',com:col.com!=null?String(r[col.com]??'').trim():'',tel,pob:col.pob!=null?String(r[col.pob]??'').trim():''})}
+    out.push({c:String(c),n:col.n!=null?String(r[col.n]??'').trim():'',com:col.com!=null?String(r[col.com]??'').trim():'',tel,pob:col.pob!=null?String(r[col.pob]??'').trim():'',canal:col.canal!=null?String(r[col.canal]??'').trim():'',dia:col.dia!=null?String(r[col.dia]??'').trim():''})}
   return{cols:Object.keys(col),rows:out};
 };
 
@@ -127,7 +127,7 @@ NV.cargarVentas=(st,V,desde,hasta,modo)=>{
 NV.quitarUltimo=st=>{const p=st.periodos.pop();st.act=new Date().toISOString();return p};
 NV.cargarClientes=(st,L)=>{
   idx(st);let n=0,com=0,tel=0;
-  for(const r of L.rows){const i=cliIdx(st,r.c,r.n);const c=st.cli[i];if(r.com){c.com=r.com;com++}if(r.tel){c.tel=r.tel;tel++}if(r.pob)c.pob=r.pob;n++}
+  for(const r of L.rows){const i=cliIdx(st,r.c,r.n);const c=st.cli[i];if(r.com){c.com=r.com;com++}if(r.tel){c.tel=r.tel;tel++}if(r.pob)c.pob=r.pob;if(r.canal)c.canal=r.canal;if(r.dia)c.dia=r.dia;n++}
   // comerciales nuevos → se añaden al listado de teléfonos (si coincide el nombre con uno conocido, se le pone su móvil)
   const known=Object.entries(st.reps);
   for(const name of new Set(st.cli.map(c=>c.com).filter(Boolean))){
