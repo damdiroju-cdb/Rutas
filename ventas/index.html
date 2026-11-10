@@ -6,6 +6,11 @@
 <title>Cuadro de ventas · Penalva</title>
 <meta name="theme-color" content="#0067B1">
 <meta name="robots" content="noindex">
+<meta property="og:title" content="👉 Toca aquí y entra en tu cuadro de ventas">
+<meta property="og:description" content="Penalva Alimentación · Tus clientes, quién ha pedido y quién no, y su enlace de pedidos.">
+<meta property="og:image" content="https://damdiroju-cdb.github.io/Rutas/ventas/cuadro-wa.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:type" content="website"><meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="../cotizador/img/icon-192.png">
 <style>
 :root{--red:#D2000F;--blue:#0067B1;--blue2:#00518c;--ink:#14213d;--mut:#5b6474;--line:#e3e7ee;--soft:#f4f6fa;--ok:#1a9c4b;--okbg:#e7f6ec;--ko:#c2410c;--kobg:#fff1e8;--wa:#25D366}
@@ -226,7 +231,8 @@ function resumen(){
 }
 function filaCli(i){const c=ST.cli[i],U=PER==='ult';const v=U?AG.ult[i]:AG.tot[i];
   const st=AG.tot[i]<=0.005&&AG.antes[i]<=0.005?'<span class="pill ko">Sin compras desde 1 ago</span>':AG.nper===1?'':pidio(i)?'<span class="pill ok">Ha pedido</span>':habitual(i)?'<span class="pill ko">Sin pedido</span>':'<span class="pill nu">Sin compras</span>';
-  return`<tr class="click" data-ci="${i}"><td><b>${esc(c.n)}</b><div class="sub">${esc(c.c)}${c.pob?' · '+esc(c.pob):''}${!REP?' · '+esc(repOf(c)):''}${c.dia?' · '+esc(c.dia.toLowerCase()):''}</div>${c.canal||st?`<div style="margin-top:4px;display:flex;gap:6px;flex-wrap:wrap">${c.canal?`<span class="pill ${/whats/i.test(c.canal)?'ok':'nu'}">${/whats/i.test(c.canal)?'💬 ':''}${esc(c.canal)}</span>`:''}${st}</div>`:''}</td><td class="n"><b>${eur(v)}</b>${AG.nper>1&&U?`<div class="sub">desde 1 ago: ${eur(AG.tot[i])}</div>`:''}</td></tr>`}
+  const sb=c.id?`<a class="btn sm ${ENV.has(c.c)?'':'wa'}" data-send="${esc(c.c)}" target="_blank" rel="noopener" href="${waCli(c)}" style="margin-top:6px">${ENV.has(c.c)?'✔ Enviado · repetir':'📲 Enviarle su pedido'}</a>`:'';
+  return`<tr class="click" data-ci="${i}"><td><b>${esc(c.n)}</b><div class="sub">${esc(c.c)}${c.pob?' · '+esc(c.pob):''}${!REP?' · '+esc(repOf(c)):''}${c.dia?' · '+esc(c.dia.toLowerCase()):''}</div>${c.canal||st?`<div style="margin-top:4px;display:flex;gap:6px;flex-wrap:wrap">${c.canal?`<span class="pill ${/whats/i.test(c.canal)?'ok':'nu'}">${/whats/i.test(c.canal)?'💬 ':''}${esc(c.canal)}</span>`:''}${st}</div>`:''}${sb}</td><td class="n"><b>${eur(v)}</b>${AG.nper>1&&U?`<div class="sub">desde 1 ago: ${eur(AG.tot[i])}</div>`:''}</td></tr>`}
 function clientes(){
   const V=$('v-cli');
   if(!ST){V.innerHTML=`<div class="card empty">Todavía no hay ventas cargadas.</div>`;return}
@@ -248,17 +254,21 @@ function lista(){
   const ws=NV.norm(CQ).split(/\s+/).filter(Boolean);
   if(ws.length)ids=ids.filter(i=>{const c=ST.cli[i];const t=NV.norm(c.n+' '+c.c+' '+c.pob+' '+c.com);return ws.every(w=>t.includes(w))});
   ids.sort((a,b)=>CF==='sin'?AG.antes[b]-AG.antes[a]:(U?AG.ult[b]-AG.ult[a]:0)||AG.tot[b]-AG.tot[a]);
-  $('cn').textContent=ids.length+' clientes'+(ids.length>200?' · se muestran los 200 primeros, usa el buscador':'');
-  $('tCli').innerHTML=ids.slice(0,200).map(filaCli).join('')||`<tr><td class="empty">No hay clientes con ese filtro.</td></tr>`;
+  $('cn').textContent=ids.length+' clientes'+(ids.length>400?' · se muestran los 400 primeros, usa el buscador':'');
+  $('tCli').innerHTML=ids.slice(0,400).map(filaCli).join('')||`<tr><td class="empty">No hay clientes con ese filtro.</td></tr>`;
 }
 document.addEventListener('click',e=>{
+  const sd=e.target.closest('[data-send]');if(sd){marcar(sd.dataset.send);setTimeout(()=>{sd.classList.remove('wa');sd.textContent='✔ Enviado · repetir'},300);return}
   const r=e.target.closest('[data-rep]');if(r){REP=r.dataset.rep;$('fRep').value=REP;VIEW='cli';CF='todos';pintar();window.scrollTo(0,0);return}
   const c=e.target.closest('[data-ci]');if(c){ficha(+c.dataset.ci);return}
   const cp=e.target.closest('[data-copy]');if(cp){copiar(cp.dataset.copy);return}
   if(e.target.id==='mclose'||e.target===$('modal'))$('modal').hidden=true;
 });
 async function copiar(t){try{await navigator.clipboard.writeText(t);toast('Copiado ✔')}catch(e){prompt('Copia este texto:',t)}}
-function msgCliente(c){return`Hola 👋, te mando tu enlace de pedidos de *Penalva Alimentación*.\n\nAhí tienes lo que sueles comprar, con fotos y precios. Toca lo que quieras y dale a *Enviar*: el pedido me llega por WhatsApp.\n\n👉 ${NV.enlace(c)}\n\nGuárdalo, es siempre el mismo.`}
+function msgCliente(c){return`${NV.enlace(c)}\n\n👆 *Toca la imagen de arriba* para hacer tu pedido a *Penalva Alimentación*.\n\nTe salen las cosas que sueles comprar, con foto y precio. Tocas *+ Añadir*, le das a *Enviar* y el pedido me llega por WhatsApp.\n\n📌 Guarda este mensaje: el enlace es siempre el mismo.`}
+const ENV=(()=>{try{return new Set(JSON.parse(get('pnv_env')||'[]'))}catch(e){return new Set()}})();
+const marcar=code=>{ENV.add(code);put('pnv_env',JSON.stringify([...ENV]))};
+const waCli=c=>`https://wa.me/${c.tel?'34'+c.tel:''}?text=${encodeURIComponent(msgCliente(c))}`;
 function ficha(i){
   const c=ST.cli[i];const items=new Map();
   ST.periodos.forEach((p,pi)=>{const r=p.rows,isL=pi===ST.periodos.length-1;for(let j=0;j<r.length;j+=4)if(r[j]===i){const a=r[j+1];const o=items.get(a)||[0,0,0];o[0]+=r[j+2];o[2]+=r[j+3];if(isL)o[1]+=r[j+2];items.set(a,o)}});
@@ -266,7 +276,7 @@ function ficha(i){
   const link=c.id?NV.enlace(c):null;const tel=c.tel;
   $('mbox').innerHTML=`<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><div><h2>${esc(c.n)}</h2><div class="sub">Cliente ${esc(c.c)}${c.pob?' · '+esc(c.pob):''} · ${esc(repOf(c))}${tel?' · 📱 '+esc(tel):''}</div></div><button class="btn sm" id="mclose">✕</button></div>
   <div class="kpis" style="grid-template-columns:repeat(3,1fr);margin:12px 0"><div class="kpi"><div class="l">Desde 1 ago</div><div class="v">${eur(AG.tot[i])}</div><div class="s">${pctH(pct(AG.tot[i],AG.totp[i]))} vs año ant.</div></div>${AG.nper>1?`<div class="kpi"><div class="l">Última carga</div><div class="v">${eur(AG.ult[i])}</div><div class="s">${NV.fmtD(AG.last.desde)} – ${NV.fmtD(AG.last.hasta)}</div></div>`:''}<div class="kpi"><div class="l">Artículos</div><div class="v">${L.filter(x=>x[1][0]>0).length}</div><div class="s">distintos</div></div></div>
-  ${link?`<div class="acts">${tel?`<a class="btn wa big" target="_blank" rel="noopener" href="https://wa.me/34${esc(tel)}?text=${encodeURIComponent(msgCliente(c))}">📲 Mandarle su enlace por WhatsApp</a>`:`<a class="btn wa big" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(msgCliente(c))}">📲 Mandar su enlace por WhatsApp</a>`}<button class="btn" data-copy="${esc(link)}">Copiar enlace</button><a class="btn" href="${esc(link)}" target="_blank" rel="noopener">Ver su página</a></div>`:''}
+  ${link?`<div class="acts"><a class="btn wa big" data-send="${esc(c.c)}" target="_blank" rel="noopener" href="${waCli(c)}">📲 Mandarle su pedido por WhatsApp</a><button class="btn" data-copy="${esc(link)}">Copiar enlace</button><a class="btn" href="${esc(link)}" target="_blank" rel="noopener">Ver su página</a></div>`:''}
   <div class="tw"><table><thead><tr><th>Artículo</th><th class="n">Desde 1 ago</th>${AG.nper>1?'<th class="n">Última carga</th>':''}<th class="n hm">Año ant.</th></tr></thead><tbody>${L.map(([a,o])=>{const A=ST.arts[a];return`<tr><td>${esc(A[1])}<div class="sub">${esc(A[0])}</div></td><td class="n"><b>${eur(o[0],1)}</b></td>${AG.nper>1?`<td class="n">${o[1]>0.005?`<span class="pill ok">${eur(o[1],1)}</span>`:'—'}</td>`:''}<td class="n hm sub">${o[2]?eur(o[2],1):'—'}</td></tr>`}).join('')}</tbody></table></div>`;
   $('modal').hidden=false;
 }
@@ -362,7 +372,7 @@ function enlaces(){
   const dk=encodeURIComponent(NV.b64url(DASH));
   const base=NV.LINK_BASE+'ventas/';
   const reps=ST?[...new Set(ST.cli.map(c=>c.com).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es')):[];
-  const row=(n,u,tel)=>{const t=`Hola ${n.split(' ')[0]} 👋, este es tu *cuadro de ventas* de Penalva. Cada semana verás qué clientes han pedido y cuáles no, y desde ahí les puedes mandar su enlace de pedidos.\n\n👉 ${u}\n\nGuárdalo, es siempre el mismo.`;
+  const row=(n,u,tel)=>{const t=`${u}\n\n👆 *Toca la imagen de arriba*, ${n.split(' ')[0]}. Es tu *cuadro de ventas* de Penalva.\n\n1️⃣ Entra en *Clientes*. Si quieres, filtra por canal *WhatsApp*.\n2️⃣ En cada cliente dale al botón verde *📲 Enviarle su pedido*.\n3️⃣ Se abre WhatsApp con su mensaje. *Espera un segundo a que salga la imagen* y envíalo.\n\nAsí el cliente recibe un botón, no un enlace. Toca la imagen, elige y te llega el pedido a ti.\n\n📌 Guarda este mensaje, el enlace es siempre el mismo.`;
     return`<tr><td><b>${esc(n)}</b><div class="link">${esc(u)}</div></td><td><div class="acts" style="margin:0"><button class="btn sm" data-copy="${esc(u)}">Copiar</button><a class="btn sm wa" target="_blank" rel="noopener" href="https://wa.me/${tel?'34'+esc(tel):''}?text=${encodeURIComponent(t)}">WhatsApp</a></div></td></tr>`};
   V.innerHTML=`<div class="card"><h2>Enlaces del cuadro de ventas</h2><p class="help">Cada comercial entra directo a <b>sus</b> clientes. Con el tuyo ves a todos.</p><div class="tw"><table><tbody>
   ${row('David (todos)',base+'#v='+dk,'')}
