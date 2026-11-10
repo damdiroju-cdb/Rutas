@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tu pedido · Penalva Alimentación</title>
+<meta name="theme-color" content="#D2000F">
+<meta property="og:title" content="Tu pedido Penalva">
+<meta property="og:description" content="Toca aquí, elige lo que necesitas y envía tu pedido por WhatsApp.">
+<meta property="og:image" content="https://damdiroju-cdb.github.io/Rutas/catalogo/portada-wa.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../cotizador/img/icon-192.png">
+<link rel="apple-touch-icon" href="../cotizador/img/apple-touch-icon.png">
+<style>
+:root{--red:#D2000F;--red2:#a8000c;--blue:#0067B1;--ink:#14213d;--mut:#5b6474;--line:#e3e7ee;--soft:#f4f6fa;--ok:#1a9c4b;--wa:#25D366}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--soft);color:var(--ink);font:17px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+button,input,textarea{font:inherit}
+.top{position:sticky;top:0;z-index:20;background:var(--red);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 0}
+.top .row{display:flex;align-items:center;gap:12px}
+.top img{height:30px}
+.top .nw{height:24px;margin-left:auto;opacity:.95}
+.hola{margin:10px 0 2px;font-size:22px;font-weight:800;line-height:1.15}
+.sub{opacity:.92;font-size:15px;margin-bottom:10px}
+.tabs{display:flex;gap:6px}
+.tab{flex:1;border:0;border-radius:14px 14px 0 0;padding:13px 8px;font-weight:800;font-size:17px;background:rgba(255,255,255,.18);color:#fff;cursor:pointer}
+.tab[aria-selected=true]{background:var(--soft);color:var(--red)}
+main{max-width:720px;margin:0 auto;padding:14px 12px 140px}
+.hint{background:#fff;border:2px dashed var(--line);border-radius:16px;padding:12px 14px;color:var(--mut);font-size:15px;margin-bottom:12px}
+.hint b{color:var(--ink)}
+.card{display:flex;gap:12px;background:#fff;border-radius:18px;padding:12px;margin-bottom:12px;box-shadow:0 1px 3px rgba(20,33,61,.08);border:2px solid transparent}
+.card.on{border-color:var(--ok);background:#f2fbf5}
+.ph{flex:0 0 112px;height:112px;border-radius:14px;background:#fff center/contain no-repeat;border:1px solid var(--line);cursor:zoom-in;position:relative;overflow:hidden}
+.ph.no{background:var(--soft);display:flex;align-items:center;justify-content:center;color:#9aa3b2;font-weight:800;font-size:28px;cursor:default}
+.ph .zoom{position:absolute;right:4px;bottom:4px;background:rgba(20,33,61,.7);color:#fff;border-radius:8px;font-size:12px;padding:2px 6px}
+.inf{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.nm{font-weight:800;font-size:16px;line-height:1.2}
+.cd{color:var(--mut);font-size:13px}
+.pr{font-size:18px;font-weight:800;color:var(--blue)}
+.pr small{font-size:14px;font-weight:600;color:var(--mut)}
+.hist{font-size:13px;color:var(--mut)}
+.hist b{color:var(--ink)}
+.badge{display:inline-block;background:#e9f4ff;color:var(--blue);border-radius:999px;padding:1px 8px;font-size:12px;font-weight:700}
+.step{display:flex;align-items:center;gap:8px;margin-top:auto}
+.step button{width:52px;height:48px;border-radius:14px;border:0;font-size:28px;font-weight:800;line-height:1;cursor:pointer}
+.mi{background:#eef1f6;color:var(--ink)}
+.pl{background:var(--red);color:#fff}
+.step .q{min-width:44px;text-align:center;font-size:22px;font-weight:800}
+.step .u{font-size:14px;color:var(--mut)}
+.add{margin-top:auto;border:0;border-radius:14px;background:var(--red);color:#fff;font-weight:800;font-size:18px;padding:12px;cursor:pointer}
+.search{position:relative;margin-bottom:10px}
+.search input{width:100%;padding:16px 16px 16px 52px;border-radius:16px;border:2px solid var(--line);font-size:19px;background:#fff;outline:none}
+.search input:focus{border-color:var(--blue)}
+.search span{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:22px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;scrollbar-width:none}
+.chips button{flex:0 0 auto;border:2px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;font-weight:700;font-size:14px;color:var(--ink);cursor:pointer}
+.chips button[aria-pressed=true]{background:var(--blue);border-color:var(--blue);color:#fff}
+.empty{text-align:center;color:var(--mut);padding:30px 10px}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--soft) 70%,rgba(244,246,250,0))}
+.bar button{display:flex;width:100%;max-width:720px;margin:0 auto;align-items:center;justify-content:center;gap:10px;border:0;border-radius:18px;background:var(--ok);color:#fff;font-size:20px;font-weight:800;padding:18px;box-shadow:0 6px 18px rgba(26,156,75,.35);cursor:pointer}
+.bar button .n{background:#fff;color:var(--ok);border-radius:999px;min-width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px}
+.ov{position:fixed;inset:0;z-index:50;background:rgba(10,15,30,.55);display:flex;align-items:flex-end;justify-content:center}
+.ov[hidden]{display:none}
+.sheet{background:#fff;width:100%;max-width:720px;max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+.sheet h2{margin:0 0 4px;font-size:24px}
+.ln{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.ln img{width:56px;height:56px;object-fit:contain;border-radius:10px;border:1px solid var(--line);background:#fff}
+.ln .t{flex:1;min-width:0;font-size:15px;font-weight:700;line-height:1.2}
+.ln .t small{display:block;color:var(--mut);font-weight:500}
+.ln .step button{width:42px;height:40px;font-size:22px}
+.ln .step .q{min-width:30px;font-size:18px}
+.tot{display:flex;justify-content:space-between;font-size:20px;font-weight:800;padding:14px 0 4px}
+.note{font-size:13px;color:var(--mut)}
+textarea{width:100%;min-height:80px;border:2px solid var(--line);border-radius:14px;padding:12px;font-size:17px;margin:10px 0}
+.send{display:flex;width:100%;align-items:center;justify-content:center;gap:10px;border:0;border-radius:18px;background:var(--wa);color:#fff;font-size:21px;font-weight:800;padding:18px;cursor:pointer;margin-top:6px}
+.send svg{width:28px;height:28px}
+.ghost{display:block;width:100%;border:0;background:none;color:var(--mut);font-weight:700;padding:14px;font-size:16px;cursor:pointer}
+.zv{position:fixed;inset:0;z-index:60;background:#fff;display:flex;flex-direction:column}
+.zv[hidden]{display:none}
+.zv img{flex:1;min-height:0;width:100%;object-fit:contain;padding:12px}
+.zv .zt{padding:12px 16px;font-weight:800;font-size:18px;text-align:center}
+.zv button{margin:0 16px calc(16px + env(safe-area-inset-bottom));border:0;border-radius:16px;background:var(--ink);color:#fff;font-size:20px;font-weight:800;padding:16px}
+.done{text-align:center;padding:10px 0 4px}
+.done .big{font-size:56px}
+.err{max-width:480px;margin:60px auto;background:#fff;border-radius:20px;padding:28px 20px;text-align:center}
+.err h2{margin:.2em 0}
+.load{text-align:center;padding:60px 0;color:var(--mut)}
+.spin{width:44px;height:44px;border:5px solid var(--line);border-top-color:var(--red);border-radius:50%;margin:0 auto 14px;animation:s 1s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+mark{background:#fff1a8;color:inherit;border-radius:3px}
+</style>
+</head>
+<body>
+<header class="top" id="top">
+  <div class="row"><img src="../catalogo/penalva_blanco.png" alt="Penalva Alimentación"><img class="nw" src="../catalogo/nordwik_blanco.png" alt="Helados Nordwik"></div>
+  <div class="hola" id="hola">Tu pedido</div>
+  <div class="sub" id="sub">Cargando…</div>
+  <div class="tabs" role="tablist" id="tabs" hidden>
+    <button class="tab" role="tab" aria-selected="true" data-t="fav">⭐ Lo de siempre</button>
+    <button class="tab" role="tab" aria-selected="false" data-t="bus">🔍 Buscar más</button>
+  </div>
+</header>
+<main id="main"><div class="load"><div class="spin"></div>Preparando tu pedido…</div></main>
+<div class="bar" id="bar" hidden><button type="button" id="barBtn">🛒 Ver mi pedido <span class="n" id="barN">0</span></button></div>
+
+<div class="ov" id="ov" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Tu pedido"></div></div>
+<div class="zv" id="zv" hidden><div class="zt" id="zvT"></div><img id="zvI" alt=""><button type="button" id="zvX">← Volver</button></div>
+
+<script>
+(async function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const TD=new TextDecoder();
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const eur=n=>(Math.round(n*100)/100).toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+const norm=s=>String(s??'').normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase();
+const unb64=s=>{s=String(s).replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';const b=atob(s),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u};
+const get=k=>{try{return localStorage.getItem(k)}catch(e){return null}},put=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+async function dec(raw,u){const k=await crypto.subtle.importKey('raw',raw,'AES-GCM',false,['decrypt']);return new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:u.subarray(0,12)},k,u.subarray(12)))}
+const fmtD=iso=>{if(!iso)return'';const[y,m,d]=iso.split('-');return+d+' '+['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'][m-1]};
+const fail=(t,s)=>{$('top').querySelector('.sub').textContent='';$('main').innerHTML=`<div class="err"><div style="font-size:54px">😕</div><h2>${esc(t)}</h2><p>${esc(s)}</p></div>`};
+
+// ---- enlace del cliente ----
+let id=new URLSearchParams(location.search).get('c'),key=location.hash.replace(/^#/,'');
+if(id&&key)put('pnv_ped',JSON.stringify({id,key}));
+else{try{const s=JSON.parse(get('pnv_ped')||'null');if(s){id=s.id;key=s.key}}catch(e){}}
+if(!id||!key)return fail('Falta tu enlace','Abre el enlace que te ha mandado tu comercial por WhatsApp.');
+let B,CAT;
+try{
+  const sh=await (await fetch('d/'+id[0]+'.json?_='+Date.now(),{cache:'no-store'})).json();
+  if(!sh[id])throw new Error('nf');
+  B=JSON.parse(TD.decode(await dec(unb64(key),unb64(sh[id]))));
+  const cu=new Uint8Array(await (await fetch('catalogo.bin?_='+Date.now(),{cache:'no-store'})).arrayBuffer());
+  CAT=JSON.parse(TD.decode(await dec(unb64(B.ck),unb64(TD.decode(cu).trim()))));
+}catch(e){console.error(e);return fail('Este enlace no funciona','Pide a tu comercial que te lo vuelva a mandar.')}
+
+// ---- datos ----
+const UW={CJ:['caja','cajas'],UN:['unidad','unidades'],KG:['kilo','kilos'],TIR:['tira','tiras'],BOL:['bolsa','bolsas'],LT:['litro','litros'],BT:['bote','botes']};
+const uw=(u,n)=>{const w=UW[u]||(/^C\d+/.test(u)?['caja','cajas']:['ud.','uds.']);return n===1?w[0]:w[1]};
+const A=new Map(CAT.rows.map(r=>({c:r[0],d:r[1],f:r[2],p:r[3],u:r[4],q:r[5],s:r[6],k:r[7]})).map(x=>[x.c,Object.assign(x,{n:norm(x.d+' '+x.c),w:norm(x.d).split(/[^A-Z0-9Ñ]+/).filter(Boolean)})]));
+const H=new Map(B.it.map(x=>[x[0],{tot:x[1],ult:x[2],d:x[3]}]));
+const FAV=B.it.map(x=>x[0]).filter(c=>A.has(c));
+const CK='pnv_cart_'+B.c;
+let cart={};try{cart=JSON.parse(get(CK)||'{}')||{}}catch(e){}
+for(const c of Object.keys(cart))if(!A.has(c)||!(cart[c]>0))delete cart[c];
+const saveCart=()=>put(CK,JSON.stringify(cart));
+let TAB='fav',Q='',SUB=-1;
+
+const NOMBRE=B.n.replace(/[*]+/g,'').replace(/\s+/g,' ').trim();$('hola').textContent='Hola, '+NOMBRE;
+$('sub').textContent='Toca + en lo que quieras y luego «Ver mi pedido».';
+$('tabs').hidden=false;
+document.title='Pedido · '+B.n;
+
+const foto=c=>'../fotos/'+encodeURIComponent(c)+'.jpg';
+function priceLine(a){
+  let s=`${eur(a.p)} <small>${a.f==='KG'?'el kilo':'la '+uw(a.f,1)}</small>`;
+  if(a.k&&a.f!=='UN'&&a.f!=='KG')s+=` <small>· ${a.k} uds</small>`;
+  return s;
+}
+function hl(t,q){if(!q)return esc(t);const ws=norm(q).split(/\s+/).filter(w=>w.length>1);let o=esc(t);const nt=norm(t);const marks=[];for(const w of ws){let i=nt.indexOf(w);if(i>=0)marks.push([i,i+w.length])}if(!marks.length)return o;marks.sort((a,b)=>a[0]-b[0]);let r='',p=0;for(const[s,e]of marks){if(s<p)continue;r+=esc(t.slice(p,s))+'<mark>'+esc(t.slice(s,e))+'</mark>';p=e}return r+esc(t.slice(p))}
+function card(a){
+  const q=cart[a.c]||0,h=H.get(a.c);
+  const hist=h?`<div class="hist">Desde el ${fmtD(B.desde)}: <b>${eur(h.tot)}</b>${h.ult>0?' <span class="badge">pedido esta semana</span>':''}</div>`:'';
+  return `<div class="card${q?' on':''}" data-c="${esc(a.c)}">
+    <div class="ph" data-z="${esc(a.c)}" style="background-image:url('${foto(a.c)}')"><span class="zoom">🔍</span></div>
+    <div class="inf"><div class="nm">${hl(a.d,TAB==='bus'?Q:'')}</div><div class="cd">Ref. ${esc(a.c)}</div><div class="pr">${priceLine(a)}</div>${hist}
+    ${q?`<div class="step"><button class="mi" data-m="${esc(a.c)}" aria-label="Quitar uno">−</button><span class="q">${q}</span><span class="u">${uw(a.f,q)}</span><button class="pl" data-p="${esc(a.c)}" aria-label="Añadir uno">+</button></div>`:`<button class="add" data-p="${esc(a.c)}">+ Añadir</button>`}</div></div>`;
+}
+// buscador tolerante (plurales, faltas, sin tildes)
+function lev(a,b,mx){if(Math.abs(a.length-b.length)>mx)return mx+1;let p=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){const c=[i];let m=i;for(let j=1;j<=b.length;j++){c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));m=Math.min(m,c[j])}if(m>mx)return mx+1;p=c}return p[b.length]}
+function wm(q,ws){let best=0;for(const w of ws){if(w.startsWith(q))return 3;if(q.length>=4){const s=q.replace(/(ES|S)$/,'');if(s.length>=3&&w.startsWith(s))best=Math.max(best,2);else if(lev(q,w.slice(0,Math.max(q.length,w.length)),q.length>=7?2:1)<=(q.length>=7?2:1))best=Math.max(best,1)}}return best}
+function buscar(){
+  const ws=norm(Q).split(/[^A-Z0-9Ñ]+/).filter(Boolean);
+  let L=[...A.values()];
+  if(SUB>=0)L=L.filter(a=>a.s===SUB);
+  if(ws.length){L=L.map(a=>{let sc=0;for(const w of ws){if(a.c===w){sc+=10;continue}const m=a.n.includes(w)?3:wm(w,a.w);if(!m)return null;sc+=m}if(H.has(a.c))sc+=1;return[sc,a]}).filter(Boolean).sort((x,y)=>y[0]-x[0]).map(x=>x[1])}
+  else if(SUB<0)L=[];
+  return L;
+}
+function render(keep){
+  const M=$('main');
+  if(TAB==='fav'){
+    const L=FAV.map(c=>A.get(c));
+    M.innerHTML=(L.length?`<div class="hint">⭐ Esto es <b>lo que sueles comprar</b>. Toca <b>+ Añadir</b> en lo que necesites.</div>`+L.map(card).join(''):`<div class="hint">Todavía no tenemos tus compras. Toca <b>🔍 Buscar más</b> para elegir.</div>`);
+  }else{
+    const subs=[...new Set([...A.values()].map(a=>a.s))].filter(s=>CAT.subs[s]).sort((a,b)=>CAT.subs[a].localeCompare(CAT.subs[b],'es'));
+    if(!keep){
+      M.innerHTML=`<div class="search"><span>🔍</span><input id="q" type="search" placeholder="Escribe: croquetas, mahonesa…" autocomplete="off" enterkeyhint="search" value="${esc(Q)}"></div>
+      <div class="chips" id="chips"><button data-s="-1" aria-pressed="${SUB<0}">Todo</button>${subs.map(s=>`<button data-s="${s}" aria-pressed="${SUB===s}">${esc(CAT.subs[s].replace(/^[A-Z0-9]+\s*-\s*/,'').toLowerCase().replace(/^./,x=>x.toUpperCase()))}</button>`).join('')}</div><div id="res"></div>`;
+      $('q').addEventListener('input',e=>{Q=e.target.value;render(true)});
+    }
+    const L=buscar(),R=$('res');
+    R.innerHTML=!Q&&SUB<0?`<div class="empty">Escribe arriba lo que buscas<br>o toca una familia.</div>`:L.length?L.slice(0,60).map(card).join('')+(L.length>60?`<div class="empty">Hay ${L.length} productos. Escribe algo más para afinar.</div>`:''):`<div class="empty">No encuentro «${esc(Q)}».<br>Prueba con otra palabra.</div>`;
+  }
+  bar();
+}
+function bar(){const n=Object.keys(cart).length;$('bar').hidden=!n;$('barN').textContent=n}
+function setQ(c,d){const a=A.get(c);if(!a)return;const step=1;cart[c]=Math.max(0,Math.round(((cart[c]||0)+d*step)*100)/100);if(!cart[c])delete cart[c];saveCart();
+  document.querySelectorAll('.card[data-c="'+CSS.escape(c)+'"]').forEach(el=>{el.outerHTML=card(a)});bar();if(!$('ov').hidden)sheet()}
+document.addEventListener('click',e=>{
+  const p=e.target.closest('[data-p]'),m=e.target.closest('[data-m]'),z=e.target.closest('[data-z]'),t=e.target.closest('.tab'),s=e.target.closest('[data-s]');
+  if(p){setQ(p.dataset.p,1);return}
+  if(m){setQ(m.dataset.m,-1);return}
+  if(z){const a=A.get(z.dataset.z);$('zvI').src=foto(a.c);$('zvT').textContent=a.d;$('zv').hidden=false;return}
+  if(t){TAB=t.dataset.t;document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===t));render();window.scrollTo(0,0);return}
+  if(s){SUB=+s.dataset.s;document.querySelectorAll('#chips button').forEach(x=>x.setAttribute('aria-pressed',x===s));render(true)}
+});
+$('zvX').onclick=()=>{$('zv').hidden=true};
+// fotos que no existen → iniciales
+new MutationObserver(()=>{document.querySelectorAll('.ph:not([data-ok])').forEach(el=>{el.dataset.ok=1;const c=el.dataset.z;const im=new Image();im.onerror=()=>{el.classList.add('no');el.style.backgroundImage='';el.removeAttribute('data-z');el.innerHTML=esc((A.get(c)||{d:'?'}).d.trim()[0]||'?')};im.src=foto(c)})}).observe($('main'),{childList:true,subtree:true});
+
+// ---- hoja del pedido ----
+function lines(){return Object.entries(cart).map(([c,q])=>[A.get(c),q]).filter(x=>x[0])}
+function sheet(){
+  const L=lines();
+  if(!L.length){$('ov').hidden=true;return}
+  const tot=L.reduce((s,[a,q])=>s+a.p*q,0);
+  $('sheet').innerHTML=`<h2>🛒 Tu pedido</h2><div class="note">Revisa las cantidades. Puedes cambiarlas aquí.</div>
+  ${L.map(([a,q])=>`<div class="ln"><img src="${foto(a.c)}" alt="" onerror="this.style.visibility='hidden'"><div class="t">${esc(a.d)}<small>${eur(a.p)} ${a.f==='KG'?'el kilo':'la '+uw(a.f,1)}</small></div>
+  <div class="step"><button class="mi" data-m="${esc(a.c)}" aria-label="Quitar uno">−</button><span class="q">${q}</span><button class="pl" data-p="${esc(a.c)}" aria-label="Añadir uno">+</button></div></div>`).join('')}
+  <div class="tot"><span>Total aproximado</span><span>${eur(tot)}</span></div>
+  <div class="note">Precio de tarifa. Tu comercial te confirma el precio final.</div>
+  <textarea id="nota" placeholder="¿Algo más? Escríbelo aquí (opcional)">${esc(get(CK+'_nota')||'')}</textarea>
+  <button class="send" id="send"><svg viewBox="0 0 32 32" fill="#fff" aria-hidden="true"><path d="M16 3C8.8 3 3 8.7 3 15.8c0 2.5.7 4.9 2 7L3 29l6.4-2c2 1.1 4.3 1.7 6.6 1.7 7.2 0 13-5.7 13-12.8S23.2 3 16 3zm0 23.4c-2.1 0-4.1-.6-5.9-1.7l-.4-.3-3.8 1.2 1.2-3.7-.3-.4c-1.2-1.8-1.9-3.9-1.9-6C4.9 9.8 9.9 5 16 5s11.1 4.8 11.1 10.8S22.1 26.4 16 26.4zm6.1-8c-.3-.2-2-1-2.3-1.1-.3-.1-.5-.2-.8.2-.2.3-.9 1.1-1.1 1.3-.2.2-.4.3-.7.1-.3-.2-1.4-.5-2.7-1.7-1-.9-1.7-2-1.9-2.3-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.4.3-.6.1-.2 0-.5 0-.6l-1-2.5c-.3-.7-.6-.6-.8-.6h-.7c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9s1.2 3.4 1.4 3.6c.2.2 2.4 3.7 5.9 5.1 2.9 1.1 3.5.9 4.1.9.6-.1 2-.8 2.3-1.6.3-.8.3-1.5.2-1.6-.1-.2-.3-.3-.6-.4z"/></svg>Enviar pedido por WhatsApp</button>
+  <button class="ghost" id="seguir">← Seguir eligiendo</button>`;
+  $('nota').addEventListener('input',e=>put(CK+'_nota',e.target.value));
+  $('seguir').onclick=()=>{$('ov').hidden=true};
+  $('send').onclick=enviar;
+}
+function enviar(){
+  const L=lines();const nota=($('nota').value||'').trim();
+  const tot=L.reduce((s,[a,q])=>s+a.p*q,0);
+  const txt=`🛒 *PEDIDO*\n*${B.n}* (cliente ${B.c})\n\n`+L.map(([a,q])=>`• *${q} ${uw(a.f,q)}* · ${a.d} (${a.c})`).join('\n')+`\n\nTotal aprox.: ${eur(tot)}`+(nota?`\n\n📝 ${nota}`:'')+`\n\nEnviado desde mi enlace de pedidos Penalva`;
+  const tel=String(B.wa||'615849304').replace(/\D/g,'');
+  window.open('https://wa.me/34'+tel+'?text='+encodeURIComponent(txt),'_blank');
+  // queda guardado por si no se llegó a enviar; se ofrece vaciar
+  $('sheet').innerHTML=`<div class="done"><div class="big">✅</div><h2>¡Casi está!</h2><p>Se ha abierto WhatsApp con tu pedido escrito.<br><b>Dale a la flechita ➤ para enviarlo.</b></p>
+  <button class="send" id="vaciar" style="background:var(--blue)">Ya lo he enviado · Empezar otro</button><button class="ghost" id="volver">← Volver a mi pedido</button></div>`;
+  $('vaciar').onclick=()=>{cart={};saveCart();put(CK+'_nota','');$('ov').hidden=true;render()};
+  $('volver').onclick=sheet;
+}
+$('barBtn').onclick=()=>{sheet();$('ov').hidden=false};
+$('ov').addEventListener('click',e=>{if(e.target===$('ov'))$('ov').hidden=true});
+render();
+})();
+</script>
+</body>
+</html>

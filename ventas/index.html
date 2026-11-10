@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cuadro de ventas · Penalva</title>
+<meta name="theme-color" content="#0067B1">
+<meta name="robots" content="noindex">
+<link rel="icon" href="../cotizador/img/icon-192.png">
+<style>
+:root{--red:#D2000F;--blue:#0067B1;--blue2:#00518c;--ink:#14213d;--mut:#5b6474;--line:#e3e7ee;--soft:#f4f6fa;--ok:#1a9c4b;--okbg:#e7f6ec;--ko:#c2410c;--kobg:#fff1e8;--wa:#25D366}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--soft);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+button,input,select,textarea{font:inherit}
+[hidden]{display:none!important}
+header{background:var(--blue);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 0;position:sticky;top:0;z-index:20}
+.hrow{display:flex;align-items:center;gap:12px;max-width:1100px;margin:0 auto}
+.hrow img{height:28px}
+.hrow .nw{height:22px}
+.hrow h1{font-size:18px;margin:0 0 0 auto;font-weight:800;text-align:right}
+.hrow h1 small{display:block;font-weight:500;font-size:12px;opacity:.85}
+nav{display:flex;gap:6px;max-width:1100px;margin:10px auto 0;overflow-x:auto;scrollbar-width:none}
+nav button{flex:0 0 auto;border:0;border-radius:12px 12px 0 0;padding:11px 16px;font-weight:800;background:rgba(255,255,255,.16);color:#fff;cursor:pointer}
+nav button[aria-selected=true]{background:var(--soft);color:var(--blue)}
+main{max-width:1100px;margin:0 auto;padding:16px 12px 60px}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.filters label{font-weight:700;font-size:14px;color:var(--mut)}
+select,input[type=text],input[type=search],input[type=date],input[type=password],input[type=tel]{border:2px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff;font-size:16px;color:var(--ink);min-width:0}
+.seg{display:inline-flex;background:#fff;border:2px solid var(--line);border-radius:12px;overflow:hidden}
+.seg button{border:0;background:none;padding:9px 14px;font-weight:700;cursor:pointer;color:var(--mut)}
+.seg button[aria-pressed=true]{background:var(--blue);color:#fff}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.kpi{background:#fff;border-radius:16px;padding:14px 16px;box-shadow:0 1px 3px rgba(20,33,61,.07)}
+.kpi .l{font-size:13px;font-weight:700;color:var(--mut)}
+.kpi .v{font-size:28px;font-weight:800;line-height:1.15;margin-top:4px}
+.kpi .s{font-size:13px;color:var(--mut)}
+.kpi.ok .v{color:var(--ok)}.kpi.ko .v{color:var(--ko)}
+.up{color:var(--ok);font-weight:800}.down{color:var(--ko);font-weight:800}
+.card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 1px 3px rgba(20,33,61,.07);margin-bottom:16px}
+.card h2{margin:0 0 4px;font-size:19px}
+.card .help{color:var(--mut);font-size:14px;margin:0 0 12px}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:var(--mut);padding:8px;border-bottom:2px solid var(--line);white-space:nowrap}
+td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+td.n,th.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+tr.click{cursor:pointer}tr.click:hover{background:#f7f9fc}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:800;white-space:nowrap}
+.pill.ok{background:var(--okbg);color:var(--ok)}.pill.ko{background:var(--kobg);color:var(--ko)}.pill.nu{background:#eef1f6;color:var(--mut)}
+.bar{height:10px;background:#eef1f6;border-radius:6px;overflow:hidden;min-width:80px}
+.bar i{display:block;height:100%;background:var(--ok)}
+.sub{color:var(--mut);font-size:13px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:2px solid var(--line);background:#fff;color:var(--ink);border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer;text-decoration:none}
+.btn.pri{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.red{background:var(--red);border-color:var(--red);color:#fff}
+.btn.wa{background:var(--wa);border-color:var(--wa);color:#fff}
+.btn.big{padding:14px 18px;font-size:17px}
+.btn:disabled{opacity:.5;cursor:default}
+.btn.sm{padding:6px 10px;font-size:14px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.step{display:flex;gap:14px;align-items:flex-start;border-top:1px solid var(--line);padding:16px 0}
+.step:first-of-type{border-top:0}
+.num{flex:0 0 36px;height:36px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+.step .body{flex:1;min-width:0}
+.step h3{margin:4px 0 6px;font-size:17px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.drop{display:block;border:3px dashed var(--line);border-radius:16px;padding:18px;text-align:center;background:var(--soft);cursor:pointer;font-weight:700;color:var(--mut)}
+.drop:hover{border-color:var(--blue);color:var(--blue)}
+.drop input{display:none}
+.msg{margin-top:10px;padding:12px 14px;border-radius:12px;font-size:15px}
+.msg.ok{background:var(--okbg);color:#0f5c2c}.msg.ko{background:var(--kobg);color:#7c2d12}.msg.in{background:#e9f4ff;color:var(--blue2)}
+.radio{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+.radio label{display:flex;gap:10px;align-items:flex-start;background:var(--soft);border-radius:12px;padding:10px 12px;cursor:pointer}
+.radio input{margin-top:4px;width:18px;height:18px}
+.modal{position:fixed;inset:0;background:rgba(10,15,30,.55);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.modal .box{background:#fff;width:100%;max-width:760px;max-height:92vh;overflow:auto;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+@media(min-width:760px){.modal{align-items:center}.modal .box{border-radius:20px}}
+.box h2{margin:0 0 2px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.lock{position:fixed;inset:0;background:var(--blue);z-index:90;display:flex;align-items:center;justify-content:center;padding:16px}
+.lock form{background:#fff;border-radius:20px;padding:24px;max-width:400px;width:100%}
+.lock h2{margin:.2em 0}
+.lock input{width:100%;margin:10px 0;font-size:20px;letter-spacing:.06em;text-transform:uppercase}
+.empty{text-align:center;color:var(--mut);padding:24px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;z-index:99;font-weight:700}
+.busy{position:fixed;inset:0;background:rgba(255,255,255,.85);z-index:95;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-weight:800;font-size:18px;text-align:center;padding:20px}
+.spin{width:46px;height:46px;border:5px solid var(--line);border-top-color:var(--blue);border-radius:50%;animation:s 1s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+.link{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--mut);word-break:break-all}
+ol.howto{padding-left:20px;margin:6px 0}ol.howto li{margin:4px 0}
+@media(max-width:760px){.kpis{grid-template-columns:1fr 1fr}.kpi .v{font-size:23px}.hm{display:none}.grid2{grid-template-columns:1fr}.hrow h1{font-size:15px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="hrow"><img src="../catalogo/penalva_blanco.png" alt="Penalva"><img class="nw" src="../catalogo/nordwik_blanco.png" alt="Nordwik"><h1 id="hTitle">Cuadro de ventas<small id="hSub"></small></h1></div>
+  <nav id="nav" role="tablist">
+    <button data-v="res" aria-selected="true">📊 Resumen</button>
+    <button data-v="cli" aria-selected="false">👥 Clientes</button>
+    <button data-v="car" aria-selected="false" data-admin hidden>⬆️ Cargar datos</button>
+    <button data-v="enl" aria-selected="false" data-admin hidden>🔗 Enlaces</button>
+  </nav>
+</header>
+<main>
+  <div class="filters" id="filters">
+    <label for="fRep">Comercial</label><select id="fRep"></select>
+    <div class="seg" id="fPer"><button data-p="ult" aria-pressed="true">Última semana</button><button data-p="tot" aria-pressed="false">Desde 1 ago</button></div>
+  </div>
+  <section id="v-res"></section>
+  <section id="v-cli" hidden></section>
+  <section id="v-car" hidden></section>
+  <section id="v-enl" hidden></section>
+</main>
+<div class="modal" id="modal" hidden><div class="box" id="mbox"></div></div>
+<div class="lock" id="lock" hidden><form id="lockF">
+  <h2>Cuadro de ventas</h2>
+  <p class="sub">Escribe la <b>clave de carga</b>. Solo te la pide la primera vez en este aparato.</p>
+  <input type="text" id="lockK" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="PNV-XXXX-XXXX-XXXX" required>
+  <div class="msg ko" id="lockM" hidden></div>
+  <button class="btn pri big" style="width:100%" id="lockB">Entrar</button>
+  <p class="sub" style="margin-bottom:0">¿Eres comercial? Entra con el enlace que te ha mandado David.</p>
+</form></div>
+<div class="busy" id="busy" hidden><div class="spin"></div><div id="busyT">Cargando…</div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="xlsx.full.min.js"></script>
+<script src="nucleo.js"></script>
+<script>
+(async function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const eur=(n,d)=>(Math.round(n*(d?100:1))/(d?100:1)).toLocaleString('es-ES',{minimumFractionDigits:d?2:0,maximumFractionDigits:d?2:0})+' €';
+const pct=(a,b)=>b>0?Math.round((a-b)/b*100):null;
+const pctH=p=>p==null?'<span class="sub">—</span>':`<span class="${p>=0?'up':'down'}">${p>=0?'▲':'▼'} ${Math.abs(p)} %</span>`;
+const get=k=>{try{return localStorage.getItem(k)}catch(e){return null}},put=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+const toast=t=>{const e=$('toast');e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>e.hidden=true,2600)};
+const busy=t=>{$('busy').hidden=!t;if(t)$('busyT').textContent=t};
+const NOREP='(sin comercial asignado)';
+
+let ST=null,K=null,DASH=null,ADMIN=false,VIEW='res',PER='ult',REP='',CF='todos',CQ='';
+const params=new URLSearchParams(location.search);
+// ---- acceso ----
+async function entrarClave(clave){
+  K=await NV.claves(clave);DASH=K.dash;ADMIN=true;
+  const st=await NV.abrirDatos(DASH);
+  put('pnv_vclave',clave.trim().toUpperCase());
+  return st;
+}
+async function arrancar(){
+  const hv=(location.hash.match(/v=([^&]+)/)||[])[1];
+  try{
+    if(hv){DASH=NV.unb64(decodeURIComponent(hv));busy('Cargando ventas…');ST=await NV.abrirDatos(DASH);put('pnv_vdash',hv);}
+    else if(get('pnv_vclave')){busy('Cargando ventas…');ST=await entrarClave(get('pnv_vclave'))}
+    else if(get('pnv_vdash')){DASH=NV.unb64(get('pnv_vdash'));busy('Cargando ventas…');ST=await NV.abrirDatos(DASH)}
+    else{busy(false);$('lock').hidden=false;return}
+  }catch(e){console.error(e);busy(false);put('pnv_vdash',null);$('lock').hidden=false;$('lockM').hidden=false;$('lockM').textContent='No se han podido abrir los datos. Escribe la clave o pide el enlace de nuevo.';return}
+  busy(false);iniciar();
+}
+$('lockF').addEventListener('submit',async e=>{e.preventDefault();$('lockB').disabled=true;$('lockM').hidden=true;busy('Comprobando la clave…');
+  try{ST=await entrarClave($('lockK').value);$('lock').hidden=true;busy(false);iniciar()}
+  catch(err){console.error(err);busy(false);put('pnv_vclave',null);ADMIN=false;$('lockM').hidden=false;$('lockM').textContent='Clave incorrecta.'}finally{$('lockB').disabled=false}});
+
+// ---- cálculos ----
+let AG=null;
+function calcular(){
+  const P=ST?ST.periodos:[];const last=P[P.length-1];
+  const n=ST?ST.cli.length:0;
+  const tot=new Float64Array(n),totp=new Float64Array(n),ult=new Float64Array(n),ultp=new Float64Array(n),antes=new Float64Array(n);
+  P.forEach((p,pi)=>{const r=p.rows,isL=pi===P.length-1;for(let i=0;i<r.length;i+=4){const c=r[i];tot[c]+=r[i+2];totp[c]+=r[i+3];if(isL){ult[c]+=r[i+2];ultp[c]+=r[i+3]}else antes[c]+=r[i+2]}});
+  AG={last,tot,totp,ult,ultp,antes,nper:P.length};
+}
+const repOf=c=>c.com||NOREP;
+function visibles(){if(!ST)return[];return ST.cli.map((c,i)=>i).filter(i=>(AG.tot[i]>0.005||AG.ult[i]>0.005||AG.antes[i]>0.005)&&(!REP||repOf(ST.cli[i])===REP))}
+const pidio=i=>AG.ult[i]>0.005;
+const habitual=i=>AG.nper>1?AG.antes[i]>0.005:AG.tot[i]>0.005;
+
+// ---- vistas ----
+function iniciar(){
+  document.querySelectorAll('[data-admin]').forEach(b=>b.hidden=!ADMIN);
+  if(!ST){$('hSub').textContent='Todavía no hay datos cargados';VIEW=ADMIN?'car':'res'}
+  else{calcular();$('hSub').textContent=`Ventas del ${NV.fmtD(ST.inicio)} al ${NV.fmtD(AG.last.hasta)}`}
+  // comercial: por enlace ?c=slug
+  const reps=ST?[...new Set(ST.cli.map(repOf))].sort((a,b)=>a===NOREP?1:b===NOREP?-1:a.localeCompare(b,'es')):[];
+  const want=params.get('c');
+  if(want){const r=reps.find(x=>NV.slug(x)===want)||reps.find(x=>NV.slug(x).includes(want));if(r)REP=r}
+  $('fRep').innerHTML=`<option value="">Todos los comerciales</option>`+reps.map(r=>`<option${r===REP?' selected':''}>${esc(r)}</option>`).join('');
+  pintar();
+}
+$('fRep').onchange=e=>{REP=e.target.value;pintar()};
+$('fPer').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;PER=b.dataset.p;$('fPer').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));pintar()});
+$('nav').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;VIEW=b.dataset.v;pintar()});
+function pintar(){
+  $('nav').querySelectorAll('button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===VIEW));
+  ['res','cli','car','enl'].forEach(v=>$('v-'+v).hidden=v!==VIEW);
+  $('filters').hidden=!ST||VIEW==='car'||VIEW==='enl';$('fPer').hidden=!ST||AG.nper<2;if(ST&&AG.nper<2)PER='tot';
+  if(ST){const l=AG.last;$('fPer').querySelector('[data-p=ult]').textContent=AG.nper>1?`Última carga (${NV.fmtD(l.desde).slice(0,5)}–${NV.fmtD(l.hasta).slice(0,5)})`:'Última carga'}
+  if(VIEW==='res')resumen();else if(VIEW==='cli')clientes();else if(VIEW==='car')carga();else enlaces();
+}
+function resumen(){
+  const V=$('v-res');
+  if(!ST){V.innerHTML=`<div class="card empty">Todavía no hay ventas cargadas.</div>`;return}
+  const ids=visibles(),U=PER==='ult';
+  const sum=(a)=>ids.reduce((s,i)=>s+a[i],0);
+  const venta=sum(U?AG.ult:AG.tot),prev=sum(U?AG.ultp:AG.totp);
+  const hab=ids.filter(habitual),con=ids.filter(pidio),sin=hab.filter(i=>!pidio(i));
+  const first=AG.nper===1;
+  V.innerHTML=`
+  ${first?`<div class="msg in" style="margin:0 0 14px">📌 Este es el <b>punto de partida</b> (del ${NV.fmtD(ST.inicio)} al ${NV.fmtD(AG.last.hasta)}). A partir de la próxima carga verás aquí quién ha pedido y quién no cada semana.</div>`:''}
+  <div class="kpis">
+    <div class="kpi"><div class="l">Venta ${U&&!first?'de la última carga':'desde el 1 ago'}</div><div class="v">${eur(venta)}</div><div class="s">${pctH(pct(venta,prev))} vs mismo periodo año anterior</div></div>
+    <div class="kpi ok"><div class="l">Clientes que han pedido</div><div class="v">${con.length}</div><div class="s">${U&&!first?'en la última carga':'desde el 1 ago'}</div></div>
+    <div class="kpi ko"><div class="l">Clientes sin pedido</div><div class="v">${first?'—':sin.length}</div><div class="s">${first?'se verá en la próxima carga':'de '+hab.length+' que compraban'}</div></div>
+    <div class="kpi"><div class="l">Pedido medio</div><div class="v">${con.length?eur(sum(U?AG.ult:AG.tot)/con.length):'—'}</div><div class="s">por cliente con compra</div></div>
+  </div>
+  <div class="card"><h2>Por comercial</h2><p class="help">Toca un comercial para ver sus clientes.</p><div class="tw"><table>
+    <thead><tr><th>Comercial</th><th class="n">Clientes</th><th class="n">Han pedido</th><th class="n">Sin pedido</th><th class="hm">Cobertura</th><th class="n">Venta</th><th class="n hm">vs año ant.</th></tr></thead><tbody id="tRep"></tbody></table></div></div>
+  ${!first&&sin.length?`<div class="card"><h2>⚠️ Clientes habituales sin pedido en la última carga</h2><p class="help">Los que más compran, primero. Toca para ver su ficha y mandarle su enlace.</p><div class="tw"><table><tbody>${sin.sort((a,b)=>AG.antes[b]-AG.antes[a]).slice(0,25).map(i=>filaCli(i)).join('')}</tbody></table></div>${sin.length>25?`<div class="acts"><button class="btn" id="verSin">Ver los ${sin.length}</button></div>`:''}</div>`:''}`;
+  // tabla por comercial
+  const by={};
+  for(const i of ids){const r=repOf(ST.cli[i]);const o=by[r]=by[r]||{r,n:0,con:0,sin:0,v:0,p:0,hab:0};o.n++;if(pidio(i))o.con++;if(habitual(i)){o.hab++;if(!pidio(i))o.sin++}o.v+=U?AG.ult[i]:AG.tot[i];o.p+=U?AG.ultp[i]:AG.totp[i]}
+  const rows=Object.values(by).sort((a,b)=>b.v-a.v);
+  $('tRep').innerHTML=rows.map(o=>{const cov=o.hab?Math.round(o.con/o.hab*100):0;return`<tr class="click" data-rep="${esc(o.r)}"><td><b>${esc(o.r)}</b></td><td class="n">${o.n}</td><td class="n"><span class="pill ok">${o.con}</span></td><td class="n">${first?'—':`<span class="pill ko">${o.sin}</span>`}</td><td class="hm"><div class="bar" title="${cov} %"><i style="width:${first?100:cov}%"></i></div></td><td class="n"><b>${eur(o.v)}</b></td><td class="n hm">${pctH(pct(o.v,o.p))}</td></tr>`}).join('')||`<tr><td colspan="7" class="empty">Sin datos</td></tr>`;
+  if($('verSin'))$('verSin').onclick=()=>{CF='sin';VIEW='cli';pintar()};
+}
+function filaCli(i){const c=ST.cli[i],U=PER==='ult';const v=U?AG.ult[i]:AG.tot[i];
+  const st=AG.nper===1?'':pidio(i)?'<span class="pill ok">Ha pedido</span>':habitual(i)?'<span class="pill ko">Sin pedido</span>':'<span class="pill nu">Sin compras</span>';
+  return`<tr class="click" data-ci="${i}"><td><b>${esc(c.n)}</b><div class="sub">${esc(c.c)}${c.pob?' · '+esc(c.pob):''}${!REP?' · '+esc(repOf(c)):''}</div></td><td>${st}</td><td class="n"><b>${eur(v)}</b><div class="sub">desde 1 ago: ${eur(AG.tot[i])}</div></td></tr>`}
+function clientes(){
+  const V=$('v-cli');
+  if(!ST){V.innerHTML=`<div class="card empty">Todavía no hay ventas cargadas.</div>`;return}
+  const first=AG.nper===1;
+  V.innerHTML=`<div class="card"><div class="filters" style="margin:0 0 10px"><input type="search" id="cq" placeholder="Buscar cliente por nombre, código o pueblo…" style="flex:1;min-width:220px" value="${esc(CQ)}">
+  ${first?'':`<div class="seg" id="cf"><button data-f="todos">Todos</button><button data-f="con">Han pedido</button><button data-f="sin">Sin pedido</button></div>`}</div><div class="sub" id="cn"></div><div class="tw"><table><tbody id="tCli"></tbody></table></div></div>`;
+  if(!first)$('cf').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.f===CF));
+  $('cq').addEventListener('input',e=>{CQ=e.target.value;lista()});
+  if(!first)$('cf').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;CF=b.dataset.f;$('cf').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));lista()});
+  lista();
+}
+function lista(){
+  const U=PER==='ult',first=AG.nper===1;
+  let ids=visibles();
+  if(!first&&CF==='con')ids=ids.filter(pidio);
+  if(!first&&CF==='sin')ids=ids.filter(i=>habitual(i)&&!pidio(i));
+  const ws=NV.norm(CQ).split(/\s+/).filter(Boolean);
+  if(ws.length)ids=ids.filter(i=>{const c=ST.cli[i];const t=NV.norm(c.n+' '+c.c+' '+c.pob+' '+c.com);return ws.every(w=>t.includes(w))});
+  ids.sort((a,b)=>CF==='sin'?AG.antes[b]-AG.antes[a]:(U?AG.ult[b]-AG.ult[a]:0)||AG.tot[b]-AG.tot[a]);
+  $('cn').textContent=ids.length+' clientes'+(ids.length>200?' · se muestran los 200 primeros, usa el buscador':'');
+  $('tCli').innerHTML=ids.slice(0,200).map(filaCli).join('')||`<tr><td class="empty">No hay clientes con ese filtro.</td></tr>`;
+}
+document.addEventListener('click',e=>{
+  const r=e.target.closest('[data-rep]');if(r){REP=r.dataset.rep;$('fRep').value=REP;VIEW='cli';CF='todos';pintar();window.scrollTo(0,0);return}
+  const c=e.target.closest('[data-ci]');if(c){ficha(+c.dataset.ci);return}
+  const cp=e.target.closest('[data-copy]');if(cp){copiar(cp.dataset.copy);return}
+  if(e.target.id==='mclose'||e.target===$('modal'))$('modal').hidden=true;
+});
+async function copiar(t){try{await navigator.clipboard.writeText(t);toast('Copiado ✔')}catch(e){prompt('Copia este texto:',t)}}
+function msgCliente(c){return`Hola 👋, te mando tu enlace de pedidos de *Penalva Alimentación*.\n\nAhí tienes lo que sueles comprar, con fotos y precios. Toca lo que quieras y dale a *Enviar*: el pedido me llega por WhatsApp.\n\n👉 ${NV.enlace(c)}\n\nGuárdalo, es siempre el mismo.`}
+function ficha(i){
+  const c=ST.cli[i];const items=new Map();
+  ST.periodos.forEach((p,pi)=>{const r=p.rows,isL=pi===ST.periodos.length-1;for(let j=0;j<r.length;j+=4)if(r[j]===i){const a=r[j+1];const o=items.get(a)||[0,0,0];o[0]+=r[j+2];o[2]+=r[j+3];if(isL)o[1]+=r[j+2];items.set(a,o)}});
+  const L=[...items.entries()].filter(([a,o])=>Math.abs(o[0])>0.005||o[2]>0.005).sort((x,y)=>y[1][0]-x[1][0]);
+  const link=c.id?NV.enlace(c):null;const tel=c.tel;
+  $('mbox').innerHTML=`<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><div><h2>${esc(c.n)}</h2><div class="sub">Cliente ${esc(c.c)}${c.pob?' · '+esc(c.pob):''} · ${esc(repOf(c))}${tel?' · 📱 '+esc(tel):''}</div></div><button class="btn sm" id="mclose">✕</button></div>
+  <div class="kpis" style="grid-template-columns:repeat(3,1fr);margin:12px 0"><div class="kpi"><div class="l">Desde 1 ago</div><div class="v">${eur(AG.tot[i])}</div><div class="s">${pctH(pct(AG.tot[i],AG.totp[i]))} vs año ant.</div></div>${AG.nper>1?`<div class="kpi"><div class="l">Última carga</div><div class="v">${eur(AG.ult[i])}</div><div class="s">${NV.fmtD(AG.last.desde)} – ${NV.fmtD(AG.last.hasta)}</div></div>`:''}<div class="kpi"><div class="l">Artículos</div><div class="v">${L.filter(x=>x[1][0]>0).length}</div><div class="s">distintos</div></div></div>
+  ${link?`<div class="acts">${tel?`<a class="btn wa big" target="_blank" rel="noopener" href="https://wa.me/34${esc(tel)}?text=${encodeURIComponent(msgCliente(c))}">📲 Mandarle su enlace por WhatsApp</a>`:`<a class="btn wa big" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(msgCliente(c))}">📲 Mandar su enlace por WhatsApp</a>`}<button class="btn" data-copy="${esc(link)}">Copiar enlace</button><a class="btn" href="${esc(link)}" target="_blank" rel="noopener">Ver su página</a></div>`:''}
+  <div class="tw"><table><thead><tr><th>Artículo</th><th class="n">Desde 1 ago</th>${AG.nper>1?'<th class="n">Última carga</th>':''}<th class="n hm">Año ant.</th></tr></thead><tbody>${L.map(([a,o])=>{const A=ST.arts[a];return`<tr><td>${esc(A[1])}<div class="sub">${esc(A[0])}</div></td><td class="n"><b>${eur(o[0],1)}</b></td>${AG.nper>1?`<td class="n">${o[1]>0.005?`<span class="pill ok">${eur(o[1],1)}</span>`:'—'}</td>`:''}<td class="n hm sub">${o[2]?eur(o[2],1):'—'}</td></tr>`}).join('')}</tbody></table></div>`;
+  $('modal').hidden=false;
+}
+
+// ---- carga de datos (solo con clave de carga) ----
+let PV=null,PC=null;
+function carga(){
+  const V=$('v-car');
+  const last=ST&&ST.periodos.length?ST.periodos[ST.periodos.length-1]:null;
+  const tok=get('pnv_gh');
+  const hoy=NV.iso(new Date());
+  V.innerHTML=`
+  <div class="card"><h2>Cargar datos</h2><p class="help">${last?`Hay ventas cargadas del <b>${NV.fmtD(ST.inicio)}</b> al <b>${NV.fmtD(last.hasta)}</b> (${ST.periodos.length} carga${ST.periodos.length>1?'s':''}).`:'Todavía no hay nada cargado.'} Cada carga se <b>suma</b> a lo anterior.</p>
+  <div class="step"><div class="num">1</div><div class="body"><h3>Ventas de gsBase</h3>
+    <p class="sub">El listado «clientes y artículos» (Excel). Puede ser <b>desde el 1 de agosto hasta hoy</b> (lo más fácil) o <b>solo los días nuevos</b>.</p>
+    <label class="drop">📂 Toca aquí para elegir el Excel de ventas<input type="file" id="fV" accept=".xlsx,.xls,.csv"></label>
+    <div id="pV"></div></div></div>
+  <div class="step"><div class="num">2</div><div class="body"><h3>Listado de clientes <span class="sub">(cuando haya cambios)</span></h3>
+    <p class="sub">Excel con <b>código de cliente, nombre, comercial y móvil</b> (y población si la tienes). Sirve para repartir los clientes por comercial y para mandarles su enlace.</p>
+    <label class="drop">📂 Toca aquí para elegir el listado de clientes<input type="file" id="fC" accept=".xlsx,.xls,.csv"></label>
+    <div id="pC"></div></div></div>
+  <div class="step"><div class="num">3</div><div class="body"><h3>¿A qué WhatsApp llegan los pedidos?</h3>
+    <div class="radio" id="envio"><label><input type="radio" name="env" value="comercial"><span><b>Al comercial de cada cliente</b><br><span class="sub">Si el cliente no tiene comercial o el comercial no tiene móvil, llega al número central.</span></span></label>
+    <label><input type="radio" name="env" value="central"><span><b>Todos a un solo número</b></span></label></div>
+    <div class="grid2"><div><label class="sub" for="central"><b>Número central</b></label><br><input type="tel" id="central" value="${esc(ST?ST.central:NV.CENTRAL)}" style="width:100%"></div></div>
+    <details style="margin-top:12px"><summary class="btn sm">📱 Móviles de los comerciales</summary><div class="tw"><table><tbody id="tReps"></tbody></table></div></details></div></div>
+  <div class="step"><div class="num">4</div><div class="body"><h3>Publicar</h3>
+    <p class="sub">Sube todo a la web. En 1–2 minutos lo ven los comerciales y los clientes. Los precios de los enlaces de clientes se cogen de la tarifa del cotizador en este momento.</p>
+    <div class="acts"><button class="btn red big" id="pub">🚀 Publicar</button>${last?`<button class="btn" id="undo">↩️ Deshacer la última carga</button>`:''}</div><div id="pM"></div></div></div>
+  </div>
+  <div class="card"><h2>🔑 Llave de GitHub</h2><p class="help">Hace falta una sola vez en este aparato para poder publicar. ${tok?'<span class="pill ok">Ya está puesta</span>':'<span class="pill ko">Falta</span>'}</p>
+  <details${tok?'':' open'}><summary class="btn sm">Cómo sacarla (2 minutos)</summary><ol class="howto">
+    <li>Entra en <b>github.com</b> con tu usuario (damdiroju-cdb).</li>
+    <li>Ve a <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">esta página</a> (Settings → Developer settings → Fine-grained tokens → Generate new token).</li>
+    <li>Nombre: <b>Penalva ventas</b>. Caducidad: la más larga (o «No expiration»).</li>
+    <li>En <b>Repository access</b> elige «Only select repositories» → <b>Rutas</b>.</li>
+    <li>En <b>Permissions → Repository permissions → Contents</b> pon <b>Read and write</b>.</li>
+    <li>Dale a <b>Generate token</b>, copia el código (empieza por <code>github_pat_</code>) y pégalo aquí abajo.</li></ol></details>
+  <div class="filters" style="margin-top:10px"><input type="password" id="tok" placeholder="github_pat_…" style="flex:1;min-width:220px" value="${esc(tok||'')}"><button class="btn pri" id="tokB">Guardar y probar</button></div><div id="tokM"></div></div>
+  <div class="card"><h2>Salir</h2><p class="help">Olvida la clave de carga y la llave de GitHub en este aparato.</p><button class="btn" id="salir">Cerrar sesión</button></div>`;
+  // envío
+  const env=ST?ST.envio:'comercial';V.querySelector(`input[name=env][value=${env}]`).checked=true;
+  pintaReps();
+  $('fV').onchange=async e=>{const f=e.target.files[0];if(!f)return;busy('Leyendo el Excel…');try{PV=NV.leerVentas(await f.arrayBuffer());PV.file=f.name;previewV()}catch(err){PV=null;$('pV').innerHTML=`<div class="msg ko">${esc(err.message)}</div>`}finally{busy(false);e.target.value=''}};
+  $('fC').onchange=async e=>{const f=e.target.files[0];if(!f)return;busy('Leyendo el listado…');try{PC=NV.leerClientes(await f.arrayBuffer());const n=PC.rows.length,com=PC.rows.filter(r=>r.com).length,tel=PC.rows.filter(r=>r.tel).length;
+    $('pC').innerHTML=`<div class="msg ok">✔ <b>${n}</b> clientes leídos · ${com} con comercial · ${tel} con móvil.<br><span class="sub">Columnas encontradas: ${PC.cols.map(k=>({c:'código',n:'nombre',com:'comercial',tel:'móvil',pob:'población'})[k]).join(', ')}</span></div>`}catch(err){PC=null;$('pC').innerHTML=`<div class="msg ko">${esc(err.message)}</div>`}finally{busy(false);e.target.value=''}};
+  $('pub').onclick=publicar;
+  if($('undo'))$('undo').onclick=async()=>{const l=ST.periodos[ST.periodos.length-1];if(!confirm(`¿Quitar la última carga (${NV.fmtD(l.desde)} – ${NV.fmtD(l.hasta)})? Después tendrás que pulsar Publicar.`))return;NV.quitarUltimo(ST);if(!ST.periodos.length){toast('No se puede dejar sin datos');ST.periodos.push(l);return}calcular();PV=null;carga();$('pM').innerHTML=`<div class="msg in">Última carga quitada. Pulsa <b>Publicar</b> para guardarlo.</div>`};
+  $('tokB').onclick=async()=>{const t=$('tok').value.trim();if(!t)return;busy('Probando la llave…');const ok=await NV.probarToken(t).catch(()=>false);busy(false);if(ok){put('pnv_gh',t);$('tokM').innerHTML='<div class="msg ok">✔ Llave correcta. Ya puedes publicar.</div>'}else $('tokM').innerHTML='<div class="msg ko">Esta llave no sirve o no tiene permiso de escritura en Rutas. Revisa el paso 5.</div>'};
+  $('salir').onclick=()=>{if(!confirm('¿Cerrar sesión en este aparato?'))return;put('pnv_vclave',null);put('pnv_gh',null);put('pnv_vdash',null);location.href=location.pathname};
+}
+function pintaReps(){
+  const reps=ST?ST.reps:Object.assign({},NV.REPS);
+  const usados=ST?new Set(ST.cli.map(c=>c.com).filter(Boolean)):new Set();
+  const names=Object.keys(reps).sort((a,b)=>(usados.has(b)-usados.has(a))||a.localeCompare(b,'es'));
+  $('tReps').innerHTML=names.map(n=>`<tr><td>${esc(n)}${usados.size&&!usados.has(n)?' <span class="sub">(sin clientes)</span>':''}</td><td><input type="tel" data-rp="${esc(n)}" value="${esc(reps[n]||'')}" placeholder="6XXXXXXXX" style="width:140px"></td></tr>`).join('');
+}
+function previewV(){
+  const last=ST&&ST.periodos.length?ST.periodos[ST.periodos.length-1].hasta:null;
+  const hoy=NV.iso(new Date());
+  const tot=PV.rows.reduce((s,r)=>s+r[2],0),cs=new Set(PV.rows.filter(r=>r[2]>0).map(r=>r[0])).size;
+  const sugDesde=last?NV.addDays(last,1):ST?ST.inicio:NV.INICIO;
+  $('pV').innerHTML=`<div class="msg ok">✔ <b>${esc(PV.file)}</b>: ${Object.keys(PV.cli).length} clientes, ${PV.rows.length} líneas, venta ${PV.year}: <b>${eur(tot)}</b> (${cs} clientes con compra).</div>
+  <div class="radio"><label><input type="radio" name="modo" value="acumulado" ${last?'checked':''}><span><b>Es desde el 1 de agosto hasta hoy</b> (acumulado)<br><span class="sub">Calculo yo solo lo nuevo desde la última carga.</span></span></label>
+  <label><input type="radio" name="modo" value="periodo" ${last?'':'checked'}><span><b>Son solo las ventas de unos días</b><br><span class="sub">Se suman tal cual.</span></span></label></div>
+  <div class="grid2"><div><label class="sub" for="d1"><b>Desde</b></label><br><input type="date" id="d1" value="${sugDesde}" style="width:100%"></div><div><label class="sub" for="d2"><b>Hasta</b></label><br><input type="date" id="d2" value="${hoy}" style="width:100%"></div></div>`;
+  const sync=()=>{const m=document.querySelector('input[name=modo]:checked').value;if(m==='acumulado'){$('d1').value=ST?ST.inicio:NV.INICIO;$('d1').disabled=true}else{$('d1').disabled=false;$('d1').value=sugDesde}};
+  document.querySelectorAll('input[name=modo]').forEach(r=>r.onchange=sync);sync();
+}
+async function publicar(){
+  const M=$('pM');M.innerHTML='';
+  const tok=get('pnv_gh');if(!tok){M.innerHTML='<div class="msg ko">Falta la llave de GitHub (más abajo).</div>';return}
+  const st=ST?JSON.parse(JSON.stringify(ST)):NV.nuevoEstado();
+  let res=[];
+  try{
+    if(PV){const modo=document.querySelector('input[name=modo]:checked').value;const r=NV.cargarVentas(st,PV,$('d1').value,$('d2').value,modo);res.push(`Ventas del ${NV.fmtD(r.desde)} al ${NV.fmtD(r.hasta)}: ${eur(r.total)} · ${r.clientes} clientes con compra`)}
+    if(PC){const r=NV.cargarClientes(st,PC);res.push(`Clientes: ${r.clientes} (${r.conComercial} con comercial, ${r.conMovil} con móvil)`)}
+    if(!st.periodos.length)throw new Error('Primero elige el Excel de ventas (paso 1).');
+    st.envio=document.querySelector('input[name=env]:checked').value;
+    st.central=NV.tel($('central').value)||NV.CENTRAL;
+    document.querySelectorAll('[data-rp]').forEach(i=>{st.reps[i.dataset.rp]=NV.tel(i.value)});
+    busy('Preparando la tarifa…');const T=await NV.tarifa();
+    busy('Preparando los enlaces de '+st.cli.length+' clientes…');
+    const files=await NV.construir(st,K,T);
+    await NV.publicar(tok,files,'Ventas: '+(res[0]||'ajustes')+' (panel)',t=>busy(t));
+    ST=st;PV=null;PC=null;calcular();busy(false);
+    carga();$('pM').innerHTML=`<div class="msg ok">✅ <b>Publicado.</b> ${res.map(esc).join('<br>')}<br><span class="sub">Tarda 1–2 minutos en verse en todos los móviles.</span></div>`;
+    $('hSub').textContent=`Ventas del ${NV.fmtD(ST.inicio)} al ${NV.fmtD(AG.last.hasta)}`;
+  }catch(e){console.error(e);busy(false);M.innerHTML=`<div class="msg ko">${esc(e.message||e)}</div>`}
+}
+function enlaces(){
+  const V=$('v-enl');
+  const dk=encodeURIComponent(NV.b64url(DASH));
+  const base=NV.LINK_BASE+'ventas/';
+  const reps=ST?[...new Set(ST.cli.map(c=>c.com).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es')):[];
+  const row=(n,u,tel)=>{const t=`Hola ${n.split(' ')[0]} 👋, este es tu *cuadro de ventas* de Penalva. Cada semana verás qué clientes han pedido y cuáles no, y desde ahí les puedes mandar su enlace de pedidos.\n\n👉 ${u}\n\nGuárdalo, es siempre el mismo.`;
+    return`<tr><td><b>${esc(n)}</b><div class="link">${esc(u)}</div></td><td><div class="acts" style="margin:0"><button class="btn sm" data-copy="${esc(u)}">Copiar</button><a class="btn sm wa" target="_blank" rel="noopener" href="https://wa.me/${tel?'34'+esc(tel):''}?text=${encodeURIComponent(t)}">WhatsApp</a></div></td></tr>`};
+  V.innerHTML=`<div class="card"><h2>Enlaces del cuadro de ventas</h2><p class="help">Cada comercial entra directo a <b>sus</b> clientes. Con el tuyo ves a todos.</p><div class="tw"><table><tbody>
+  ${row('David (todos)',base+'#v='+dk,'')}
+  ${reps.map(n=>row(n,base+'?c='+NV.slug(n)+'#v='+dk,ST.reps[n])).join('')}
+  </tbody></table></div>${reps.length?'':'<div class="msg in">Cuando cargues el listado de clientes con su comercial, aquí saldrá el enlace de cada uno.</div>'}</div>`;
+}
+arrancar();
+})();
+</script>
+</body>
+</html>
