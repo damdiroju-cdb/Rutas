@@ -2339,7 +2339,7 @@ a{color:#B93A24}
 </head>
 <body>
 <div class="app">
-<div class="top"><div class="logos"><img class="lp" src="../penalva.png" alt="Alimentación Penalva"><img class="ln" src="../nordwik.png" alt="Helados Nordwik"></div><div class="hint" id="hint">Pasa página con las flechas · toca ♥ lo que te interese</div></div>
+<div class="top"><div class="logos"><img class="lp" src="../penalva.png" alt="Alimentación Penalva"><img class="ln" src="../nordwik.png" alt="Helados Nordwik"></div><div class="hint" id="hint">Pasa página con las flechas o deslizando · toca ♥ lo que te interese</div></div>
 <div class="stage" id="stage"><div id="wrap"><button class="side l" id="sprev" aria-label="Página anterior"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button><button class="side r" id="snext" aria-label="Página siguiente"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></button><div id="book">
 <div class="page" data-density="hard" aria-label="Portada"><div class="inner" style="background: #EEF3F9; color: #1D1C1A; font-family: Inter, system-ui, sans-serif"><div style="position: absolute; left: 56px; right: 56px; top: 44px; display: flex; justify-content: space-between; align-items: center">
 <img src="../penalva.png" alt="Alimentación Penalva" style="height: 82px">
@@ -2572,7 +2572,7 @@ a{color:#B93A24}
   fit();
   var book=new St.PageFlip(document.getElementById('book'),{
     width:W,height:H,size:'stretch',minWidth:200,maxWidth:MOB?600:W,minHeight:200,maxHeight:MOB?1100:H,
-    showCover:true,usePortrait:true,maxShadowOpacity:0.45,mobileScrollSupport:false,flippingTime:MOB?550:700,disableFlipByClick:true,useMouseEvents:false
+    showCover:true,usePortrait:true,maxShadowOpacity:0.45,mobileScrollSupport:false,flippingTime:MOB?550:700,disableFlipByClick:true
   });
   book.loadFromHTML(document.querySelectorAll(PSEL));
   document.querySelectorAll(PSEL).forEach(function(p,i){ var n=p.querySelector('.pnum'); if(n) n.textContent=(i+1)+' / '+N; });
