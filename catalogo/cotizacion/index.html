@@ -2891,5 +2891,20 @@ a{color:#B93A24}
   if(window.MutationObserver){ var mo=new MutationObserver(function(){ clearTimeout(mo.t); mo.t=setTimeout(paint,30); }); mo.observe(document.getElementById('book'),{childList:true,subtree:false}); }
 })();
 </script>
+<script>
+/* Auto-actualización: si hay versión nueva publicada, el catálogo se recarga solo (la lista del cliente no se pierde). Sube CATV en cada cambio. */
+(function(){
+  var CATV=2;
+  function chk(){ try{
+    fetch(location.pathname+'?_='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){
+      var m=t.match(/var CATV=(\d+);/); if(!m||+m[1]<=CATV) return;
+      var k='pen_catv'+m[1]; try{ if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1'); }catch(e){}
+      var u=new URL(location.href); u.searchParams.set('u',m[1]+'-'+Date.now()); location.replace(u.toString());
+    }).catch(function(){});
+  }catch(e){} }
+  setTimeout(chk,2500);
+  document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible') chk(); });
+})();
+</script>
 </body>
 </html>
