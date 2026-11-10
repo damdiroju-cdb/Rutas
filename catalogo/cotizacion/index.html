@@ -2357,6 +2357,14 @@ a{color:#B93A24}
 .pv-nav{display:flex;justify-content:space-between;gap:8px}
 .pv-nav button{appearance:none;border:1px solid #9AA6B5;background:#fff;border-radius:999px;height:42px;padding:0 14px;font:600 14px Inter,sans-serif;cursor:pointer}
 .pv-nav button:disabled{opacity:.3}
+#pv-hd{display:none;width:100%;max-height:44vh;object-fit:contain;cursor:zoom-in}
+.pv-tip{font-size:12.5px;color:#545A63;text-align:center;margin-top:-4px}
+#zv{position:fixed;inset:0;z-index:400;background:#fff;display:none;flex-direction:column}
+#zv.open{display:flex}
+#zv .zb{display:flex;justify-content:flex-end;padding:10px 12px}
+#zv button{appearance:none;border:none;background:#D2000F;color:#fff;border-radius:999px;height:48px;padding:0 22px;font:800 16px Inter,sans-serif;cursor:pointer}
+#zv .zi{flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;padding:10px;touch-action:pinch-zoom pan-x pan-y}
+#zv img{width:100%;max-height:100%;object-fit:contain}
 </style>
 </head>
 <body>
@@ -2639,9 +2647,10 @@ a{color:#B93A24}
 
 
 <div id="toast" aria-live="polite"></div>
+<div id="zv" role="dialog" aria-modal="true" aria-label="Foto en grande"><div class="zb"><button id="zv-x">Cerrar foto</button></div><div class="zi"><img id="zv-img" alt="Foto del producto"></div></div>
 <div id="pv" role="dialog" aria-modal="true" aria-labelledby="pv-name"><div class="pv-box">
 <div class="pv-top"><button class="pv-back" id="pv-back">‹ Volver al catálogo</button><span class="pv-ref">Ref. <b id="pv-ref"></b></span></div>
-<div class="pv-ph"><div id="pv-img" role="img" aria-label="Foto del producto"></div></div>
+<div class="pv-ph"><div id="pv-img" role="img" aria-label="Foto del producto"></div><img id="pv-hd" alt="Foto del producto"></div><div class="pv-tip" id="pv-tip">Toca la foto para verla a pantalla completa</div>
 <div class="pv-fam" id="pv-fam"></div><h2 id="pv-name"></h2>
 <div class="pv-fmt" id="pv-fmt"></div>
 <div class="pv-use" id="pv-use"></div>
@@ -2707,6 +2716,7 @@ a{color:#B93A24}
   document.addEventListener('keydown',function(e){ if(e.key==='Escape') close(); });
   $('fp-copy').onclick=function(){ var t=msg(); try{ navigator.clipboard.writeText(t).then(function(){toast('Lista copiada');},function(){toast('No se pudo copiar');}); }catch(e){ toast('No se pudo copiar'); } };
 
+  var HD={"700434": 1, "700715": 1, "703821": 1, "700681": 1, "701697": 1, "700670": 1, "701039": 1, "700893": 1, "700669": 1, "700737": 1, "700668": 1, "700692": 1, "701204": 1, "700683": 1, "703713": 1, "703627": 1, "700680": 1, "701923": 1, "703799": 1, "700689": 1, "700671": 1, "701615": 1, "703317": 1, "701411": 1, "703812": 1, "701609": 1, "701061": 1, "703968": 1, "701698": 1, "701217": 1, "703602": 1, "701754": 1, "701560": 1, "701886": 1, "701368": 1, "701237": 1, "703966": 1, "700555": 1, "700740": 1, "700396": 1, "701757": 1, "700833": 1, "700387": 1, "700823": 1, "700400": 1, "700629": 1, "500172": 1, "701659": 1, "701849": 1, "701490": 1, "701311": 1, "703796": 1, "701896": 1, "701590": 1, "700384": 1, "701679": 1, "700755": 1, "705275": 1, "701263": 1, "705299": 1, "705960": 1, "705400": 1, "500295": 1, "705618": 1, "705346": 1, "701489": 1, "701486": 1, "705122": 1, "705941": 1, "701492": 1, "700183": 1, "703649": 1, "700931": 1, "701796": 1, "700579": 1, "701623": 1, "701937": 1, "700416": 1, "700501": 1, "703981": 1, "701881": 1, "703024": 1, "701431": 1, "701339": 1, "701706": 1, "705491": 1, "701507": 1, "701876": 1, "700041": 1, "701297": 1, "700292": 1, "701812": 1, "701114": 1, "703311": 1, "703717": 1, "703629": 1, "703797": 1, "703126": 1, "701347": 1, "701806": 1, "701312": 1, "700866": 1, "700992": 1, "703393": 1, "700125": 1, "701857": 1, "703038": 1, "700562": 1, "700843": 1, "703887": 1, "703302": 1, "701224": 1, "701867": 1, "703933": 1, "703486": 1, "700745": 1, "701246": 1, "701244": 1, "701245": 1, "701243": 1, "705197": 1, "701653": 1, "701092": 1, "701861": 1, "700928": 1, "701272": 1, "700672": 1, "701472": 1, "705008": 1, "701077": 1, "705997": 1, "500250": 1, "500112": 1, "705200": 1, "500365": 1, "705198": 1, "705201": 1, "701210": 1, "701506": 1, "701170": 1, "700090": 1, "701201": 1, "701386": 1, "701289": 1, "701131": 1, "701341": 1, "701342": 1, "701737": 1, "500041": 1, "500043": 1, "705887": 1, "500048": 1, "500226": 1, "705110": 1, "705116": 1, "705511": 1, "705041": 1, "705042": 1, "705031": 1, "700694": 1, "705020": 1, "703946": 1, "705006": 1, "705722": 1, "705007": 1, "701049": 1, "705993": 1, "500136": 1, "705286": 1, "500055": 1, "705836": 1, "500083": 1, "500231": 1, "500021": 1, "500020": 1, "500601": 1, "500273": 1, "500599": 1, "500378": 1, "500022": 1, "500088": 1, "500379": 1, "500269": 1, "500018": 1, "500019": 1, "500090": 1, "500094": 1, "500024": 1, "500023": 1, "500111": 1, "500834": 1, "500375": 1, "500376": 1, "500377": 1, "500124": 1, "500001": 1, "500331": 1, "500054": 1, "500002": 1, "500003": 1, "500013": 1, "500382": 1, "500014": 1, "500165": 1, "500015": 1, "500016": 1, "500085": 1, "500322": 1, "500324": 1, "500325": 1, "500089": 1, "500049": 1, "500594": 1, "500260": 1, "500144": 1, "500005": 1, "500259": 1, "500006": 1, "500008": 1, "500141": 1, "500145": 1, "500262": 1, "500304": 1, "500059": 1, "500065": 1, "500064": 1, "500093": 1, "500091": 1, "500010": 1, "500856": 1, "705655": 1, "500859": 1, "705330": 1, "705048": 1, "705839": 1, "705047": 1, "705036": 1, "705037": 1, "700690": 1, "705028": 1, "705322": 1, "705053": 1, "705070": 1, "705071": 1, "705065": 1, "705068": 1, "705066": 1, "705747": 1, "705062": 1, "705074": 1, "705081": 1, "705991": 1, "701440": 1, "500525": 1, "500288": 1, "701146": 1, "701147": 1, "701150": 1, "701148": 1, "701149": 1, "700659": 1, "701164": 1, "701429": 1, "701626": 1, "700423": 1, "703401": 1, "700115": 1, "701821": 1, "701822": 1, "701825": 1, "700769": 1, "701208": 1, "701542": 1, "701166": 1, "701226": 1, "701073": 1, "701377": 1, "700419": 1, "700777": 1, "701897": 1, "703011": 1, "701134": 1, "701747": 1, "701841": 1, "701153": 1, "700274": 1, "700352": 1, "700436": 1, "700111": 1, "700114": 1, "700360": 1, "701466": 1, "701645": 1, "700764": 1, "703452": 1, "701880": 1, "701654": 1, "703528": 1, "700926": 1, "700558": 1, "701474": 1, "703513": 1, "701155": 1, "701203": 1, "701513": 1, "701144": 1, "701539": 1, "701420": 1, "700696": 1, "703331": 1, "703702": 1, "700208": 1, "703861": 1, "701221": 1, "701414": 1, "701220": 1, "704396": 1, "704283": 1, "704224": 1, "704221": 1, "704220": 1, "704067": 1, "704310": 1, "700637": 1, "700005": 1, "704494": 1, "704495": 1, "704496": 1, "704497": 1, "704171": 1, "701116": 1, "703926": 1, "703174": 1, "703177": 1, "703180": 1, "703148": 1, "701275": 1, "701410": 1, "701394": 1, "701240": 1, "701117": 1, "701337": 1, "701396": 1, "700630": 1, "700604": 1, "701850": 1, "701882": 1, "700052": 1, "700053": 1, "700047": 1, "700049": 1, "703183": 1, "700051": 1, "700476": 1, "700057": 1, "700673": 1, "701448": 1, "700058": 1, "701663": 1, "701664": 1, "701665": 1, "700084": 1, "701016": 1, "700048": 1, "700050": 1, "701707": 1, "701708": 1, "701038": 1, "703398": 1, "700060": 1, "701018": 1, "700085": 1, "703303": 1, "703384": 1, "700077": 1, "700082": 1, "700076": 1, "700075": 1, "701251": 1, "700079": 1, "700078": 1, "703801": 1, "703064": 1, "701666": 1, "700073": 1, "700074": 1, "700080": 1, "700675": 1, "703803": 1, "700331": 1, "703161": 1, "703489": 1, "700674": 1, "700565": 1, "700835": 1, "700563": 1, "700853": 1, "700758": 1, "700894": 1, "701709": 1, "700098": 1, "703160": 1, "700676": 1, "703178": 1, "700803": 1, "700151": 1, "700850": 1, "703792": 1, "701636": 1, "701637": 1, "701638": 1, "700165": 1, "700172": 1, "700168": 1, "700166": 1, "700175": 1, "700173": 1, "700174": 1, "700065": 1, "700064": 1, "700062": 1, "700067": 1, "700072": 1, "700069": 1, "700070": 1, "700068": 1, "700066": 1, "701601": 1, "701602": 1, "500027": 1, "701612": 1, "700638": 1, "700653": 1, "704701": 1, "701702": 1}, HDP='../../fotos/';
   var spIdx={}; SP.codes.forEach(function(c,i){spIdx[c]=i;});
   var cur=null, sib=[];
   function pvPaint(){ if(!cur) return; var on=fav.indexOf(cur)>=0, b=$('pv-fav');
@@ -2719,10 +2729,16 @@ a{color:#B93A24}
     var im=$('pv-img'), w=im.clientWidth||300;
     if(spIdx[c]!==undefined){ var i=spIdx[c]; im.style.backgroundImage='url(../fotos.jpg)'; im.style.backgroundSize=(SP.C*w)+'px '+(SP.rows*w)+'px'; im.style.backgroundPosition='-'+((i%SP.C)*w)+'px -'+(Math.floor(i/SP.C)*w)+'px'; }
     else im.style.backgroundImage='none';
+    var hdi=$('pv-hd'), hdOk=HD[c];
+    if(hdOk){ im.style.display='none'; hdi.style.display='block'; hdi.onerror=function(){ hdi.style.display='none'; im.style.display=''; $('pv-tip').style.display='none'; }; hdi.src=HDP+c+'.jpg'; $('pv-tip').style.display=''; }
+    else { hdi.style.display='none'; hdi.removeAttribute('src'); im.style.display=''; $('pv-tip').style.display='none'; }
     $('pv-fam').textContent=p[3]; $('pv-name').textContent=p[1]; $('pv-fmt').textContent='Formato: '+p[2]; $('pv-ref').textContent=c;
     var u=USE[c]; $('pv-use').textContent=u?('Se usa en: '+u.join(' · ')):'';
     pvPaint(); $('pv').querySelector('.pv-box').scrollTop=0;
   }
+  $('pv-hd').onclick=function(){ $('zv-img').src=this.src; $('zv').classList.add('open'); };
+  $('zv-x').onclick=function(){ $('zv').classList.remove('open'); };
+  $('zv').addEventListener('click',function(e){ if(e.target.id!=='zv-img') $('zv').classList.remove('open'); });
   function hidePv(){ $('pv').classList.remove('open'); cur=null; }
   $('pv-back').onclick=hidePv;
   $('pv').addEventListener('click',function(e){ if(e.target===$('pv')) hidePv(); });
@@ -2730,7 +2746,7 @@ a{color:#B93A24}
   $('pv-list').onclick=function(){ hidePv(); open(); };
   $('pv-prev').onclick=function(){ var i=sib.indexOf(cur); if(i>0) show(sib[i-1]); };
   $('pv-next').onclick=function(){ var i=sib.indexOf(cur); if(i>=0&&i<sib.length-1) show(sib[i+1]); };
-  document.addEventListener('keydown',function(e){ if(e.key==='Escape') hidePv(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ if($('zv').classList.contains('open')) $('zv').classList.remove('open'); else hidePv(); } });
   // toques sobre artículos
   var tEl=null,sx=0,sy=0,lastT=0;
   document.addEventListener('touchstart',function(e){ var t=e.target.closest&&e.target.closest('.pc[data-c],.pl[data-c]'); tEl=t; if(t){ sx=e.touches[0].clientX; sy=e.touches[0].clientY; } },{capture:true,passive:true});
