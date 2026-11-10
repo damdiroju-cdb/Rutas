@@ -171,7 +171,7 @@ function calcular(){
   AG={last,tot,totp,ult,ultp,antes,nper:P.length};
 }
 const repOf=c=>c.com||NOREP;
-function visibles(){if(!ST)return[];return ST.cli.map((c,i)=>i).filter(i=>!NV.fuera(ST.cli[i])&&(AG.tot[i]>0.005||AG.ult[i]>0.005||AG.antes[i]>0.005)&&(!REP||repOf(ST.cli[i])===REP))}
+function visibles(){if(!ST)return[];return ST.cli.map((c,i)=>i).filter(i=>!NV.fuera(ST.cli[i])&&(!REP||repOf(ST.cli[i])===REP))}
 const pidio=i=>AG.ult[i]>0.005;
 const habitual=i=>AG.nper>1?AG.antes[i]>0.005:AG.tot[i]>0.005;
 
@@ -210,21 +210,22 @@ function resumen(){
   <div class="kpis">
     <div class="kpi"><div class="l">Venta ${U&&!first?'de la última carga':'desde el 1 ago'}</div><div class="v">${eur(venta)}</div><div class="s">${pctH(pct(venta,prev))} vs mismo periodo año anterior</div></div>
     <div class="kpi ok"><div class="l">Clientes que han pedido</div><div class="v">${con.length}</div><div class="s">${U&&!first?'en la última carga':'desde el 1 ago'}</div></div>
-    <div class="kpi ko"><div class="l">Clientes sin pedido</div><div class="v">${first?'—':sin.length}</div><div class="s">${first?'se verá en la próxima carga':'de '+hab.length+' que compraban'}</div></div>
-    <div class="kpi"><div class="l">Pedido medio</div><div class="v">${con.length?eur(sum(U?AG.ult:AG.tot)/con.length):'—'}</div><div class="s">por cliente con compra</div></div>
+    ${first?'':`<div class="kpi ko"><div class="l">Clientes sin pedido</div><div class="v">${sin.length}</div><div class="s">de ${hab.length} que compraban</div></div>`}
+    <div class="kpi"><div class="l">Clientes en cartera</div><div class="v">${ids.length}</div><div class="s">${ids.filter(i=>AG.tot[i]<=0.005).length} sin compras desde 1 ago</div></div>
+    <div class="kpi" hidden><div class="l">Pedido medio</div><div class="v">${con.length?eur(sum(U?AG.ult:AG.tot)/con.length):'—'}</div><div class="s">por cliente con compra</div></div>
   </div>
   <div class="card"><h2>Por comercial</h2><p class="help">Toca un comercial para ver sus clientes.</p><div class="tw"><table>
-    <thead><tr><th>Comercial</th><th class="n">Clientes</th><th class="n hm">Canal WhatsApp</th><th class="n">Han pedido</th><th class="n">Sin pedido</th><th class="hm">Cobertura</th><th class="n">Venta</th><th class="n hm">vs año ant.</th></tr></thead><tbody id="tRep"></tbody></table></div></div>
+    <thead><tr><th>Comercial</th><th class="n">Clientes</th><th class="n hm">Canal WhatsApp</th><th class="n">Han pedido</th><th class="n">${first?'Sin compra':'Sin pedido'}</th><th class="hm">Cobertura</th><th class="n">Venta</th><th class="n hm">vs año ant.</th></tr></thead><tbody id="tRep"></tbody></table></div></div>
   ${!first&&sin.length?`<div class="card"><h2>⚠️ Clientes habituales sin pedido en la última carga</h2><p class="help">Los que más compran, primero. Toca para ver su ficha y mandarle su enlace.</p><div class="tw"><table><tbody>${sin.sort((a,b)=>AG.antes[b]-AG.antes[a]).slice(0,25).map(i=>filaCli(i)).join('')}</tbody></table></div>${sin.length>25?`<div class="acts"><button class="btn" id="verSin">Ver los ${sin.length}</button></div>`:''}</div>`:''}`;
   // tabla por comercial
   const by={};
-  for(const i of ids){const r=repOf(ST.cli[i]);const o=by[r]=by[r]||{r,n:0,wa:0,con:0,sin:0,v:0,p:0,hab:0};o.n++;if(/whats/i.test(ST.cli[i].canal||''))o.wa++;if(pidio(i))o.con++;if(habitual(i)){o.hab++;if(!pidio(i))o.sin++}o.v+=U?AG.ult[i]:AG.tot[i];o.p+=U?AG.ultp[i]:AG.totp[i]}
+  for(const i of ids){const r=repOf(ST.cli[i]);const o=by[r]=by[r]||{r,n:0,wa:0,con:0,sin:0,zero:0,v:0,p:0,hab:0};o.n++;if(AG.tot[i]<=0.005)o.zero++;if(/whats/i.test(ST.cli[i].canal||''))o.wa++;if(pidio(i))o.con++;if(habitual(i)){o.hab++;if(!pidio(i))o.sin++}o.v+=U?AG.ult[i]:AG.tot[i];o.p+=U?AG.ultp[i]:AG.totp[i]}
   const rows=Object.values(by).sort((a,b)=>b.v-a.v);
-  $('tRep').innerHTML=rows.map(o=>{const cov=o.hab?Math.round(o.con/o.hab*100):0;return`<tr class="click" data-rep="${esc(o.r)}"><td><b>${esc(o.r)}</b></td><td class="n">${o.n}</td><td class="n hm">${o.wa||'—'}</td><td class="n"><span class="pill ok">${o.con}</span></td><td class="n">${first?'—':`<span class="pill ko">${o.sin}</span>`}</td><td class="hm"><div class="bar" title="${cov} %"><i style="width:${first?100:cov}%"></i></div></td><td class="n"><b>${eur(o.v)}</b></td><td class="n hm">${pctH(pct(o.v,o.p))}</td></tr>`}).join('')||`<tr><td colspan="8" class="empty">Sin datos</td></tr>`;
+  $('tRep').innerHTML=rows.map(o=>{const cov=o.hab?Math.round(o.con/o.hab*100):0;return`<tr class="click" data-rep="${esc(o.r)}"><td><b>${esc(o.r)}</b></td><td class="n">${o.n}</td><td class="n hm">${o.wa||'—'}</td><td class="n"><span class="pill ok">${o.con}</span></td><td class="n"><span class="pill ko">${first?o.zero:o.sin}</span></td><td class="hm"><div class="bar" title="${cov} %"><i style="width:${first?100:cov}%"></i></div></td><td class="n"><b>${eur(o.v)}</b></td><td class="n hm">${pctH(pct(o.v,o.p))}</td></tr>`}).join('')||`<tr><td colspan="8" class="empty">Sin datos</td></tr>`;
   if($('verSin'))$('verSin').onclick=()=>{CF='sin';VIEW='cli';pintar()};
 }
 function filaCli(i){const c=ST.cli[i],U=PER==='ult';const v=U?AG.ult[i]:AG.tot[i];
-  const st=AG.nper===1?'':pidio(i)?'<span class="pill ok">Ha pedido</span>':habitual(i)?'<span class="pill ko">Sin pedido</span>':'<span class="pill nu">Sin compras</span>';
+  const st=AG.tot[i]<=0.005&&AG.antes[i]<=0.005?'<span class="pill ko">Sin compras desde 1 ago</span>':AG.nper===1?'':pidio(i)?'<span class="pill ok">Ha pedido</span>':habitual(i)?'<span class="pill ko">Sin pedido</span>':'<span class="pill nu">Sin compras</span>';
   return`<tr class="click" data-ci="${i}"><td><b>${esc(c.n)}</b><div class="sub">${esc(c.c)}${c.pob?' · '+esc(c.pob):''}${!REP?' · '+esc(repOf(c)):''}${c.dia?' · '+esc(c.dia.toLowerCase()):''}</div>${c.canal||st?`<div style="margin-top:4px;display:flex;gap:6px;flex-wrap:wrap">${c.canal?`<span class="pill ${/whats/i.test(c.canal)?'ok':'nu'}">${/whats/i.test(c.canal)?'💬 ':''}${esc(c.canal)}</span>`:''}${st}</div>`:''}</td><td class="n"><b>${eur(v)}</b>${AG.nper>1&&U?`<div class="sub">desde 1 ago: ${eur(AG.tot[i])}</div>`:''}</td></tr>`}
 function clientes(){
   const V=$('v-cli');
