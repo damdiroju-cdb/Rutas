@@ -156,6 +156,25 @@ a.btn{color:var(--ink)}
 .saved{padding:6px 14px 12px;display:flex;flex-direction:column;gap:6px}
 .saved .sv{display:flex;gap:8px;align-items:center;font-size:13px;border:1px solid var(--line);border-radius:8px;padding:6px 8px}
 .saved .sv span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qbtns{display:flex;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.qbtns .btn{flex:1;min-width:140px;min-height:44px;font-weight:700}
+.sendTop{min-height:40px;font-weight:800}
+.qs-search{width:100%;font-size:16px;padding:12px;border:1px solid var(--line);border-radius:10px;box-sizing:border-box;margin:6px 0 10px}
+.qs-list{display:flex;flex-direction:column;gap:8px;max-height:min(60vh,520px);overflow:auto}
+.qs-it{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.qs-it .t{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.qs-it .n{font-weight:800;font-size:15.5px;line-height:1.25}
+.qs-it .m{font-size:12.5px;color:var(--muted)}
+.qs-it .st{font-size:12px;font-weight:700;border-radius:999px;padding:3px 9px;white-space:nowrap}
+.qs-it .st.ok{background:#E3F4EA;color:#17733F}.qs-it .st.no{background:#FFF1E0;color:#9A5A00}
+.qs-it .a{display:flex;gap:8px;flex-wrap:wrap}.qs-it .a .btn{flex:1;min-height:42px;font-weight:700}
+.qs-it .a .x{flex:none;min-width:44px}
+.two{display:flex;flex-direction:column;gap:12px;margin:14px 0}
+.two button{appearance:none;display:flex;align-items:center;gap:14px;width:100%;min-height:72px;border-radius:16px;border:2px solid var(--line);background:#fff;padding:12px 16px;font:800 20px system-ui,sans-serif;color:inherit;cursor:pointer;text-align:left}
+.two button .ic{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none;color:#fff}
+.two button small{display:block;font-weight:500;font-size:13px;color:var(--muted);margin-top:2px}
+.two .bimg .ic{background:#1F8F4E}.two .bpdf .ic{background:#D2000F}
+.two button:active{transform:scale(.98)}
 
 /* splash e instalación */
 .splash{position:fixed;inset:0;z-index:100;background:linear-gradient(160deg,#2c5fd1,#132f73);display:flex;align-items:center;justify-content:center;color:#fff;transition:opacity .35s}
@@ -315,7 +334,8 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
   </section>
 
   <aside class="card" id="prop" aria-label="Cotización">
-    <div class="ph"><h2>Cotización</h2><span class="pill" id="nSel">0</span><span style="flex:1"></span><span class="mono" style="color:var(--muted);font-size:12px" id="propNo"></span></div>
+    <div class="ph"><h2>Cotización</h2><span class="pill" id="nSel">0</span><span class="mono" style="color:var(--muted);font-size:12px" id="propNo"></span><span style="flex:1"></span><button class="btn primary sendTop" type="button" id="sendTop">Enviar</button></div>
+    <div class="qbtns"><button class="btn" type="button" id="qsFind">Buscar cotización de un cliente</button><button class="btn" type="button" id="qsAll">Todas las cotizaciones</button></div>
     <div class="scroll">
       <details class="blk" id="cliBlk" open>
         <summary><span class="t">Cliente</span><span class="s" id="cliSum">Sin datos</span></summary>
@@ -347,16 +367,14 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
           <div class="field full"><label for="oNotas">Observaciones</label><textarea id="oNotas" rows="3" placeholder="Condiciones de pago, portes, pedido mínimo…"></textarea></div>
         </div>
       </details>
-      <details class="blk" id="savedBlk">
-        <summary><span class="t">Guardadas</span><span class="s" id="savedSum"></span></summary>
-        <div class="saved" id="saved"></div>
-      </details>
+      <div id="savedBlk" hidden><span id="savedSum"></span><div class="saved" id="saved"></div></div>
     </div>
     <div class="pf">
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn" type="button" id="saveBtn">Guardar</button>
-        <button class="btn" type="button" id="newBtn">Nueva</button>
-        <button class="btn primary" type="button" id="pdfBtn" style="flex:1">Generar PDF</button>
+        <button class="btn" type="button" id="newBtn">Nueva cotización</button>
+        <button class="btn primary" type="button" id="pdfBtn" style="flex:1">Enviar cotización</button>
+      </div>
+      <div style="font-size:12px;color:var(--muted);text-align:center">Todo se guarda solo, aunque cierres la app.
       </div>
       <div class="msg" id="msg" role="status"></div>
     </div>
@@ -381,6 +399,7 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
 
 <div class="modal" id="pdModal" hidden><div class="box" id="pdBox"></div></div>
 <div id="zv" hidden role="dialog" aria-modal="true" aria-label="Foto en grande"><div class="zb"><button type="button" id="zvX">Cerrar foto</button></div><div class="zi"><img id="zvImg" alt="Foto del producto"></div></div>
+<div class="modal" id="qsModal" hidden><div class="box" id="qsBox"></div></div>
 <div class="modal" id="cntModal" hidden><div class="box wide" id="cntBox"></div></div>
 
 <div class="modal" id="repModal" hidden>
@@ -469,7 +488,16 @@ if(!S||!Array.isArray(S.lines)||S.sent)S=blank();
 S.lines=S.lines.filter(l=>BY[l.c]).map(l=>({c:l.c,dto:l.dto||''}));
 let REP=store('pnv_rep')||{};
 let MODE='con';
-const save=()=>store('pnv_cur2',S);
+let _keepT=null;
+const save=()=>{store('pnv_cur2',S);clearTimeout(_keepT);_keepT=setTimeout(keepQuote,300)};
+// cada cambio queda en el historial del dispositivo (hasta 300 cotizaciones)
+function keepQuote(extra){try{
+  if(!S.lines.length&&!cliLabel())return;
+  const G=savedList(),k=G.findIndex(p=>p.no===S.no),prev=k>=0?G[k]:{};
+  const cp=JSON.parse(JSON.stringify(S));delete cp.sent;cp.label=cliLabel();cp.upd=new Date().toISOString();
+  cp.enviada=prev.enviada||null;cp.envios=prev.envios||0;if(extra)Object.assign(cp,extra);
+  if(k>=0)G.splice(k,1);G.unshift(cp);store('pnv_saved2',G.slice(0,300));
+}catch(e){}}
 function freshQuote(){const old=S.lines.map(l=>l.c);S=blank();save();loadForm();renderProp();old.forEach(refreshItem);['pdModal','cntModal'].forEach(id=>$(id).hidden=true);setView('cat');$('startModal').hidden=false}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&S.sent&&Date.now()-S.sent>10*60*1000)freshQuote()});
 const lineOf=c=>S.lines.find(l=>l.c===c);
@@ -629,10 +657,35 @@ function loadForm(){Object.entries(CF).forEach(([id,k])=>$(id).value=S.cli[k]||'
 function savedList(){return store('pnv_saved2')||[]}
 function renderSaved(){const L=savedList();$('savedSum').textContent=L.length?String(L.length):'Ninguna';
   $('saved').innerHTML=L.length?L.map((p,i)=>`<div class="sv"><span><b class="mono">${esc(p.no)}</b> · ${esc(p.label||'Sin cliente')} · ${p.lines.length} art.</span><button class="btn" type="button" data-load="${i}">Abrir</button><button class="x" type="button" aria-label="Borrar" data-rm="${i}">×</button></div>`).join(''):'<div style="color:var(--muted);font-size:13px">Pulsa «Guardar» y tendrás aquí tus cotizaciones en este dispositivo.</div>'}
-$('saveBtn').addEventListener('click',()=>{const L=savedList();const rec=JSON.parse(JSON.stringify(S));rec.label=cliLabel();const i=L.findIndex(p=>p.no===S.no);if(i>=0)L[i]=rec;else L.unshift(rec);store('pnv_saved2',L.slice(0,40));renderSaved();flash('Cotización '+S.no+' guardada en este dispositivo','ok')});
+
 $('saved').addEventListener('click',e=>{const L=savedList();const a=e.target.closest('[data-load]'),b=e.target.closest('[data-rm]');
   if(a){S=JSON.parse(JSON.stringify(L[+a.dataset.load]));delete S.label;delete S.sent;save();loadForm();renderProp();renderList(true);flash('Abierta la cotización '+S.no,'ok')}
   if(b){L.splice(+b.dataset.rm,1);store('pnv_saved2',L);renderSaved()}});
+function openQuote(no){const p=savedList().find(x=>x.no===no);if(!p)return false;const old=S.lines.map(l=>l.c);
+  S=JSON.parse(JSON.stringify(p));['label','sent','upd','enviada','envios'].forEach(k=>delete S[k]);S.lines=S.lines.filter(l=>BY[l.c]);
+  store('pnv_cur2',S);loadForm();renderProp();old.forEach(refreshItem);S.lines.forEach(l=>refreshItem(l.c));return true}
+function qsRender(){
+  const q=norm($('qsQ')?$('qsQ').value:'').trim(),L=savedList();
+  const f=L.filter(p=>!q||norm((p.label||'')+' '+(p.cli&&p.cli.cod||'')+' '+p.no).includes(q));
+  const fd=d=>d?new Date(d).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
+  $('qsList').innerHTML=f.length?f.map(p=>`<div class="qs-it"><div class="t"><div class="n">${esc(p.label||'Sin cliente')}</div>${p.enviada?`<span class="st ok">Enviada${p.envios>1?' ×'+p.envios:''}</span>`:'<span class="st no">Sin enviar</span>'}</div>
+    <div class="m">Nº ${esc(p.no)} · ${p.lines.length} artículo${p.lines.length===1?'':'s'} · ${p.enviada?'enviada el '+fd(p.enviada):'última modificación '+fd(p.upd)}</div>
+    <div class="a"><button class="btn primary" type="button" data-qo="${esc(p.no)}">${p.enviada?'Modificar y volver a enviar':'Seguir con ella'}</button><button class="btn" type="button" data-qd="${esc(p.no)}">Descargar</button><button class="btn x" type="button" aria-label="Borrar" data-qx="${esc(p.no)}">×</button></div></div>`).join('')
+   :`<div style="color:var(--muted);padding:14px 4px">${L.length?'No hay cotizaciones de ese cliente.':'Todavía no hay cotizaciones. Se guardan solas en cuanto añades artículos o pones el cliente.'}</div>`}
+function qsOpen(find){
+  $('qsBox').innerHTML=`<h3>${find?'Buscar cotización de un cliente':'Todas las cotizaciones'}</h3><p>${find?'Escribe el nombre o el código del cliente.':'Las de este teléfono u ordenador, la última arriba.'}</p>
+   <input class="qs-search" id="qsQ" type="search" placeholder="Nombre o código del cliente" autocomplete="off"><div class="qs-list" id="qsList"></div>
+   <div class="acts"><button class="btn" type="button" data-close>Cerrar</button></div>`;
+  $('qsModal').hidden=false;qsRender();$('qsQ').addEventListener('input',qsRender);if(find)setTimeout(()=>$('qsQ').focus(),60)}
+$('qsFind').addEventListener('click',()=>qsOpen(true));$('qsAll').addEventListener('click',()=>qsOpen(false));
+$('qsModal').addEventListener('click',async e=>{
+  if(e.target===$('qsModal')||e.target.closest('[data-close]')){$('qsModal').hidden=true;return}
+  const o=e.target.closest('[data-qo]'),d=e.target.closest('[data-qd]'),x=e.target.closest('[data-qx]');
+  if(o){openQuote(o.dataset.qo);$('qsModal').hidden=true;setMode('cot');setView('prop');flash('Abierta la cotización de '+(cliLabel()||S.no)+'. Cambia lo que quieras y pulsa Enviar.','ok')}
+  if(d){openQuote(d.dataset.qd);$('qsModal').hidden=true;await makeQuote(true)}
+  if(x){if(!confirmDel(x))return;const L=savedList().filter(p=>p.no!==x.dataset.qx);store('pnv_saved2',L);qsRender()}
+});
+function confirmDel(b){if(b.dataset.sure)return true;b.dataset.sure='1';b.textContent='¿Borrar?';b.classList.add('danger');setTimeout(()=>{if(b.isConnected){delete b.dataset.sure;b.textContent='×';b.classList.remove('danger')}},3000);return false}
 $('newBtn').addEventListener('click',()=>{const old=S.lines.map(l=>l.c);S=blank();save();loadForm();renderProp();old.forEach(refreshItem);flash('Nueva cotización '+S.no,'ok')});
 function repRender(){const ok=REP.nom&&REP.tel;$('repChip').textContent=ok?REP.nom:'Pon tus datos';$('repChip').classList.toggle('empty',!ok)}
 const REPS=['Abraam','Antonio Aguado','Antonio Ayala','Avidad','Batseva','David Díaz','David Guadix','Jorge','Jose Manuel Herrera','Juanma Cabrerizo','Juanma Nordwik','Manolo Borrego','Nacho Penalva','Sebastián'];
@@ -654,46 +707,40 @@ function flash(t,k){const m=$('msg');m.textContent=t;m.className='msg '+(k||'');
 
 // PDF para el cliente
 function imgDims(src){return new Promise(res=>{const im=new Image();im.onload=()=>res({w:im.naturalWidth,h:im.naturalHeight});im.onerror=()=>res(null);im.src=src})}
-$('pdfBtn').addEventListener('click',async()=>{
+$('pdfBtn').addEventListener('click',()=>makeQuote(false));
+$('sendTop').addEventListener('click',()=>makeQuote(false));
+async function makeQuote(onlyDownload){
   if(!S.lines.length)return flash('Añade al menos un artículo a la cotización.','err');
   if(!(REP.nom&&REP.tel)){flash('Primero pon tu nombre y teléfono de comercial.','err');return repOpen()}
   if(!cliLabel()){$('cliBlk').open=true;if(innerWidth<=980)setView('prop');return flash(S.tipo==='ex'?'Pon el código o el nombre del cliente.':'Pon el nombre o el nombre comercial del futuro cliente.','err')}
   if(!window.jspdf)return flash('No se ha podido cargar el generador de PDF. Recarga la página.','err');
-  $('pdfBtn').disabled=true;flash('Preparando PDF…');
+  $('pdfBtn').disabled=true;$('sendTop').disabled=true;flash('Preparando la cotización…');
   try{const blob=await buildPDF();const fn=('Cotizacion_'+(cliLabel()||'cliente')+'_'+S.no).replace(/[^\wÁÉÍÓÚÑáéíóúñ\- ]+/g,'').replace(/\s+/g,'_').slice(0,90)+'.pdf';
     let imgs=[];try{imgs=await buildImages()}catch(e){console.warn('imagen',e)}
-    logEnvio();try{showPdf(blob,fn,imgs)}catch(e){console.error(e);try{showPdf(blob,fn,[])}catch(e2){}}flash('Propuesta lista','ok');
-  }catch(err){console.error(err);flash('Error al generar el PDF: '+((err&&err.message)||err)+'. Haz una captura y mándasela a David.','err')}finally{$('pdfBtn').disabled=false}
-});
+    if(!onlyDownload)logEnvio();try{showPdf(blob,fn,imgs,onlyDownload)}catch(e){console.error(e);try{showPdf(blob,fn,[],onlyDownload)}catch(e2){}}flash('Cotización lista','ok');
+  }catch(err){console.error(err);flash('Error al generar el PDF: '+((err&&err.message)||err)+'. Haz una captura y mándasela a David.','err')}finally{$('pdfBtn').disabled=false;$('sendTop').disabled=false}
+}
 let PDFURL=null,IMGURLS=[];
-function showPdf(blob,fn,imgs){
+function showPdf(blob,fn,imgs,onlyDownload){
   if(PDFURL)URL.revokeObjectURL(PDFURL);PDFURL=URL.createObjectURL(blob);IMGURLS.forEach(u=>URL.revokeObjectURL(u));IMGURLS=imgs.map(b=>URL.createObjectURL(b));
   const pdf=new File([blob],fn,{type:'application/pdf'});
   const base=fn.replace(/\.pdf$/,'');
   const jpgs=imgs.map((b,i)=>new File([b],base+(imgs.length>1?'_'+(i+1):'')+'.jpg',{type:'image/jpeg'}));
-  const can=f=>!!(navigator.canShare&&(()=>{try{return navigator.canShare({files:f})}catch(e){return false}})());
-  const oneImg=can(jpgs),onePdf=can([pdf]),both=can([...jpgs,pdf]);
-  const n=S.lines.length,rec=n<=14?'img':'pdf';
-  const txt='Le envío nuestra propuesta comercial. '+(REP.nom?('Un saludo, '+REP.nom+' · '+REP.tel):'');
-  const btn=(id,ico,t,d,star)=>`<button type="button" id="${id}"><span class="ic">${ico}</span><span><b>${t}${star?' <span class="rec">Recomendado</span>':''}</b><span class="tx">${d}</span></span></button>`;
-  $('cntBox').innerHTML=`<h3>Propuesta lista</h3><p>¿Cómo se la mandas al cliente?</p>
-   <div class="prev">${IMGURLS.map(u=>`<img src="${u}" alt="Vista previa de la imagen">`).join('')}</div>
-   <div class="choice">
-    ${both?btn('shBoth','<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>','Imagen + PDF','Un solo toque: eliges el chat del cliente y le llegan la imagen y el PDF juntos.',true):''}
-    ${oneImg?btn('shImg','<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>','Solo imagen','Se ve directamente en el chat. Ideal hasta 14 artículos.',!both&&rec==='img'):''}
-    ${onePdf?btn('shPdf','<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5"/></svg>','Solo PDF','Más formal. Mejor con muchos artículos o clientes nuevos.',!both&&rec==='pdf'):''}
-    ${!(both||oneImg||onePdf)?'<p class="tx" style="margin:0">Este navegador no deja compartir directamente: descarga la imagen o el PDF y mándalo desde WhatsApp.</p>':''}
+  const can=f=>!onlyDownload&&!!(navigator.canShare&&(()=>{try{return navigator.canShare({files:f})}catch(e){return false}})());
+  const dl=(url,name)=>{const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove()};
+  const icImg='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>';
+  const icPdf='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5"/></svg>';
+  const shImg=can(jpgs),shPdf=can([pdf]);
+  $('cntBox').innerHTML=`<h3>${onlyDownload?'Descargar cotización':'Enviar cotización'}</h3><p>${onlyDownload?'Se guarda en tu teléfono u ordenador.':'Elige cómo se la mandas al cliente.'}</p>
+   <div class="two">
+    ${jpgs.length?`<button type="button" class="bimg" id="shImg"><span class="ic">${icImg}</span><span>${shImg?'Imagen':'Descargar imagen'}<small>Se ve directamente en el chat</small></span></button>`:''}
+    <button type="button" class="bpdf" id="shPdf"><span class="ic">${icPdf}</span><span>${shPdf?'PDF':'Descargar PDF'}<small>Documento para imprimir o guardar</small></span></button>
    </div>
-   <div class="dl">${IMGURLS.map((u,i)=>`<a class="btn" href="${u}" download="${esc(jpgs[i].name)}">Descargar imagen${IMGURLS.length>1?' '+(i+1):''}</a>`).join('')}<a class="btn" href="${PDFURL}" download="${esc(fn)}">Descargar PDF</a><a class="btn" href="${PDFURL}" target="_blank" rel="noopener">Ver PDF</a></div>
    <div class="acts"><button class="btn" type="button" data-close>Cerrar</button></div>`;
   $('cntModal').hidden=false;
-  // WhatsApp en Android descarta los archivos si van con texto o mezclados: se mandan solos y por separado
-  const go=files=>async()=>{try{await navigator.share({files});return true}catch(e){return false}};
-  if($('shBoth'))$('shBoth').addEventListener('click',async()=>{const ok=await go([...jpgs,pdf])();if(!ok||!$('shBoth'))return;
-    $('shBoth').insertAdjacentHTML('afterend',`<div class="tx" id="shChk" style="font-size:13px;color:var(--muted);padding:6px 4px">✓ Enviado. ¿En el chat no aparece el PDF? <button type="button" class="btn" id="shFix" style="margin-top:6px;width:100%">Mandar solo el PDF al mismo chat</button></div>`);
-    $('shFix').addEventListener('click',go([pdf]))});
-  if($('shImg'))$('shImg').addEventListener('click',go(jpgs));
-  if($('shPdf'))$('shPdf').addEventListener('click',go([pdf]));
+  const go=async(files,fallback)=>{if(files&&navigator.share){try{await navigator.share({files});return}catch(e){if(e&&e.name==='AbortError')return}}fallback()};
+  if($('shImg'))$('shImg').addEventListener('click',()=>go(shImg?jpgs:null,()=>jpgs.forEach((f,i)=>dl(IMGURLS[i],f.name))));
+  $('shPdf').addEventListener('click',()=>go(shPdf?[pdf]:null,()=>dl(PDFURL,fn)));
 }
 // ---------- imagen para WhatsApp: vertical, pensada para leerse en el móvil ----------
 function loadImg(src){return new Promise(res=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>res(null);im.src=src})}
@@ -813,7 +860,7 @@ function paintCount(){const L=sentList(),mes=monthKey(new Date().toISOString());
 function logEnvio(){
   const rec={no:S.no,fecha:new Date().toISOString(),cliente:cliLabel(),tipo:S.tipo==='ex'?'Cliente':'Futuro cliente',articulos:S.lines.length,comercial:REP.nom||'',tel:REP.tel||''};
   const L=sentList().filter(x=>x.no!==rec.no);L.unshift(rec);store('pnv_sent',L.slice(0,500));paintCount();
-  S.sent=Date.now();save();try{const G=savedList(),cp=JSON.parse(JSON.stringify(S));delete cp.sent;cp.label=cliLabel();const k=G.findIndex(p=>p.no===S.no);if(k>=0)G[k]=cp;else G.unshift(cp);store('pnv_saved2',G.slice(0,40));renderSaved()}catch(e){}
+  S.sent=Date.now();store('pnv_cur2',S);try{const G=savedList(),p=G.find(x=>x.no===S.no);keepQuote({enviada:rec.fecha,envios:((p&&p.envios)||0)+1})}catch(e){}
   if(SHEET_URL){try{fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(rec)}).catch(()=>{})}catch(e){}}
 }
 function fmtDT(iso){try{return new Date(iso).toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'2-digit'})}catch(e){return''}}
