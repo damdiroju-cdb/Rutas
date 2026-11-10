@@ -158,6 +158,13 @@ a.btn{color:var(--ink)}
 .saved .sv span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .qbtns{display:flex;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
 .qbtns .btn{flex:1;min-width:140px;min-height:44px;font-weight:700}
+.imp-btn{flex-basis:100%!important;background:#1F8F4E!important;border-color:#1F8F4E!important;color:#fff!important}
+#impModal{z-index:200}
+.imp-ta{width:100%;min-height:150px;font-size:15px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--soft);color:var(--ink)}
+.imp-sum{background:var(--soft);border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.5;margin-top:8px}
+.imp-sum ul{margin:6px 0 0;padding-left:18px}
+.imp-step{background:#1F8F4E;color:#fff;border-radius:10px;padding:8px 12px;font-size:13.5px;line-height:1.4;margin-bottom:10px}
+.imp-step b{font-size:15px}
 .sendTop{min-height:40px;font-weight:800}
 .qs-search{width:100%;font-size:16px;padding:12px;border:1px solid var(--line);border-radius:10px;box-sizing:border-box;margin:6px 0 10px}
 .qs-list{display:flex;flex-direction:column;gap:8px;max-height:min(60vh,520px);overflow:auto}
@@ -343,7 +350,7 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
 
   <aside class="card" id="prop" aria-label="Cotización">
     <div class="ph"><h2>Cotización</h2><span class="pill" id="nSel">0</span><span class="mono" style="color:var(--muted);font-size:12px" id="propNo"></span><span style="flex:1"></span><button class="btn primary sendTop" type="button" id="sendTop">Enviar</button></div>
-    <div class="qbtns"><button class="btn" type="button" id="qsFind">Buscar cotización de un cliente</button><button class="btn" type="button" id="qsAll">Todas las cotizaciones</button></div>
+    <div class="qbtns"><button class="btn imp-btn" type="button" id="impBtn">📋 Lista del cliente (WhatsApp)</button><button class="btn" type="button" id="qsFind">Buscar cotización de un cliente</button><button class="btn" type="button" id="qsAll">Todas las cotizaciones</button></div>
     <div class="scroll">
       <details class="blk" id="cliBlk" open>
         <summary><span class="t">Cliente</span><span class="s" id="cliSum">Sin datos</span></summary>
@@ -406,6 +413,15 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
 </div>
 
 <div class="modal" id="pdModal" hidden><div class="box" id="pdBox"></div></div>
+<div class="modal" id="impModal" hidden><div class="box" id="impBox">
+<h3>Lista del cliente</h3>
+<p>Pega aquí el WhatsApp que te ha mandado el cliente desde el catálogo. Te pongo los artículos en la cotización uno a uno y en cada uno te pregunto el descuento.</p>
+<textarea class="imp-ta" id="impTa" placeholder="Mantén pulsado el mensaje del cliente en WhatsApp → Copiar, y pégalo aquí"></textarea>
+<div class="acts" style="justify-content:flex-start;margin-top:8px"><button class="btn" type="button" id="impPaste">Pegar del portapapeles</button></div>
+<div class="imp-sum" id="impSum" hidden></div>
+<label class="chk-inline" id="impNewWrap" hidden style="margin-top:8px"><input type="checkbox" id="impNew" checked> Empezar una cotización nueva (la actual queda guardada)</label>
+<div class="acts"><button class="btn" type="button" id="impX">Cancelar</button><button class="btn primary" type="button" id="impGo" disabled>Empezar</button></div>
+</div></div>
 <div id="zv" hidden role="dialog" aria-modal="true" aria-label="Foto en grande"><div class="zb"><button type="button" id="zvX">Cerrar foto</button></div><div class="zi"><img id="zvImg" alt="Foto del producto"></div></div>
 <div class="modal" id="qsModal" hidden><div class="box" id="qsBox"></div></div>
 <div class="modal" id="cntModal" hidden><div class="box wide" id="cntBox"></div></div>
@@ -888,13 +904,11 @@ fillFam();fillSub();loadForm();repRender();renderSaved();renderProp();
 document.body.dataset.view='cat';setMode('con');sizeBars();$('startModal').hidden=false;
 // ---------- novedades: se enseñan una sola vez por versión ----------
 // Para la próxima versión: cambia APP_VER, la lista NOVEDADES y sube APPV (más abajo) para que los móviles se recarguen solos. Volverá a salir una vez a todos.
-const APP_VER='V0.2';
+const APP_VER='V0.3';
 const NOVEDADES=[
- ['Fotos más grandes y nítidas','Hemos mejorado todas las fotos. Toca un artículo y verás la foto en grande. Si tocas la foto, se ve a pantalla completa.'],
- ['Buscador más listo','Encuentra el artículo aunque lo escribas en plural, con alguna falta o sin tildes. Por ejemplo: «croquetas», «mahonesa», «kechup».'],
- ['Todo se guarda solo','Cada cambio que haces en una cotización se guarda al momento. Si se cierra la app, al volver la tienes igual.'],
- ['Tus cotizaciones, siempre a mano','Arriba de la cotización tienes «Buscar cotización de un cliente» y «Todas las cotizaciones». Desde ahí puedes seguir con ella, modificarla y volver a enviarla, o descargarla al teléfono u ordenador.'],
- ['Enviar, más fácil','Tienes el botón «Enviar» arriba y abajo de la cotización. Al enviar solo eliges dos cosas: Imagen o PDF.']
+ ['Lista del cliente en un toque','Cuando un cliente te mande su lista desde el catálogo, toca el enlace del final del mensaje (o copia el mensaje y dale a «📋 Lista del cliente»). Los artículos entran solos en la cotización.'],
+ ['Descuento artículo por artículo','Te va enseñando cada artículo de la lista con lo que gastaría el cliente a la semana y te pregunta el descuento. «Cancelar» lo salta.'],
+ ['Ofertas del catálogo','Si el cliente marcó un artículo en oferta, te sale avisado para que lo tengas en cuenta en el precio.']
 ];
 $('appVer').textContent=APP_VER.toLowerCase();
 function showNews(){
@@ -907,6 +921,62 @@ function showNews(){
 }
 showNews();
 if(LINKED&&!REP.tel){$('startModal').hidden=true;repOpen();$('repModal').querySelector('p').textContent='Hola, '+LINKED.split(' ')[0]+'. Pon tu teléfono una sola vez: saldrá en los PDF como contacto del cliente.';$('repForm').addEventListener('submit',()=>{if(REP.tel)$('startModal').hidden=false},{once:true})}
+
+// ===== Lista del cliente desde el catálogo (WhatsApp) → cotización guiada
+(function(){
+  let IMP=null; // {items:[{c,q,of}],i,neg,com}
+  function parseLista(t){
+    const items=[],seen=new Set(),miss=[];
+    String(t||'').split(/\n/).forEach(line=>{const m=line.match(/Ref\.?\s*(\d{5,7})/i);if(!m)return;const c=m[1];if(seen.has(c))return;seen.add(c);
+      const q=(line.match(/aprox\.?\s*(\d+)/i)||[])[1]||'';const of=(line.match(/OFERTA:\s*(.+)$/i)||[])[1]||'';
+      if(BY[c])items.push({c,q,of:of.trim()});else miss.push(c)});
+    const neg=((String(t).match(/soy de ([^.\n]+)/i)||[])[1]||'').trim();
+    const com=((String(t).match(/Comentario:\s*(.+)/i)||[])[1]||'').trim();
+    return {items,miss,neg,com};
+  }
+  function parseHash(){try{const h=new URLSearchParams(location.hash.slice(1));const l=h.get('lista');if(!l)return null;
+    const items=[],miss=[];l.split(',').forEach(x=>{const [c,q]=x.split('.');if(!c)return;if(BY[c])items.push({c,q:q||'',of:''});else miss.push(c)});
+    return {items,miss,neg:h.get('n')||'',com:h.get('o')||''}}catch(e){return null}}
+  let P=null;
+  function showSum(){
+    const box=$('impSum');if(!P||(!P.items.length&&!P.miss.length)){box.hidden=true;$('impGo').disabled=true;$('impNewWrap').hidden=true;return}
+    box.hidden=false;$('impGo').disabled=!P.items.length;$('impNewWrap').hidden=!S.lines.length;
+    box.innerHTML=(P.neg?`<b>Cliente:</b> ${esc(P.neg)}<br>`:'')+`<b>${P.items.length} artículo${P.items.length==1?'':'s'}</b> para cotizar`+(P.com?`<br><b>Comentario:</b> ${esc(P.com)}`:'')+
+      `<ul>${P.items.map(x=>`<li>${esc(cleanDesc(BY[x.c].d))} <span class="mono" style="color:var(--muted)">${x.c}</span>${x.q?' · aprox. '+x.q+' cj/sem':''}</li>`).join('')}</ul>`+
+      (P.miss.length?`<div style="color:var(--warn);margin-top:6px">No están en la tarifa: ${P.miss.map(esc).join(', ')}</div>`:'');
+  }
+  function openImp(pre){$('pdModal').hidden=true;$('startModal').hidden=true;$('impModal').hidden=false;if(pre){P=pre;$('impTa').value='';}else{P=parseLista($('impTa').value)}showSum()}
+  $('impBtn').addEventListener('click',()=>openImp(null));
+  $('impX').addEventListener('click',()=>{$('impModal').hidden=true});
+  $('impModal').addEventListener('click',e=>{if(e.target===$('impModal'))$('impModal').hidden=true});
+  $('impTa').addEventListener('input',()=>{P=parseLista($('impTa').value);showSum()});
+  $('impPaste').addEventListener('click',async()=>{try{const t=await navigator.clipboard.readText();$('impTa').value=t;P=parseLista(t);showSum();if(!P.items.length)flash('En lo pegado no veo referencias. Copia el mensaje del cliente entero.','err')}catch(e){flash('No me deja leer el portapapeles: mantén pulsado el cuadro y pega.','err')}});
+  $('impGo').addEventListener('click',()=>{
+    if(!P||!P.items.length)return;
+    if(S.lines.length&&$('impNew').checked){const old=S.lines.map(l=>l.c);S=blank();old.forEach(refreshItem)}
+    if(P.neg&&!cliLabel()){S.tipo='nu';S.cli.com=P.neg}
+    save();loadForm();summaries();renderProp();
+    $('impModal').hidden=true;setMode('cot');
+    IMP={items:P.items.slice(),i:0,neg:P.neg,com:P.com};next();
+  });
+  function next(){
+    if(!IMP)return;
+    if(IMP.i>=IMP.items.length){const n=IMP.items.filter(x=>lineOf(x.c)).length;IMP=null;renderProp();setView('prop');
+      flash('Lista cargada: '+n+' artículo'+(n==1?'':'s')+' en la cotización. Revisa y dale a «Enviar cotización».','ok');return}
+    const it=IMP.items[IMP.i];openProduct(it.c);
+    const st=document.createElement('div');st.className='imp-step';
+    st.innerHTML=`<b>Artículo ${IMP.i+1} de ${IMP.items.length}</b>${IMP.neg?' · lista de '+esc(IMP.neg):''}`+(it.q?`<br>El cliente gastaría aprox. <b>${esc(it.q)} caja${it.q=='1'?'':'s'}/semana</b>`:'')+(it.of?`<br>🔥 Va con la oferta: <b>${esc(it.of)}</b>`:'')+
+      (IMP.i===0&&IMP.com?`<br>Comentario: ${esc(IMP.com)}`:'')+`<br><span style="opacity:.85">«Cancelar» = saltar este artículo</span>`;
+    $('pdBox').prepend(st);
+  }
+  $('pdModal').addEventListener('click',e=>{if(!IMP)return;
+    const b=e.target.closest('[data-pd]');const a=b?b.dataset.pd:(e.target===$('pdModal')?'close':null);
+    if(a==='ok'||a==='close'||a==='del'){IMP.i++;setTimeout(next,60)}});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&IMP){IMP=null;flash('Has parado la lista. Lo que ya añadiste está en la cotización.')}});
+  function fromHash(d){const H=parseHash();
+    if(H&&(H.items.length||H.miss.length)){setTimeout(()=>{openImp(H);try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}},d)}}
+  fromHash(700);addEventListener('hashchange',()=>fromHash(50));
+})();
 window.setImgs=j=>{IMG=j||{};
   document.querySelectorAll('.thumb[data-ti]').forEach(el=>{const s=IMG[el.dataset.ti];if(s){el.classList.remove('no');el.removeAttribute('data-ti');el.innerHTML=`<img loading="lazy" alt="" src="data:image/jpeg;base64,${s}">`}});};
 };
@@ -958,7 +1028,7 @@ $('gDone').addEventListener('click',()=>{put('pnv_inst_done','1');closeGuide()})
 addEventListener('appinstalled',()=>{put('pnv_inst_done','1');closeGuide()});
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{try{r.update()}catch(e){}}).catch(()=>{});
 // auto-actualización: al abrir o volver a la app, mira si hay versión nueva y se recarga sola
-const APPV=12;
+const APPV=13;
 async function checkUpd(){if(!$('cntModal').hidden)return;try{const t=await (await fetch('index.html?_='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const APPV=(\d+);/);
   if(m&&+m[1]>APPV){try{const r=await navigator.serviceWorker.getRegistration();if(r)await r.update()}catch(e){}if(!sessionStorage.getItem('pnv_upd'+m[1])){sessionStorage.setItem('pnv_upd'+m[1],'1');location.reload()}}}catch(e){}}
 setTimeout(checkUpd,2500);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkUpd()});
