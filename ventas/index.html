@@ -270,7 +270,7 @@ document.addEventListener('click',e=>{
   if(e.target.id==='mclose'||e.target===$('modal'))$('modal').hidden=true;
 });
 async function copiar(t){try{await navigator.clipboard.writeText(t);toast('Copiado ✔')}catch(e){prompt('Copia este texto:',t)}}
-function msgCliente(c){return`${NV.enlace(c)}\n\n👆 *Toca la imagen de arriba* para hacer tu pedido a *Penalva Alimentación*.\n\nTe salen las cosas que sueles comprar, con foto y precio. Tocas *+ Añadir*, le das a *Enviar* y el pedido me llega por WhatsApp.\n\n📌 Guarda este mensaje: el enlace es siempre el mismo.`}
+function msgCliente(c){return`${NV.enlace(c)}`}
 const ENV=(()=>{try{return new Set(JSON.parse(get('pnv_env')||'[]'))}catch(e){return new Set()}})();
 const marcar=code=>{ENV.add(code);put('pnv_env',JSON.stringify([...ENV]))};
 const waCli=c=>`https://wa.me/${c.tel?'34'+c.tel:''}?text=${encodeURIComponent(msgCliente(c))}`;
@@ -377,7 +377,7 @@ function enlaces(){
   const dk=encodeURIComponent(NV.b64url(DASH));
   const base=NV.LINK_BASE+'ventas/';
   const reps=ST?[...new Set(ST.cli.map(c=>c.com).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es')):[];
-  const row=(n,u,tel)=>{const t=`${u}\n\n👆 *Toca la imagen de arriba*, ${n.split(' ')[0]}. Es tu *cuadro de ventas* de Penalva.\n\n1️⃣ Entra en *Clientes*. Si quieres, filtra por canal *WhatsApp*.\n2️⃣ En cada cliente dale al botón verde *📲 Enviarle su pedido*.\n3️⃣ Se abre WhatsApp con su mensaje. *Espera un segundo a que salga la imagen* y envíalo.\n\nAsí el cliente recibe un botón, no un enlace. Toca la imagen, elige y te llega el pedido a ti.\n\n📌 Guarda este mensaje, el enlace es siempre el mismo.`;
+  const row=(n,u,tel)=>{const t=`${u}`;
     return`<tr><td><b>${esc(n)}</b><div class="link">${esc(u)}</div></td><td><div class="acts" style="margin:0"><button class="btn sm" data-copy="${esc(u)}">Copiar</button><a class="btn sm wa" target="_blank" rel="noopener" href="https://wa.me/${tel?'34'+esc(tel):''}?text=${encodeURIComponent(t)}">WhatsApp</a></div></td></tr>`};
   V.innerHTML=`<div class="card"><h2>Enlaces del cuadro de ventas</h2><p class="help">Cada comercial entra directo a <b>sus</b> clientes. Con el tuyo ves a todos.</p><div class="tw"><table><tbody>
   ${row('David (todos)',base+'#v='+dk,'')}
