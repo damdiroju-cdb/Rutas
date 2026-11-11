@@ -13,7 +13,7 @@ const SHEET='https://script.google.com/macros/s/AKfycbwXS7Xx-Ow-AUmQuEEVul2jAnN6
 NV.INICIO='2026-08-01';
 NV.CENTRAL='615849304';
 // comerciales conocidos (nombre → móvil). Se pueden cambiar desde el panel.
-NV.REPS={'Antonio Aguado':'609253986','Abraham Megias':'627483661','David Sierra':'625400548','Jorge Ortega':'685330838','Antonio Ayala':'615849309','Jose Manuel Herrera':'695229073','Jose Manuel Avidad':'664549032','Juan Manuel Cabrerizo':'655334450','Juan Manuel Martin':'615849308','Manuel Borrego':'627483672','Sebastián Doncel':'656392838','David Díaz':'615849304','David Guadix':'625400548','Juanma Nordwik':'615849308'};
+NV.REPS={'Antonio Aguado':'609253986','Abraham Megias':'627483661','David Sierra':'625400548','Jorge Ortega':'685330838','Antonio Ayala':'615849309','Jose Manuel Herrera':'695229073','Jose Manuel Avidad':'664549032','Juan Manuel Cabrerizo':'655334450','Juan Manuel Martin':'615849308','Manuel Borrego':'627483672','Sebastián Doncel':'656392838','David Díaz':'615849304','David Guadix':'625400548','Juanma Nordwik':'615849308','Televenta Nordwik':'692853375'};
 // fuera de nuestro canal: grandes cuentas, cadenas y distribuidores (códigos 990000 en adelante) y el 0
 NV.fuera=c=>{const n=parseInt(c.c,10);return n===0||n>=990000};
 
