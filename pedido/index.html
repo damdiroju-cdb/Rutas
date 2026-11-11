@@ -233,7 +233,7 @@ function enviar(){
   const L=lines();const nota=($('nota').value||'').trim();
   const tot=L.reduce((s,[a,q])=>s+a.p*q,0);
   const txt=`🛒 *PEDIDO*\n*${B.n}* (cliente ${B.c})\n\n`+L.map(([a,q])=>`• *${q} ${uw(a.f,q)}* · ${a.d} (${a.c})`).join('\n')+`\n\nTotal aprox.: ${eur(tot)}`+(nota?`\n\n📝 ${nota}`:'')+`\n\nEnviado desde mi enlace de pedidos Penalva`;
-  const tel=String(B.wa||'615849304').replace(/\D/g,'');
+  const tel=String(B.wa||'692853375').replace(/\D/g,'');
   window.open('https://wa.me/34'+tel+'?text='+encodeURIComponent(txt),'_blank');
   // queda guardado por si no se llegó a enviar; se ofrece vaciar
   $('sheet').innerHTML=`<div class="done"><div class="big">✅</div><h2>¡Casi está!</h2><p>Se ha abierto WhatsApp con tu pedido escrito.<br><b>Dale a la flechita ➤ para enviarlo.</b></p>
