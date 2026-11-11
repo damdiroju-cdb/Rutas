@@ -2780,7 +2780,7 @@ a{color:#B93A24}
     if(spIdx[c]!==undefined){ var i=spIdx[c]; im.style.backgroundImage='url(../fotos.jpg?v=2)'; im.style.backgroundSize=(SP.C*w)+'px '+(SP.rows*w)+'px'; im.style.backgroundPosition='-'+((i%SP.C)*w)+'px -'+(Math.floor(i/SP.C)*w)+'px'; }
     else im.style.backgroundImage='none';
     var hdi=$('pv-hd'), hdOk=HD[c];
-    if(hdOk){ im.style.display='none'; hdi.style.display='block'; hdi.onerror=function(){ hdi.style.display='none'; im.style.display=''; $('pv-tip').style.display='none'; }; hdi.src=HDP+c+'.jpg'; $('pv-tip').style.display=''; }
+    if(hdOk){ im.style.display='none'; hdi.style.display='block'; hdi.onerror=function(){ hdi.style.display='none'; im.style.display=''; $('pv-tip').style.display='none'; }; hdi.src=HDP+c+'.jpg?v=2'; $('pv-tip').style.display=''; }
     else { hdi.style.display='none'; hdi.removeAttribute('src'); im.style.display=''; $('pv-tip').style.display='none'; }
     $('pv-fam').textContent=p[3]; $('pv-name').textContent=p[1]; $('pv-fmt').textContent='Formato: '+p[2]; $('pv-ref').textContent=c;
     var u=USE[c]; $('pv-use').textContent=u?('Se usa en: '+u.join(' · ')):'';
