@@ -12,6 +12,10 @@ Uso:
   python3 actualizar_fotos.py --nuevas carpeta_o_json [--forzar 700434,701146]
      carpeta: archivos <código>.jpg/.png ; json: {"código": "base64 jpeg"}
      --forzar: códigos cuya foto oficial sí se quiere sustituir (foto mejor).
+     --comida: códigos que son FOTO DE COMIDA (producto terminado, sin envase).
+               Esas NO se mejoran con IA (les quita la textura: rebozado, pan,
+               especias quedan "de plástico"); se amplían con Lanczos + realce suave.
+               Los envases sí van con IA (el texto sale más nítido).
   python3 actualizar_fotos.py --solo-cotizador   (regenera solo fotos.bin)
 Requiere: numpy, pillow, cryptography. Clave del cotizador en la variable PENALVA_CLAVE.
 """
@@ -32,6 +36,14 @@ def cargar_nuevas(src):
     else:
         for c, b in json.load(open(src)).items():
             yield c, Image.open(io.BytesIO(base64.b64decode(b))).convert('RGB')
+
+def suave(im, factor=4):
+    from PIL import ImageFilter
+    if max(im.size) < 400:
+        im = im.resize((im.width * factor, im.height * factor), Image.LANCZOS)
+        im = im.filter(ImageFilter.UnsharpMask(radius=1.6, percent=70, threshold=2))
+    im.thumbnail((640, 640), Image.LANCZOS)
+    return im
 
 def mejorar(im, net):
     if max(im.size) < 400:
@@ -59,16 +71,17 @@ def cotizador():
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
-    ap.add_argument('--nuevas'); ap.add_argument('--forzar', default=''); ap.add_argument('--solo-cotizador', action='store_true')
+    ap.add_argument('--nuevas'); ap.add_argument('--forzar', default=''); ap.add_argument('--comida', default=''); ap.add_argument('--solo-cotizador', action='store_true')
     a = ap.parse_args()
     if a.nuevas:
         from srnp import Net
         net = Net(os.path.join(AQUI, 'general.pth'))
         forzar = set(x.strip() for x in a.forzar.split(',') if x.strip())
+        comida = set(x.strip() for x in a.comida.split(',') if x.strip())
         nuevas = mantenidas = 0
         for c, im in cargar_nuevas(a.nuevas):
             dst = os.path.join(FOTOS, c + '.jpg')
             if os.path.exists(dst) and c not in forzar: mantenidas += 1; continue
-            mejorar(im, net).save(dst, quality=84, optimize=True); nuevas += 1
+            (suave(im) if c in comida else mejorar(im, net)).save(dst, quality=84, optimize=True); nuevas += 1
         print(f'Fotos nuevas/sustituidas: {nuevas} · oficiales que se mantienen: {mantenidas}')
     cotizador()
