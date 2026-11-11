@@ -103,7 +103,7 @@ ol.howto{padding-left:20px;margin:6px 0}ol.howto li{margin:4px 0}
 <body>
 <header>
   <div class="hrow"><img src="../catalogo/penalva_blanco.png" alt="Penalva"><img class="nw" src="../catalogo/nordwik_blanco.png" alt="Nordwik"><h1 id="hTitle">Cuadro de ventas<small id="hSub"></small></h1></div>
-  <div class="hrow" style="justify-content:flex-end;margin-top:6px"><button id="instBtn" class="btn" style="background:#fff;border-color:#fff;color:#0067B1" hidden>📌 Ponerlo en mi escritorio</button></div>
+  <div class="hrow" style="justify-content:flex-end;margin-top:6px"><button id="outBtn" class="btn" style="background:rgba(255,255,255,.18);border-color:transparent;color:#fff;margin-right:8px" hidden>🔒 Cerrar sesión</button><button id="instBtn" class="btn" style="background:#fff;border-color:#fff;color:#0067B1" hidden>📌 Ponerlo en mi escritorio</button></div>
   <nav id="nav" role="tablist">
     <button data-v="res" aria-selected="true">📊 Resumen</button>
     <button data-v="cli" aria-selected="false">👥 Clientes</button>
@@ -130,6 +130,15 @@ ol.howto{padding-left:20px;margin:6px 0}ol.howto li{margin:4px 0}
   <button class="btn pri big" style="width:100%" id="lockB">Entrar</button>
   <p class="sub" style="margin-bottom:0">¿Eres comercial? Entra con el enlace que te ha mandado David.</p>
 </form></div>
+<div class="lock" id="pinbox" hidden><form id="pinF" autocomplete="off">
+  <h2 id="pinT">Cuadro de ventas</h2>
+  <p class="sub" id="pinS"></p>
+  <input type="password" id="pinI" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="····" style="font-size:30px;letter-spacing:14px;text-align:center">
+  <input type="password" id="pinI2" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Repite el PIN" style="font-size:22px;letter-spacing:8px;text-align:center;margin-top:8px" hidden>
+  <div class="msg ko" id="pinM" hidden></div>
+  <button class="btn pri big" style="width:100%" id="pinB">Entrar</button>
+  <p class="sub" style="margin-bottom:0;text-align:center"><a href="#" id="pinOlv">¿Has olvidado tu PIN?</a></p>
+</form></div>
 <div class="busy" id="busy" hidden><div class="spin"></div><div id="busyT">Cargando…</div></div>
 <div class="toast" id="toast" hidden></div>
 
@@ -148,6 +157,7 @@ const toast=t=>{const e=$('toast');e.textContent=t;e.hidden=false;clearTimeout(t
 const busy=t=>{$('busy').hidden=!t;if(t)$('busyT').textContent=t};
 const NOREP='(sin comercial asignado)';
 
+let SESS='';
 let ST=null,K=null,DASH=null,ADMIN=false,VIEW='res',PER='ult',REP='',CF='todos',CQ='',CCAN='';
 const params=new URLSearchParams(location.search);
 // ---- acceso ----
@@ -157,8 +167,55 @@ async function entrarClave(clave){
   put('pnv_vclave',clave.trim().toUpperCase());
   return st;
 }
+const NOMBRE=s=>s==='todos'?'todos los comerciales':s.split('-').map(w=>w[0].toUpperCase()+w.slice(1)).join(' ');
+let PINMODO='',PINDASH='';
+function pedirPin(cs,modo){
+  PINMODO=modo||(get('pnv_pin_'+cs)?'pin':'primera');
+  $('pinbox').hidden=false;$('pinM').hidden=true;$('pinI').value='';$('pinI2').value='';$('pinI2').hidden=PINMODO!=='nuevo';
+  $('pinOlv').parentNode.hidden=PINMODO!=='pin';
+  $('pinT').textContent=cs==='todos'?'Cuadro de ventas':'Hola, '+NOMBRE(cs)+' 👋';
+  $('pinS').innerHTML=PINMODO==='primera'?'Es la primera vez en este aparato. Escribe el PIN <b>0000</b>.'
+    :PINMODO==='nuevo'?'Ahora <b>crea tu PIN</b> de 4 cifras (que no sea 0000) y repítelo. Te lo pedirá solo si cierras la sesión.'
+    :'Escribe tu PIN de 4 cifras.';
+  $('pinB').textContent=PINMODO==='nuevo'?'Guardar mi PIN':'Entrar';
+  setTimeout(()=>$('pinI').focus(),50);
+}
+async function entrarPin(cs,dashB64){
+  put('pnv_open_'+cs,dashB64);put('pnv_lastc',cs);SESS=cs;DASH=NV.unb64(dashB64);busy('Cargando ventas…');
+  ST=await NV.abrirDatos(DASH);$('pinbox').hidden=true;$('outBtn').hidden=false;busy(false);iniciar();
+}
+$('pinF').addEventListener('submit',async e=>{e.preventDefault();const cs=params.get('c');const v=$('pinI').value.trim();const M=$('pinM');M.hidden=true;
+  const err=t=>{M.textContent=t;M.hidden=false;busy(false)};
+  if(!/^\d{4}$/.test(v))return err('El PIN son 4 números.');
+  try{
+    if(PINMODO==='primera'){
+      if(v!==NV.PIN0)return err('La primera vez el PIN es 0000.');
+      busy('Comprobando…');const r=await fetch('acc/'+encodeURIComponent(cs)+'.bin?_='+Date.now(),{cache:'no-store'});
+      if(!r.ok)return err('Este enlace no es válido. Pide el tuyo a David.');
+      PINDASH=await NV.pinAbrir(v,cs,NV.unb64((await r.text()).trim()));busy(false);pedirPin(cs,'nuevo');
+    }else if(PINMODO==='nuevo'){
+      const v2=$('pinI2').value.trim();
+      if(v===NV.PIN0)return err('Elige un PIN distinto de 0000.');
+      if(v!==v2)return err('Los dos PIN no coinciden.');
+      busy('Guardando tu PIN…');put('pnv_pin_'+cs,NV.b64url(await NV.pinCerrar(v,cs,PINDASH)));PINDASH='';
+      toast('PIN guardado ✔');await entrarPin(cs,await NV.pinAbrir(v,cs,NV.unb64(get('pnv_pin_'+cs))));
+    }else{
+      busy('Comprobando…');let d;try{d=await NV.pinAbrir(v,cs,NV.unb64(get('pnv_pin_'+cs)))}catch(x){return err('PIN incorrecto.')}
+      await entrarPin(cs,d);
+    }
+  }catch(x){console.error(x);err('No se ha podido entrar. Revisa la conexión y prueba otra vez.')}
+});
+$('pinOlv').onclick=e=>{e.preventDefault();if(!confirm('¿Has olvidado tu PIN? Vuelve a entrar con 0000 y crea uno nuevo.'))return;const cs=params.get('c');put('pnv_pin_'+cs,null);pedirPin(cs,'primera')};
+$('outBtn').onclick=()=>{if(!confirm('¿Cerrar sesión? Para volver a entrar te pedirá tu PIN.'))return;if(SESS)put('pnv_open_'+SESS,null);put('pnv_vdash',null);put('pnv_vrep',null);location.href=location.pathname+(SESS?'?c='+SESS:'')};
 async function arrancar(){
   const hv=(location.hash.match(/v=([^&]+)/)||[])[1];
+  const cs=params.get('c');
+  if(!hv&&!cs&&!get('pnv_vclave')&&get('pnv_lastc')){location.replace(location.pathname+'?c='+encodeURIComponent(get('pnv_lastc')));return}
+  if(!hv&&cs&&!get('pnv_vclave')){
+    const op=get('pnv_open_'+cs);
+    if(op){try{await entrarPin(cs,op);return}catch(e){console.error(e);put('pnv_open_'+cs,null)}}
+    busy(false);pedirPin(cs);return;
+  }
   try{
     if(hv){DASH=NV.unb64(decodeURIComponent(hv));busy('Cargando ventas…');ST=await NV.abrirDatos(DASH);put('pnv_vdash',hv);}
     else if(get('pnv_vclave')){busy('Cargando ventas…');ST=await entrarClave(get('pnv_vclave'))}
@@ -192,9 +249,10 @@ function iniciar(){
   else{calcular();$('hSub').textContent=`Ventas del ${NV.fmtD(ST.inicio)} al ${NV.fmtD(AG.last.hasta)}`}
   // comercial: por enlace ?c=slug
   const reps=ST?[...new Set(ST.cli.filter(c=>!NV.fuera(c)).map(repOf))].sort((a,b)=>a===NOREP?1:b===NOREP?-1:a.localeCompare(b,'es')):[];
-  if(params.get('c'))put('pnv_vrep',params.get('c'));const want=params.get('c')||(ADMIN?null:get('pnv_vrep'));
+  if(params.get('c')&&params.get('c')!=='todos')put('pnv_vrep',params.get('c'));const want=SESS==='todos'?null:(params.get('c')||(ADMIN?null:get('pnv_vrep')));
   if(want){const r=reps.find(x=>NV.slug(x)===want)||reps.find(x=>NV.slug(x).includes(want));if(r)REP=r}
   const reps2=reps;$('fRep').innerHTML=`<option value="">Todos los comerciales</option>`+reps.map(r=>`<option${r===REP?' selected':''}>${esc(r)}</option>`).join('');
+  if(SESS&&SESS!=='todos'){$('fRep').disabled=true;$('fRep').style.display='none';const lb=document.querySelector('label[for=fRep]');if(lb)lb.style.display='none'}
   pintar();
 }
 $('fRep').onchange=e=>{REP=e.target.value;pintar()};
@@ -264,7 +322,7 @@ function lista(){
 }
 document.addEventListener('click',e=>{
   const sd=e.target.closest('[data-send]');if(sd){marcar(sd.dataset.send);setTimeout(()=>{sd.classList.remove('wa');sd.textContent='✔ Enviado · repetir'},300);return}
-  const r=e.target.closest('[data-rep]');if(r){REP=r.dataset.rep;$('fRep').value=REP;VIEW='cli';CF='todos';pintar();window.scrollTo(0,0);return}
+  const r=e.target.closest('[data-rep]');if(r&&!(SESS&&SESS!=='todos')){REP=r.dataset.rep;$('fRep').value=REP;VIEW='cli';CF='todos';pintar();window.scrollTo(0,0);return}
   const c=e.target.closest('[data-ci]');if(c){ficha(+c.dataset.ci);return}
   const cp=e.target.closest('[data-copy]');if(cp){copiar(cp.dataset.copy);return}
   if(e.target.id==='mclose'||e.target===$('modal'))$('modal').hidden=true;
@@ -379,9 +437,9 @@ function enlaces(){
   const reps=ST?[...new Set(ST.cli.map(c=>c.com).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es')):[];
   const row=(n,u,tel)=>{const t=`${u}`;
     return`<tr><td><b>${esc(n)}</b><div class="link">${esc(u)}</div></td><td><div class="acts" style="margin:0"><button class="btn sm" data-copy="${esc(u)}">Copiar</button><a class="btn sm wa" target="_blank" rel="noopener" href="https://wa.me/${tel?'34'+esc(tel):''}?text=${encodeURIComponent(t)}">WhatsApp</a></div></td></tr>`};
-  V.innerHTML=`<div class="card"><h2>Enlaces del cuadro de ventas</h2><p class="help">Cada comercial entra directo a <b>sus</b> clientes. Con el tuyo ves a todos.</p><div class="tw"><table><tbody>
-  ${row('David (todos)',base+'#v='+dk,'')}
-  ${reps.map(n=>row(n,base+'?c='+NV.slug(n)+'#v='+dk,ST.reps[n])).join('')}
+  V.innerHTML=`<div class="card"><h2>Enlaces del cuadro de ventas</h2><p class="help">Cada comercial entra a <b>sus</b> clientes. La primera vez el PIN es <b>0000</b> y le pide crear el suyo. Si alguien olvida el PIN, toca «¿Has olvidado tu PIN?» y vuelve a entrar con 0000.</p><div class="tw"><table><tbody>
+  ${row('Todos los comerciales',base+'?c=todos','')}
+  ${reps.map(n=>row(n,base+'?c='+NV.slug(n),ST.reps[n])).join('')}
   </tbody></table></div>${reps.length?'':'<div class="msg in">Cuando cargues el listado de clientes con su comercial, aquí saldrá el enlace de cada uno.</div>'}</div>`;
 }
 
@@ -394,7 +452,7 @@ window.addEventListener('appinstalled',()=>{$('instBtn').hidden=true;toast('¡Li
 function atajo(){
   const dk=get('pnv_vdash')||(DASH?encodeURIComponent(NV.b64url(DASH)):'');
   const rep=REP&&REP!==NOREP?'?c='+NV.slug(REP):'';
-  const url=NV.LINK_BASE+'ventas/'+(ADMIN?'':rep+(dk?'#v='+dk:''));
+  const url=NV.LINK_BASE+'ventas/'+(ADMIN?'':(SESS?'?c='+SESS:rep+(dk?'#v='+dk:'')));
   const txt='[InternetShortcut]\r\nURL='+url+'\r\nIconIndex=0\r\nIconFile='+NV.LINK_BASE+'ventas/img/icon.ico\r\n';
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'application/octet-stream'}));a.download='Cuadro de ventas Penalva.url';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
 }

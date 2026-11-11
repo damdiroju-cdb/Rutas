@@ -199,6 +199,9 @@ NV.construir=async(st,K,T)=>{
   st.cat=cat.fecha;
   const clean=JSON.stringify(st,(k,v)=>k[0]==='_'?undefined:v);
   files['ventas/datos.bin']=b64(await NV.encrypt(K.dash,await NV.gzip(TE.encode(clean))));
+  // acceso de cada comercial con PIN inicial 0000 (enlace corto ventas/?c=slug)
+  for(const r of new Set(['todos',...st.cli.filter(c=>c.com).map(c=>c.com)])){const sl=NV.slug(r);
+    files['ventas/acc/'+sl+'.bin']=b64(await NV.pinCerrar(NV.PIN0,sl,NV.b64url(K.dash)))}
   return files;
 };
 NV.abrirDatos=async(dashRaw,base)=>{
@@ -225,4 +228,11 @@ NV.probarToken=async token=>{const r=await fetch('https://api.github.com/repos/'
 NV.LINK_BASE='https://damdiroju-cdb.github.io/Rutas/';
 NV.enlace=c=>NV.LINK_BASE+'pedido/?c='+c.id+'#'+c.k;
 G.NV=NV;
+// ---- acceso de comerciales con PIN (enlace corto ventas/?c=slug) ----
+NV.pinKey=async(pin,slug)=>{const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(String(pin)),'PBKDF2',false,['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2',salt:new TextEncoder().encode('pnv-acc:'+slug),iterations:100000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])};
+NV.pinCerrar=async(pin,slug,texto)=>{const k=await NV.pinKey(pin,slug),iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},k,new TextEncoder().encode(texto)));const o=new Uint8Array(12+ct.length);o.set(iv);o.set(ct,12);return o};
+NV.pinAbrir=async(pin,slug,buf)=>{const k=await NV.pinKey(pin,slug);return new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:buf.slice(0,12)},k,buf.slice(12)))};
+NV.PIN0='0000';
 })(window);
