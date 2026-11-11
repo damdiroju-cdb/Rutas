@@ -1,5 +1,5 @@
 // Cuadro de ventas: siempre lo último de la red; si no hay red, lo último guardado
-const C='ventas-v2';
+const C='ventas-v3';
 self.addEventListener('install',e=>self.skipWaiting());
 self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
 self.addEventListener('fetch',e=>{

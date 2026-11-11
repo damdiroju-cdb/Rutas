@@ -13,6 +13,10 @@
 <meta property="og:type" content="website"><meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="img/icon-192.png">
 <link rel="manifest" href="manifest.json">
+<script>(function(){try{var c=new URLSearchParams(location.search).get('c');if(!c)return;var b=location.origin+location.pathname;
+var m={name:'Cuadro de ventas · Penalva',short_name:'Ventas Penalva',start_url:b+'?c='+encodeURIComponent(c),scope:b,display:'standalone',background_color:'#0067B1',theme_color:'#0067B1',lang:'es',
+icons:[{src:b+'img/icon-192.png',sizes:'192x192',type:'image/png'},{src:b+'img/icon-512.png',sizes:'512x512',type:'image/png'},{src:b+'img/icon-maskable-512.png',sizes:'512x512',type:'image/png',purpose:'maskable'}]};
+var l=document.querySelector('link[rel=manifest]');l.href='data:application/manifest+json,'+encodeURIComponent(JSON.stringify(m));}catch(e){}})();</script>
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Ventas Penalva">
@@ -198,7 +202,7 @@ $('pinF').addEventListener('submit',async e=>{e.preventDefault();const cs=params
       if(v===NV.PIN0)return err('Elige un PIN distinto de 0000.');
       if(v!==v2)return err('Los dos PIN no coinciden.');
       busy('Guardando tu PIN…');put('pnv_pin_'+cs,NV.b64url(await NV.pinCerrar(v,cs,PINDASH)));PINDASH='';
-      toast('PIN guardado ✔');await entrarPin(cs,await NV.pinAbrir(v,cs,NV.unb64(get('pnv_pin_'+cs))));
+      toast('PIN guardado ✔');await entrarPin(cs,await NV.pinAbrir(v,cs,NV.unb64(get('pnv_pin_'+cs))));if(!instalada())setTimeout(instalar,700);
     }else{
       busy('Comprobando…');let d;try{d=await NV.pinAbrir(v,cs,NV.unb64(get('pnv_pin_'+cs)))}catch(x){return err('PIN incorrecto.')}
       await entrarPin(cs,d);
@@ -430,13 +434,29 @@ async function publicar(){
     $('hSub').textContent=`Ventas del ${NV.fmtD(ST.inicio)} al ${NV.fmtD(AG.last.hasta)}`;
   }catch(e){console.error(e);busy(false);M.innerHTML=`<div class="msg ko">${esc(e.message||e)}</div>`}
 }
+const MSGREP=(n,u)=>`Hola${n&&n!=='Todos los comerciales'?' '+n.split(' ')[0]:''}, este es tu *Cuadro de ventas de Penalva*, con tus clientes:
+${u}
+
+*1. Entrar*
+Abre el enlace y escribe el PIN *0000*. Te pedirá crear tu PIN de 4 números: invéntate uno y repítelo. Ya estás dentro.
+
+*2. Ponerlo en el móvil como una app*
+• *Android:* abre el enlace en Chrome, toca los 3 puntitos ⋮ de arriba a la derecha → «Instalar aplicación» (o «Añadir a pantalla de inicio») → «Instalar».
+• *iPhone:* abre el enlace en Safari, toca el botón Compartir (cuadrado con flecha ⬆️) → «Añadir a pantalla de inicio» → «Añadir».
+• *Ordenador:* ábrelo en Chrome y toca el iconito de instalar 🖥️ que sale a la derecha de la barra de direcciones.
+Te queda un icono azul de Penalva. Desde ahí entras siempre.
+
+*3. Usarlo*
+En «Clientes» busca al cliente y toca el botón verde: le llega por WhatsApp su enlace con lo que suele comprar, elige y te manda el pedido.
+
+Si cierras sesión te pedirá tu PIN. Si lo olvidas, toca «¿Has olvidado tu PIN?» y vuelve a entrar con 0000.`;
 function enlaces(){
   const V=$('v-enl');
   const dk=encodeURIComponent(NV.b64url(DASH));
   const base=NV.LINK_BASE+'ventas/';
   const reps=ST?[...new Set(ST.cli.map(c=>c.com).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es')):[];
-  const row=(n,u,tel)=>{const t=`${u}`;
-    return`<tr><td><b>${esc(n)}</b><div class="link">${esc(u)}</div></td><td><div class="acts" style="margin:0"><button class="btn sm" data-copy="${esc(u)}">Copiar</button><a class="btn sm wa" target="_blank" rel="noopener" href="https://wa.me/${tel?'34'+esc(tel):''}?text=${encodeURIComponent(t)}">WhatsApp</a></div></td></tr>`};
+  const row=(n,u,tel)=>{const t=MSGREP(n,u);
+    return`<tr><td><b>${esc(n)}</b><div class="link">${esc(u)}</div></td><td><div class="acts" style="margin:0"><button class="btn sm" data-copy="${esc(t)}">Copiar mensaje</button><a class="btn sm wa" target="_blank" rel="noopener" href="https://wa.me/${tel?'34'+esc(tel):''}?text=${encodeURIComponent(t)}">WhatsApp</a></div></td></tr>`};
   V.innerHTML=`<div class="card"><h2>Enlaces del cuadro de ventas</h2><p class="help">Cada comercial entra a <b>sus</b> clientes. La primera vez el PIN es <b>0000</b> y le pide crear el suyo. Si alguien olvida el PIN, toca «¿Has olvidado tu PIN?» y vuelve a entrar con 0000.</p><div class="tw"><table><tbody>
   ${row('Todos los comerciales',base+'?c=todos','')}
   ${reps.map(n=>row(n,base+'?c='+NV.slug(n),ST.reps[n])).join('')}
@@ -459,12 +479,12 @@ function atajo(){
 async function instalar(){
   if(DEFER){DEFER.prompt();const r=await DEFER.userChoice.catch(()=>({}));DEFER=null;if(r&&r.outcome==='accepted')return}
   const ua=navigator.userAgent,ios=/iPhone|iPad|iPod/.test(ua),and=/Android/.test(ua);
-  $('mbox').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:flex-start"><h2>📌 Ponerlo en el escritorio</h2><button class="btn sm" id="mclose">✕</button></div>
+  $('mbox').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:flex-start"><h2>📌 Ponlo en tu móvil como una app</h2><button class="btn sm" id="mclose">✕</button></div>
   ${ios?`<ol class="howto" style="font-size:17px"><li>Abre esta página en <b>Safari</b>.</li><li>Toca el botón <b>Compartir</b> (el cuadrado con la flecha hacia arriba ⬆️).</li><li>Baja y toca <b>«Añadir a pantalla de inicio»</b>.</li><li>Toca <b>«Añadir»</b>. Te sale el icono azul en el móvil.</li></ol>`:
   and?`<ol class="howto" style="font-size:17px"><li>Toca los <b>tres puntitos ⋮</b> de arriba a la derecha de Chrome.</li><li>Toca <b>«Instalar aplicación»</b> o <b>«Añadir a pantalla de inicio»</b>.</li><li>Toca <b>«Instalar»</b>. Te sale el icono azul en el móvil.</li></ol>`:
   `<p><b>Opción 1 (la mejor):</b> en Chrome o Edge, toca el iconito de <b>instalar</b> 🖥️⬇️ que sale a la derecha de la barra de direcciones, o menú ⋮ → <b>«Enviar, guardar y compartir» → «Instalar página como aplicación»</b> (en Edge: ⋯ → <b>Aplicaciones → Instalar este sitio como aplicación</b>). Te queda el icono en el escritorio y se abre como un programa.</p>
   <p><b>Opción 2:</b> descarga un acceso directo y arrástralo al escritorio.</p><div class="acts"><button class="btn pri big" id="dlUrl">⬇️ Descargar acceso directo</button></div>`}
-  <p class="sub">Entra directo, sin clave, y siempre con los datos del último lunes.</p>`;
+  <p class="sub">Desde el icono entras directo. Si cierras sesión, te pedirá tu PIN.</p>`;
   $('modal').hidden=false;
   if($('dlUrl'))$('dlUrl').onclick=atajo;
 }
