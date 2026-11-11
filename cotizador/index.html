@@ -713,12 +713,12 @@ $('qsModal').addEventListener('click',async e=>{
 function confirmDel(b){if(b.dataset.sure)return true;b.dataset.sure='1';b.textContent='¿Borrar?';b.classList.add('danger');setTimeout(()=>{if(b.isConnected){delete b.dataset.sure;b.textContent='×';b.classList.remove('danger')}},3000);return false}
 $('newBtn').addEventListener('click',()=>{const old=S.lines.map(l=>l.c);S=blank();save();loadForm();renderProp();old.forEach(refreshItem);flash('Nueva cotización '+S.no,'ok')});
 function repRender(){const ok=REP.nom&&REP.tel;$('repChip').textContent=ok?REP.nom:'Pon tus datos';$('repChip').classList.toggle('empty',!ok)}
-const REPS=['Abraam','Antonio Aguado','Antonio Ayala','Avidad','Batseva','David Díaz','David Guadix','Jorge','Jose Manuel Herrera','Juanma Cabrerizo','Juanma Nordwik','Manolo Borrego','Nacho Penalva','Sebastián'];
+const REPS=['Abraam','Antonio Aguado','Antonio Ayala','Avidad','Batseva','David Díaz','David Guadix','Jorge','Jose Manuel Herrera','Juanma Cabrerizo','Juanma Nordwik','Manolo Borrego','Nacho Penalva','Sebastián','Televenta Nordwik'];
 $('rSel').innerHTML='<option value="">Elige tu nombre…</option>'+REPS.map(n=>`<option>${n}</option>`).join('')+'<option value="__otro">Otro…</option>';
 $('rSel').addEventListener('change',()=>{$('rNomWrap').hidden=$('rSel').value!=='__otro'});
 // enlace personal: ?c=nombre-del-comercial
 const slug=t=>norm(t).toLowerCase().replace(/[^a-z0-9]+/g,'-');
-const PRESET={'David Díaz':{tel:'682 390 990',mail:'daviddiaz@nordwik.com'}};
+const PRESET={'David Díaz':{tel:'615 849 304',mail:'daviddiaz@nordwik.com'},'Televenta Nordwik':{tel:'692 853 375',mail:''}};
 let LINKED=null;
 (function(){try{const c=new URLSearchParams(location.search).get('c');if(!c)return;const nm=REPS.find(n=>slug(n)===c.toLowerCase());if(!nm)return;LINKED=nm;
   if(REP.nom!==nm){REP={nom:nm,tel:'',mail:''}}const p=PRESET[nm];if(p){REP.tel=REP.tel||p.tel;REP.mail=REP.mail||p.mail}store('pnv_rep',REP)}catch(e){}})();
