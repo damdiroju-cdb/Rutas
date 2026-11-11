@@ -12,6 +12,10 @@ Uso:
   python3 actualizar_fotos.py --nuevas carpeta_o_json [--forzar 700434,701146]
      carpeta: archivos <código>.jpg/.png ; json: {"código": "base64 jpeg"}
      --forzar: códigos cuya foto oficial sí se quiere sustituir (foto mejor).
+     NOTA 11/11: desde el «Listado con fotos grandes» las fotos salen de originales
+     de ~300-750 px sin IA, en 3 tamaños: fotos/m/<c>.webp (480, móvil),
+     fotos/<c>.jpg (800, tablet y por defecto) y fotos/l/<c>.webp (1200, PC y zoom).
+     Script: herramientas/fotos/tamanos.py
      --comida: códigos que son FOTO DE COMIDA (producto terminado, sin envase).
                Esas NO se mejoran con IA (les quita la textura: rebozado, pan,
                especias quedan "de plástico"); se amplían con Lanczos + realce suave.

@@ -91,6 +91,7 @@ textarea{width:100%;min-height:80px;border:2px solid var(--line);border-radius:1
 @keyframes s{to{transform:rotate(360deg)}}
 mark{background:#fff1a8;color:inherit;border-radius:3px}
 </style>
+<script>function FOTO(c,p){p=p||'../fotos/';var w=Math.min(window.innerWidth||9999,(screen&&screen.width)||9999);return w<600?p+'m/'+c+'.webp?v=3':w<1100?p+c+'.jpg?v=3':p+'l/'+c+'.webp?v=3'}function FOTOZ(c,p){return (p||'../fotos/')+'l/'+c+'.webp?v=3'}</script>
 </head>
 <body>
 <header class="top" id="top">
@@ -153,7 +154,7 @@ $('sub').textContent='Toca + en lo que quieras y luego «Ver mi pedido».';
 $('tabs').hidden=false;
 document.title='Pedido · '+B.n;
 
-const foto=c=>'../fotos/'+encodeURIComponent(c)+'.jpg?v=2';
+const foto=c=>'../fotos/m/'+encodeURIComponent(c)+'.webp?v=3';
 function priceLine(a){
   let s=`${eur(a.p)} <small>${a.f==='KG'?'el kilo':'la '+uw(a.f,1)}</small>`;
   if(a.k&&a.f!=='UN'&&a.f!=='KG')s+=` <small>· ${a.k} uds</small>`;
@@ -203,7 +204,7 @@ document.addEventListener('click',e=>{
   const p=e.target.closest('[data-p]'),m=e.target.closest('[data-m]'),z=e.target.closest('[data-z]'),t=e.target.closest('.tab'),s=e.target.closest('[data-s]');
   if(p){setQ(p.dataset.p,1);return}
   if(m){setQ(m.dataset.m,-1);return}
-  if(z){const a=A.get(z.dataset.z);$('zvI').src=foto(a.c);$('zvT').textContent=a.d;$('zv').hidden=false;return}
+  if(z){const a=A.get(z.dataset.z);$('zvI').src=FOTOZ(encodeURIComponent(a.c));$('zvT').textContent=a.d;$('zv').hidden=false;return}
   if(t){TAB=t.dataset.t;document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===t));render();window.scrollTo(0,0);return}
   if(s){SUB=+s.dataset.s;document.querySelectorAll('#chips button').forEach(x=>x.setAttribute('aria-pressed',x===s));render(true)}
 });
