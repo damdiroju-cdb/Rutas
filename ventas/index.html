@@ -186,7 +186,7 @@ function pedirPin(cs,modo){
 }
 async function entrarPin(cs,dashB64){
   put('pnv_open_'+cs,dashB64);put('pnv_lastc',cs);SESS=cs;DASH=NV.unb64(dashB64);busy('Cargando ventas…');
-  ST=await NV.abrirDatos(DASH);$('pinbox').hidden=true;$('outBtn').hidden=false;busy(false);iniciar();
+  ST=await NV.abrirDatos(DASH);$('pinbox').hidden=true;$('outBtn').hidden=false;busy(false);if(cs!=='todos')VIEW='cli';iniciar();
 }
 $('pinF').addEventListener('submit',async e=>{e.preventDefault();const cs=params.get('c');const v=$('pinI').value.trim();const M=$('pinM');M.hidden=true;
   const err=t=>{M.textContent=t;M.hidden=false;busy(false)};
@@ -277,7 +277,7 @@ function resumen(){
   const venta=sum(U?AG.ult:AG.tot),prev=sum(U?AG.ultp:AG.totp);
   const hab=ids.filter(habitual),con=ids.filter(pidio),sin=hab.filter(i=>!pidio(i));
   const first=AG.nper===1;
-  V.innerHTML=`
+  V.innerHTML=`<div class="card" style="background:#EAF2FB;border:2px solid #0067B1"><h2 style="margin-top:0">🔍 Buscar un cliente</h2><p class="help" style="margin-top:0">Escribe su nombre o su número de cliente para mandarle su pedido por WhatsApp.</p><input type="search" id="rq" placeholder="Nombre o nº de cliente (ej.: 8217)" autocomplete="off" style="width:100%;font-size:18px;padding:14px 16px"></div>
   ${first?`<div class="msg in" style="margin:0 0 14px">📌 Este es el <b>punto de partida</b> (del ${NV.fmtD(ST.inicio)} al ${NV.fmtD(AG.last.hasta)}). A partir de la próxima carga verás aquí quién ha pedido y quién no cada semana.</div>`:''}
   <div class="kpis">
     <div class="kpi"><div class="l">Venta ${U&&!first?'de la última carga':'desde el 1 ago'}</div><div class="v">${eur(venta)}</div><div class="s">${pctH(pct(venta,prev))} vs mismo periodo año anterior</div></div>
@@ -304,7 +304,7 @@ function clientes(){
   const V=$('v-cli');
   if(!ST){V.innerHTML=`<div class="card empty">Todavía no hay ventas cargadas.</div>`;return}
   const first=AG.nper===1;
-  V.innerHTML=`<div class="card"><div class="filters" style="margin:0 0 10px"><input type="search" id="cq" placeholder="Buscar cliente por nombre, código o pueblo…" style="flex:1;min-width:220px" value="${esc(CQ)}">
+  V.innerHTML=`<div class="card"><div class="filters" style="margin:0 0 10px"><input type="search" id="cq" placeholder="🔍 Nombre o nº de cliente (ej.: 8217) o pueblo" autocomplete="off" style="flex:1;min-width:220px;font-size:18px;padding:14px 16px;border:2px solid #0067B1" value="${esc(CQ)}">
   <select id="ccan"><option value="">Todos los canales</option>${[...new Set(ST.cli.map(c=>c.canal).filter(Boolean))].sort().map(x=>`<option${x===CCAN?' selected':''}>${esc(x)}</option>`).join('')}</select>
   ${first?'':`<div class="seg" id="cf"><button data-f="todos">Todos</button><button data-f="con">Han pedido</button><button data-f="sin">Sin pedido</button></div>`}</div><div class="sub" id="cn"></div><div class="tw"><table><tbody id="tCli"></tbody></table></div></div>`;
   if(!first)$('cf').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.f===CF));
@@ -321,9 +321,11 @@ function lista(){
   const ws=NV.norm(CQ).split(/\s+/).filter(Boolean);
   if(ws.length)ids=ids.filter(i=>{const c=ST.cli[i];const t=NV.norm(c.n+' '+c.c+' '+c.pob+' '+c.com);return ws.every(w=>t.includes(w))});
   ids.sort((a,b)=>CF==='sin'?AG.antes[b]-AG.antes[a]:(U?AG.ult[b]-AG.ult[a]:0)||AG.tot[b]-AG.tot[a]);
+  const qn=CQ.trim();if(/^\d+$/.test(qn)){ids=ids.filter(i=>ST.cli[i].c.includes(qn));ids.sort((a,b)=>(ST.cli[b].c===qn)-(ST.cli[a].c===qn)||(ST.cli[a].c.startsWith(qn)?0:1)-(ST.cli[b].c.startsWith(qn)?0:1))}
   $('cn').textContent=ids.length+' clientes'+(ids.length>400?' · se muestran los 400 primeros, usa el buscador':'');
   $('tCli').innerHTML=ids.slice(0,400).map(filaCli).join('')||`<tr><td class="empty">No hay clientes con ese filtro.</td></tr>`;
 }
+document.addEventListener('input',e=>{if(e.target.id!=='rq')return;const v=e.target.value;if(!v.trim())return;CQ=v;VIEW='cli';CF='todos';pintar();const q=$('cq');if(q){q.focus();q.setSelectionRange(q.value.length,q.value.length)}});
 document.addEventListener('click',e=>{
   const sd=e.target.closest('[data-send]');if(sd){marcar(sd.dataset.send);setTimeout(()=>{sd.classList.remove('wa');sd.textContent='✔ Enviado · repetir'},300);return}
   const r=e.target.closest('[data-rep]');if(r&&!(SESS&&SESS!=='todos')){REP=r.dataset.rep;$('fRep').value=REP;VIEW='cli';CF='todos';pintar();window.scrollTo(0,0);return}
