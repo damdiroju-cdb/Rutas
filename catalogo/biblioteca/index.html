@@ -40,6 +40,19 @@ h1{font-size:24px;margin:4px 0 4px}
 .go.off{background:#9AA6B5;pointer-events:none}
 .alt{display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:14px;border:1.5px solid #C9D3DF;background:#F3F6FB;color:#1D1C1A;font:700 16px system-ui,sans-serif;text-decoration:none}
 .x{appearance:none;border:none;background:none;color:#545A63;font:700 15px system-ui,sans-serif;min-height:42px;cursor:pointer}
+.q{width:100%;font:600 18px system-ui,sans-serif;padding:14px;border:2px solid #1F8F4E;border-radius:14px}
+.res{max-height:38vh;overflow:auto;margin-top:6px}
+.ri{display:flex;align-items:center;gap:10px;padding:12px 8px;border-bottom:1px solid #EEF2F6;cursor:pointer}
+.ri:active{background:#EAF6EF}.ri .t{flex:1;min-width:0}.ri b{display:block;font-size:16px}.ri span{font-size:13px;color:#545A63}
+.ri .ph{font:800 15px system-ui,sans-serif;color:#1F8F4E;white-space:nowrap}.ri .ph.no{color:#9AA6B5;font-weight:600;font-size:13px}
+.selc{background:#EAF6EF;border:2px solid #1F8F4E;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px}
+.selc .t{flex:1;min-width:0}.selc b{display:block;font-size:18px}.selc span{font-size:14px;color:#33373D}
+.selc button{appearance:none;border:1px solid #9AA6B5;background:#fff;border-radius:999px;height:38px;padding:0 12px;font:700 13px system-ui,sans-serif;cursor:pointer}
+.tog{appearance:none;border:none;background:none;color:#0067B1;font:700 15px system-ui,sans-serif;text-decoration:underline;cursor:pointer;min-height:40px}
+.pinb{background:#F3F6FB;border-radius:14px;padding:12px;text-align:center;font-size:14.5px;line-height:1.45}
+.pinb input{display:block;margin:8px auto;width:160px;font:800 28px system-ui,sans-serif;letter-spacing:12px;text-align:center;padding:10px;border:2px solid #9AA6B5;border-radius:12px}
+.pinb button,.pinb a{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 18px;border-radius:12px;border:none;background:#1D1C1A;color:#fff;font:800 16px system-ui,sans-serif;text-decoration:none;cursor:pointer;margin-top:4px}
+.hint{color:#545A63;font-size:13.5px;text-align:center;padding:10px}
 .empty{background:#fff;border-radius:14px;padding:20px;text-align:center;color:#545A63}
 </style>
 </head>
@@ -47,7 +60,7 @@ h1{font-size:24px;margin:4px 0 4px}
 <div class="top"><img src="../penalva.png" alt="Alimentación Penalva"><img src="../nordwik.png" alt="Nordwik" style="height:34px"><span class="sp"></span><a class="back" id="back" href="#" hidden>‹ Volver</a></div>
 <div class="w">
   <h1>📚 Catálogos</h1>
-  <p class="sub">Elige un catálogo y pulsa <b>ENVIAR</b>. Escribe el móvil del cliente y se abre WhatsApp con el catálogo listo. No hace falta tener al cliente guardado.</p>
+  <p class="sub">Elige un catálogo y pulsa <b>ENVIAR</b>. Busca el cliente por su nombre y se abre WhatsApp con el catálogo listo. No hace falta tener al cliente guardado.</p>
   <div id="whoBox"></div>
   <div id="list"></div>
 </div>
@@ -55,8 +68,17 @@ h1{font-size:24px;margin:4px 0 4px}
 <div class="sheet" id="sh" role="dialog" aria-modal="true" aria-labelledby="shT"><div class="sb">
   <h3 id="shT">Enviar catálogo</h3>
   <div class="t" id="shS"></div>
+  <div id="cliBox">
+    <input class="q" id="q" type="search" autocomplete="off" placeholder="🔍 Busca el cliente: nombre, nº o pueblo" aria-label="Buscar cliente">
+    <div class="res" id="res"></div>
+    <div class="pinb" id="pinb" hidden></div>
+  </div>
+  <div class="selc" id="selc" hidden></div>
+  <button class="tog" id="tog">¿Cliente nuevo o no aparece? Escribe su móvil</button>
+  <div id="telBox" hidden>
   <input class="tel" id="tel" type="tel" inputmode="tel" autocomplete="off" placeholder="600 000 000" aria-label="Móvil del cliente">
   <div class="err" id="err"></div>
+  </div>
   <a class="go off" id="send" href="#" target="_top">📲 ENVIAR CATÁLOGO</a>
   <a class="alt" id="alt" href="#" target="_top">Elegir un contacto de WhatsApp</a>
   <button class="x" id="shX">Cerrar</button>
@@ -94,14 +116,58 @@ h1{font-size:24px;margin:4px 0 4px}
       l.appendChild(d);
     });
   }
-  function num(){ var t=$('tel').value.replace(/\D/g,''); if(t.indexOf('00')===0)t=t.slice(2);
+  // ===== clientes del comercial (mismos datos y misma sesión que el Cuadro de ventas)
+  var CLI=null, SEL=null, LOADING=false;
+  var get=function(k){try{return localStorage.getItem(k)}catch(e){return null}}, put=function(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+  function nucleo(){ return window.NV?Promise.resolve():new Promise(function(ok,ko){var sc=document.createElement('script');sc.src='../../ventas/nucleo.js?v=5';sc.onload=ok;sc.onerror=ko;document.head.appendChild(sc)}); }
+  function dashKey(){ if(!WHO) return null;
+    var o=get('pnv_open_'+WHO.slug)||get('pnv_open_todos')||get('pnv_vdash'); if(o) return Promise.resolve(NV.unb64(decodeURIComponent(o)));
+    var cl=get('pnv_vclave'); if(cl) return NV.claves(cl).then(function(K){return K.dash});
+    return null; }
+  function mineOf(st){ var s=WHO.slug, all=(s==='david-diaz');
+    return st.cli.filter(function(c){ var cs=NV.slug(c.com||''); return all||cs===s||(s==='televenta-nordwik'&&!c.com); })
+      .map(function(c){return {c:c.c,n:(c.n||'').replace(/\*+$/,'').trim(),pob:c.pob||'',tel:c.tel||'',k:NV.norm((c.n||'')+' '+c.c+' '+(c.pob||'')).toLowerCase()}}); }
+  function loadCli(){ if(CLI||LOADING) return; LOADING=true; $('res').innerHTML='<div class="hint">Cargando tus clientes…</div>';
+    nucleo().then(function(){ var d=dashKey(); if(!d){ LOADING=false; askPin(); return; }
+      return d.then(function(raw){ return NV.abrirDatos(raw,'../../ventas/'); }).then(function(st){ LOADING=false; if(!st) throw 0; CLI=mineOf(st); $('pinb').hidden=true; $('q').hidden=false; search(); });
+    }).catch(function(){ LOADING=false; $('res').innerHTML='<div class="hint">No he podido cargar tus clientes. Revisa la cobertura o escribe el móvil abajo.</div>'; }); }
+  function askPin(){ $('q').hidden=true; $('res').innerHTML=''; var b=$('pinb'); b.hidden=false;
+    if(get('pnv_pin_'+WHO.slug)){
+      b.innerHTML='🔒 Para ver tus clientes, escribe tu <b>PIN del cuadro de ventas</b>:<input id="pinI" type="password" inputmode="numeric" maxlength="4" placeholder="····"><button id="pinB">Ver mis clientes</button><div class="err" id="pinE"></div>';
+      $('pinB').onclick=function(){ var v=$('pinI').value.trim(); if(!/^\d{4}$/.test(v)){$('pinE').textContent='El PIN son 4 números';return}
+        NV.pinAbrir(v,WHO.slug,NV.unb64(get('pnv_pin_'+WHO.slug))).then(function(d){ put('pnv_open_'+WHO.slug,d); put('pnv_lastc',WHO.slug); loadCli(); },function(){ $('pinE').textContent='PIN incorrecto'; }); };
+      setTimeout(function(){try{$('pinI').focus()}catch(e){}},80);
+    } else {
+      b.innerHTML='🔒 Para buscar tus clientes, entra <b>una vez</b> en tu Cuadro de ventas desde este móvil (con tu PIN).<br><a target="_top" href="../../ventas/?c='+encodeURIComponent(WHO.slug)+'">Abrir mi Cuadro de ventas</a><div class="hint">Mientras, puedes escribir el móvil abajo.</div>';
+    } }
+  function fmtTel(t){ return t?t.replace(/(\d{3})(\d{3})(\d{3})/,'$1 $2 $3'):''; }
+  function search(){ if(!CLI) return; var r=$('res'), q=NV.norm($('q').value).toLowerCase().trim(); r.innerHTML='';
+    if(!q){ r.innerHTML='<div class="hint">Escribe el nombre del bar, el nº de cliente o el pueblo. Tienes '+CLI.length+' clientes.</div>'; return; }
+    var ws=q.split(/\s+/), L=CLI.filter(function(c){ return ws.every(function(w){return c.k.indexOf(w)>=0}); }).slice(0,40);
+    if(!L.length){ r.innerHTML='<div class="hint">No encuentro «'+esc($('q').value)+'». Si es nuevo, escribe su móvil abajo.</div>'; return; }
+    L.forEach(function(c){ var d=document.createElement('div'); d.className='ri';
+      d.innerHTML='<div class="t"><b></b><span></span></div><div class="ph'+(c.tel?'':' no')+'"></div>';
+      d.querySelector('b').textContent=c.n; d.querySelector('span').textContent='Nº '+c.c+(c.pob?' · '+c.pob:'');
+      d.querySelector('.ph').textContent=c.tel?fmtTel(c.tel):'sin móvil';
+      d.onclick=function(){ pick(c); }; r.appendChild(d); }); }
+  function pick(c){ SEL=c; $('cliBox').hidden=true; var s=$('selc'); s.hidden=false;
+    s.innerHTML='<div class="t"><b></b><span></span></div><button>Cambiar</button>';
+    s.querySelector('b').textContent=c.n; s.querySelector('span').textContent=c.tel?('📱 '+fmtTel(c.tel)+(c.pob?' · '+c.pob:'')):'Este cliente no tiene móvil en gsBase: escríbelo abajo';
+    s.querySelector('button').onclick=function(){ SEL=null; s.hidden=true; $('cliBox').hidden=false; $('q').focus(); upd(); };
+    if(!c.tel){ $('telBox').hidden=false; $('tog').hidden=true; setTimeout(function(){$('tel').focus()},50); }
+    upd(); }
+  $('q').addEventListener('input',search);
+  $('tog').onclick=function(){ $('telBox').hidden=false; $('tog').hidden=true; SEL=null; $('selc').hidden=true; $('cliBox').hidden=true; setTimeout(function(){$('tel').focus()},50); upd(); };
+  function num(){ if(SEL&&SEL.tel) return '34'+SEL.tel; var t=$('tel').value.replace(/\D/g,''); if(t.indexOf('00')===0)t=t.slice(2);
     if(t.length===9&&/^[6789]/.test(t))return '34'+t; if(t.length===11&&t.indexOf('34')===0)return t; return null; }
   function upd(){ if(!CUR)return; var L=linkOf(CUR), n=num(), raw=$('tel').value.replace(/\D/g,'');
     $('send').classList.toggle('off',!(L&&n)); $('send').href=(L&&n)?'https://wa.me/'+n+'?text='+encodeURIComponent(L):'#';
+    $('send').textContent=(SEL&&n)?'📲 ENVIAR A '+SEL.n.toUpperCase():'📲 ENVIAR CATÁLOGO';
     $('alt').href=L?'https://wa.me/?text='+encodeURIComponent(L):'#';
     $('err').textContent=raw.length>=9&&!n?'Revisa el número: móvil de 9 cifras':''; }
   function openSheet(cat){ CUR=cat; $('shT').textContent='Enviar: '+cat.titulo; $('shS').textContent=(cat.subtitulo||'')+(WHO?' · de '+WHO.nombre:'');
-    $('tel').value=''; upd(); $('sh').classList.add('open'); setTimeout(function(){try{$('tel').focus()}catch(e){}},80); }
+    $('tel').value=''; SEL=null; $('selc').hidden=true; $('cliBox').hidden=false; $('telBox').hidden=true; $('tog').hidden=false; $('q').value='';
+    upd(); $('sh').classList.add('open'); if(CLI){ $('q').hidden=false; search(); setTimeout(function(){try{$('q').focus()}catch(e){}},80); } else loadCli(); }
   function closeSheet(){ $('sh').classList.remove('open'); }
   $('tel').addEventListener('input',upd);
   $('shX').onclick=closeSheet; $('sh').addEventListener('click',function(e){ if(e.target===$('sh')) closeSheet(); });
