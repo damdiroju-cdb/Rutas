@@ -240,6 +240,9 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
 .choice{display:grid;gap:10px}
 .choice button{display:flex;gap:14px;align-items:center;text-align:left;border:1.5px solid var(--line);background:var(--soft);border-radius:12px;padding:14px;cursor:pointer}
 .choice button:hover{border-color:var(--accent)}
+.choice button.wa{background:#1F8F4E;border-color:#1F8F4E;color:#fff}.choice button.wa .tx{color:#e6f5ec}.choice button.wa .ic{background:rgba(255,255,255,.18);color:#fff}
+.wa-chip{background:#1F8F4E;color:#fff;border:0;border-radius:999px;padding:8px 14px;font-weight:800;font-size:14px;cursor:pointer;white-space:nowrap;min-height:38px;box-shadow:0 2px 6px rgba(31,143,78,.35)}
+.wa-chip:active{transform:scale(.97)}
 .choice .ic{width:44px;height:44px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;flex:none}
 .choice b{display:block;font-size:17px}
 .choice .tx{color:var(--muted);font-size:13.5px}
@@ -329,7 +332,7 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
   <div class="mode" id="modeSeg" role="group" aria-label="Modo">
     <button type="button" data-v="con" aria-pressed="true">Consulta</button><button type="button" data-v="cot" aria-pressed="false">Cotización</button>
   </div>
-  <button class="cnt-chip" id="cntChip" type="button" hidden title="Propuestas enviadas"></button><button class="rep-chip" id="repChip" type="button">Mis datos</button>
+  <button class="wa-chip" id="waChip" type="button" title="Meter la lista que te ha mandado el cliente por WhatsApp">📋 WhatsApp</button><button class="cnt-chip" id="cntChip" type="button" hidden title="Propuestas enviadas"></button><button class="rep-chip" id="repChip" type="button">Mis datos</button>
 </header>
 
 <main>
@@ -406,6 +409,7 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
     <h3>¿Qué vas a hacer?</h3>
     <p>Lo puedes cambiar luego arriba.</p>
     <div class="choice">
+      <button type="button" class="wa" id="startWa"><span class="ic" style="font-size:22px">📋</span><span><b>Lista del cliente (WhatsApp)</b><span class="tx">Pega lo que te ha mandado el cliente desde el catálogo y los artículos entran solos en la cotización.</span></span></button>
       <button type="button" data-start="con"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span><span><b>Solo consultar</b><span class="tx">Buscar un artículo y ver precio, unidades por caja, peso…</span></span></button>
       <button type="button" data-start="cot"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></span><span><b>Preparar cotización</b><span class="tx">Elegir artículos, poner descuentos y sacar el PDF para el cliente.</span></span></button>
     </div>
@@ -904,8 +908,9 @@ fillFam();fillSub();loadForm();repRender();renderSaved();renderProp();
 document.body.dataset.view='cat';setMode('con');sizeBars();$('startModal').hidden=false;
 // ---------- novedades: se enseñan una sola vez por versión ----------
 // Para la próxima versión: cambia APP_VER, la lista NOVEDADES y sube APPV (más abajo) para que los móviles se recarguen solos. Volverá a salir una vez a todos.
-const APP_VER='V0.3';
+const APP_VER='V0.4';
 const NOVEDADES=[
+ ['WhatsApp siempre a mano','Arriba tienes siempre el botón verde «📋 WhatsApp» para meter la lista que te manda el cliente, estés donde estés.'],
  ['Lista del cliente en un toque','Cuando un cliente te mande su lista desde el catálogo, toca el enlace del final del mensaje (o copia el mensaje y dale a «📋 Lista del cliente»). Los artículos entran solos en la cotización.'],
  ['Descuento artículo por artículo','Te va enseñando cada artículo de la lista con lo que gastaría el cliente a la semana y te pregunta el descuento. «Cancelar» lo salta.'],
  ['Ofertas del catálogo','Si el cliente marcó un artículo en oferta, te sale avisado para que lo tengas en cuenta en el precio.']
@@ -947,6 +952,8 @@ if(LINKED&&!REP.tel){$('startModal').hidden=true;repOpen();$('repModal').querySe
   }
   function openImp(pre){$('pdModal').hidden=true;$('startModal').hidden=true;$('impModal').hidden=false;if(pre){P=pre;$('impTa').value='';}else{P=parseLista($('impTa').value)}showSum()}
   $('impBtn').addEventListener('click',()=>openImp(null));
+  $('waChip').addEventListener('click',()=>openImp(null));
+  $('startWa').addEventListener('click',()=>openImp(null));
   $('impX').addEventListener('click',()=>{$('impModal').hidden=true});
   $('impModal').addEventListener('click',e=>{if(e.target===$('impModal'))$('impModal').hidden=true});
   $('impTa').addEventListener('input',()=>{P=parseLista($('impTa').value);showSum()});
@@ -1028,7 +1035,7 @@ $('gDone').addEventListener('click',()=>{put('pnv_inst_done','1');closeGuide()})
 addEventListener('appinstalled',()=>{put('pnv_inst_done','1');closeGuide()});
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{try{r.update()}catch(e){}}).catch(()=>{});
 // auto-actualización: al abrir o volver a la app, mira si hay versión nueva y se recarga sola
-const APPV=13;
+const APPV=14;
 async function checkUpd(){if(!$('cntModal').hidden)return;try{const t=await (await fetch('index.html?_='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const APPV=(\d+);/);
   if(m&&+m[1]>APPV){try{const r=await navigator.serviceWorker.getRegistration();if(r)await r.update()}catch(e){}if(!sessionStorage.getItem('pnv_upd'+m[1])){sessionStorage.setItem('pnv_upd'+m[1],'1');location.reload()}}}catch(e){}}
 setTimeout(checkUpd,2500);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkUpd()});
