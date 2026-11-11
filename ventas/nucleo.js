@@ -15,7 +15,7 @@ NV.CENTRAL='692853375';
 // comerciales conocidos (nombre → móvil). Se pueden cambiar desde el panel.
 NV.REPS={'Antonio Aguado':'609253986','Abraham Megias':'627483661','David Sierra':'625400548','Jorge Ortega':'685330838','Antonio Ayala':'615849309','Jose Manuel Herrera':'695229073','Jose Manuel Avidad':'664549032','Juan Manuel Cabrerizo':'655334450','Juan Manuel Martin':'615849308','Manuel Borrego':'627483672','Sebastián Doncel':'656392838','David Díaz':'615849304','David Guadix':'625400548','Juanma Nordwik':'615849308','Televenta Nordwik':'692853375','Nacho Penalva':'607396557'};
 // fuera de nuestro canal: grandes cuentas, cadenas y distribuidores (códigos 990000 en adelante) y el 0
-NV.fuera=c=>{const n=parseInt(c.c,10);return n===0||n>=990000};
+NV.fuera=c=>{const n=parseInt(c.c,10);return (n===0||n>=990000)&&!c.com};
 
 // ---------- utilidades ----------
 const b64=u=>{let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s)};
