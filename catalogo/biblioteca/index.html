@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#D2000F">
+<title>Biblioteca de catálogos · Penalva</title>
+<link rel="icon" href="../penalva.png">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#EEF3F9;color:#1D1C1A;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.top{background:#fff;border-bottom:1px solid #DCE4EE;padding:10px 14px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:5}
+.top img{height:30px}.top .sp{flex:1}
+.back{appearance:none;border:1px solid #9AA6B5;background:#fff;border-radius:999px;height:42px;padding:0 16px;font:700 15px system-ui,sans-serif;cursor:pointer;color:#1D1C1A;text-decoration:none;display:inline-flex;align-items:center}
+.w{max-width:760px;margin:0 auto;padding:14px}
+h1{font-size:24px;margin:4px 0 4px}
+.sub{color:#545A63;font-size:14.5px;margin:0 0 12px;line-height:1.45}
+.who{background:#fff;border:1px solid #DCE4EE;border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:15px}
+.who b{flex:1}
+.who button{appearance:none;border:1px solid #9AA6B5;background:#fff;border-radius:999px;height:38px;padding:0 14px;font:700 14px system-ui,sans-serif;cursor:pointer}
+.pick{display:grid;gap:8px;margin:6px 0 16px}
+.pick button{appearance:none;border:1.5px solid #C9D3DF;background:#fff;border-radius:14px;min-height:56px;font:700 18px system-ui,sans-serif;cursor:pointer;text-align:left;padding:0 18px}
+.pick button:active{background:#FFF1F2;border-color:#D2000F}
+.cat{background:#fff;border:1px solid #DCE4EE;border-radius:16px;overflow:hidden;margin-bottom:14px;box-shadow:0 2px 8px rgba(20,32,54,.06)}
+.cat img{display:block;width:100%;aspect-ratio:1200/630;object-fit:cover;background:#fff}
+.cat .in{padding:12px 14px 14px}
+.cat h2{margin:0;font-size:20px}.cat .s2{color:#0067B1;font-weight:700;font-size:14px;margin-top:2px}
+.cat p{margin:8px 0 12px;color:#545A63;font-size:14px;line-height:1.45}
+.go{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:62px;border:none;border-radius:16px;background:#1F8F4E;color:#fff;font:800 20px system-ui,sans-serif;cursor:pointer;text-decoration:none}
+.see{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;margin-top:8px;border-radius:14px;border:1.5px solid #C9D3DF;background:#fff;color:#1D1C1A;font:700 16px system-ui,sans-serif;text-decoration:none}
+.sheet{position:fixed;inset:0;background:rgba(20,24,30,.55);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.sheet.open{display:flex}
+@media(min-width:700px){.sheet{align-items:center}}
+.sb{background:#fff;width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:16px 16px 22px;display:flex;flex-direction:column;gap:12px}
+@media(min-width:700px){.sb{border-radius:20px}}
+.sb h3{margin:0;font-size:21px}.sb .t{color:#545A63;font-size:14px;margin-top:-6px}
+.tel{width:100%;font:800 30px system-ui,sans-serif;text-align:center;letter-spacing:.04em;padding:14px;border:2px solid #1F8F4E;border-radius:14px}
+.err{color:#C0101C;font-weight:700;font-size:14px;min-height:17px;text-align:center;margin:-4px 0}
+.go.off{background:#9AA6B5;pointer-events:none}
+.alt{display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:14px;border:1.5px solid #C9D3DF;background:#F3F6FB;color:#1D1C1A;font:700 16px system-ui,sans-serif;text-decoration:none}
+.x{appearance:none;border:none;background:none;color:#545A63;font:700 15px system-ui,sans-serif;min-height:42px;cursor:pointer}
+.empty{background:#fff;border-radius:14px;padding:20px;text-align:center;color:#545A63}
+</style>
+</head>
+<body>
+<div class="top"><img src="../penalva.png" alt="Alimentación Penalva"><img src="../nordwik.png" alt="Nordwik" style="height:34px"><span class="sp"></span><a class="back" id="back" href="#" hidden>‹ Volver</a></div>
+<div class="w">
+  <h1>📚 Catálogos</h1>
+  <p class="sub">Elige un catálogo y pulsa <b>ENVIAR</b>. Escribe el móvil del cliente y se abre WhatsApp con el catálogo listo. No hace falta tener al cliente guardado.</p>
+  <div id="whoBox"></div>
+  <div id="list"></div>
+</div>
+
+<div class="sheet" id="sh" role="dialog" aria-modal="true" aria-labelledby="shT"><div class="sb">
+  <h3 id="shT">Enviar catálogo</h3>
+  <div class="t" id="shS"></div>
+  <input class="tel" id="tel" type="tel" inputmode="tel" autocomplete="off" placeholder="600 000 000" aria-label="Móvil del cliente">
+  <div class="err" id="err"></div>
+  <a class="go off" id="send" href="#" target="_top">📲 ENVIAR CATÁLOGO</a>
+  <a class="alt" id="alt" href="#" target="_top">Elegir un contacto de WhatsApp</a>
+  <button class="x" id="shX">Cerrar</button>
+</div></div>
+
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  var q=new URLSearchParams(location.search), EMBED=q.get('embed')==='1';
+  var CFG={comerciales:[],catalogos:[]}, WHO=null, CUR=null;
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  // volver
+  var volver=q.get('volver');
+  if(EMBED){ $('back').hidden=false; $('back').textContent='✕ Cerrar'; $('back').onclick=function(e){e.preventDefault();try{parent.postMessage('lib-close','*')}catch(x){}}; }
+  else if(volver&&/^https?:\/\/damdiroju-cdb\.github\.io\//.test(volver)||volver&&volver.charAt(0)==='/'){ $('back').hidden=false; $('back').href=volver; }
+  else if(history.length>1){ $('back').hidden=false; $('back').onclick=function(e){e.preventDefault();history.back()}; }
+
+  function linkOf(cat){ return cat.url.indexOf('{slug}')>=0 ? (WHO?cat.url.replace('{slug}',WHO.slug):null) : cat.url; }
+  function renderWho(){
+    var b=$('whoBox');
+    if(WHO){ b.innerHTML='<div class="who">Catálogos de: <b>'+esc(WHO.nombre)+'</b><button id="chg">Cambiar</button></div>'; $('chg').onclick=function(){WHO=null;try{localStorage.removeItem('pen_lib_who')}catch(e){}renderWho();renderList()}; return; }
+    b.innerHTML='<p class="sub" style="margin-top:4px"><b>¿Quién eres?</b> Así el cliente te manda a ti lo que marque.</p><div class="pick" id="pick"></div>';
+    CFG.comerciales.forEach(function(c){ var x=document.createElement('button'); x.textContent=c.nombre; x.onclick=function(){WHO=c;try{localStorage.setItem('pen_lib_who',c.slug)}catch(e){}renderWho();renderList();window.scrollTo(0,0)}; $('pick').appendChild(x); });
+  }
+  function renderList(){
+    var l=$('list'); l.innerHTML='';
+    if(!WHO){ return; }
+    if(!CFG.catalogos.length){ l.innerHTML='<div class="empty">Todavía no hay catálogos.</div>'; return; }
+    CFG.catalogos.forEach(function(cat){
+      var d=document.createElement('div'); d.className='cat';
+      d.innerHTML=(cat.portada?'<img alt="" src="'+esc(cat.portada)+'">':'')+'<div class="in"><h2>'+esc(cat.titulo)+'</h2>'+(cat.subtitulo?'<div class="s2">'+esc(cat.subtitulo)+'</div>':'')+(cat.texto?'<p>'+esc(cat.texto)+'</p>':'<p></p>')+
+        '<button class="go">📲 ENVIAR</button><a class="see" target="_top">👁 Ver el catálogo</a></div>';
+      d.querySelector('.go').onclick=function(){ openSheet(cat); };
+      d.querySelector('.see').href=linkOf(cat)||'#';
+      l.appendChild(d);
+    });
+  }
+  function num(){ var t=$('tel').value.replace(/\D/g,''); if(t.indexOf('00')===0)t=t.slice(2);
+    if(t.length===9&&/^[6789]/.test(t))return '34'+t; if(t.length===11&&t.indexOf('34')===0)return t; return null; }
+  function upd(){ if(!CUR)return; var L=linkOf(CUR), n=num(), raw=$('tel').value.replace(/\D/g,'');
+    $('send').classList.toggle('off',!(L&&n)); $('send').href=(L&&n)?'https://wa.me/'+n+'?text='+encodeURIComponent(L):'#';
+    $('alt').href=L?'https://wa.me/?text='+encodeURIComponent(L):'#';
+    $('err').textContent=raw.length>=9&&!n?'Revisa el número: móvil de 9 cifras':''; }
+  function openSheet(cat){ CUR=cat; $('shT').textContent='Enviar: '+cat.titulo; $('shS').textContent=(cat.subtitulo||'')+(WHO?' · de '+WHO.nombre:'');
+    $('tel').value=''; upd(); $('sh').classList.add('open'); setTimeout(function(){try{$('tel').focus()}catch(e){}},80); }
+  function closeSheet(){ $('sh').classList.remove('open'); }
+  $('tel').addEventListener('input',upd);
+  $('shX').onclick=closeSheet; $('sh').addEventListener('click',function(e){ if(e.target===$('sh')) closeSheet(); });
+  ['send','alt'].forEach(function(id){ $(id).addEventListener('click',function(e){ if($(id).getAttribute('href')==='#'){e.preventDefault();return} setTimeout(closeSheet,600); }); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeSheet(); });
+
+  fetch('catalogos.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){
+    CFG=j||CFG;
+    var c=(q.get('c')||'').toLowerCase(), tel=(q.get('tel')||'').replace(/\D/g,''), saved=null;
+    try{saved=localStorage.getItem('pen_lib_who')}catch(e){}
+    WHO=CFG.comerciales.filter(function(x){return c&&x.slug===c})[0]
+      ||CFG.comerciales.filter(function(x){return tel&&x.tel===tel})[0]
+      ||CFG.comerciales.filter(function(x){return saved&&x.slug===saved})[0]||null;
+    if(WHO){try{localStorage.setItem('pen_lib_who',WHO.slug)}catch(e){}}
+    renderWho(); renderList();
+  }).catch(function(){ $('list').innerHTML='<div class="empty">No se ha podido cargar la biblioteca. Revisa la cobertura y vuelve a entrar.</div>'; });
+})();
+</script>
+</body>
+</html>

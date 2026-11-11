@@ -107,7 +107,7 @@ ol.howto{padding-left:20px;margin:6px 0}ol.howto li{margin:4px 0}
 <body>
 <header>
   <div class="hrow"><img src="../catalogo/penalva_blanco.png" alt="Penalva"><img class="nw" src="../catalogo/nordwik_blanco.png" alt="Nordwik"><h1 id="hTitle">Cuadro de ventas<small id="hSub"></small></h1></div>
-  <div class="hrow" style="justify-content:flex-end;margin-top:6px"><button id="outBtn" class="btn" style="background:rgba(255,255,255,.18);border-color:transparent;color:#fff;margin-right:8px" hidden>🔒 Cerrar sesión</button><button id="instBtn" class="btn" style="background:#fff;border-color:#fff;color:#0067B1" hidden>📌 Ponerlo en mi escritorio</button></div>
+  <div class="hrow" style="justify-content:flex-end;margin-top:6px"><button id="outBtn" class="btn" style="background:rgba(255,255,255,.18);border-color:transparent;color:#fff;margin-right:8px" hidden>🔒 Cerrar sesión</button><button id="libBtn" class="btn" style="background:#D2000F;border-color:#D2000F;color:#fff;margin-right:8px;font-weight:800">📚 Catálogos</button><button id="instBtn" class="btn" style="background:#fff;border-color:#fff;color:#0067B1" hidden>📌 Ponerlo en mi escritorio</button></div>
   <nav id="nav" role="tablist">
     <button data-v="res" aria-selected="true">📊 Resumen</button>
     <button data-v="cli" aria-selected="false">👥 Clientes</button>
@@ -164,6 +164,7 @@ const NOREP='(sin comercial asignado)';
 let SESS='';
 let ST=null,K=null,DASH=null,ADMIN=false,VIEW='res',PER='ult',REP='',CF='todos',CQ='',CCAN='';
 const params=new URLSearchParams(location.search);
+  $('libBtn').onclick=()=>{const c=(SESS&&SESS!=='todos')?SESS:(get('pnv_vrep')||'');location.href='../catalogo/biblioteca/?'+(c?'c='+encodeURIComponent(c)+'&':'')+'volver='+encodeURIComponent(location.pathname+location.search)};
 // ---- acceso ----
 async function entrarClave(clave){
   K=await NV.claves(clave);DASH=K.dash;ADMIN=true;

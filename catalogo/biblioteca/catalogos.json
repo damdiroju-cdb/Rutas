@@ -1,0 +1,84 @@
+{
+ "comerciales": [
+  {
+   "slug": "antonio-aguado",
+   "nombre": "Antonio Aguado",
+   "tel": "34609253986"
+  },
+  {
+   "slug": "abraham-megias",
+   "nombre": "Abraham Megías",
+   "tel": "34627483661"
+  },
+  {
+   "slug": "david-sierra",
+   "nombre": "David Sierra",
+   "tel": "34625400548"
+  },
+  {
+   "slug": "jorge-ortega",
+   "nombre": "Jorge Ortega",
+   "tel": "34685330838"
+  },
+  {
+   "slug": "antonio-ayala",
+   "nombre": "Antonio Ayala",
+   "tel": "34615849309"
+  },
+  {
+   "slug": "jose-manuel-herrera",
+   "nombre": "José Manuel Herrera",
+   "tel": "34695229073"
+  },
+  {
+   "slug": "jose-manuel-avidad",
+   "nombre": "José Manuel Avidad",
+   "tel": "34664549032"
+  },
+  {
+   "slug": "juan-manuel-cabrerizo",
+   "nombre": "Juan Manuel Cabrerizo",
+   "tel": "34655334450"
+  },
+  {
+   "slug": "juan-manuel-martin",
+   "nombre": "Juan Manuel Martín",
+   "tel": "34615849308"
+  },
+  {
+   "slug": "manuel-borrego",
+   "nombre": "Manuel Borrego",
+   "tel": "34627483672"
+  },
+  {
+   "slug": "sebastian-doncel",
+   "nombre": "Sebastián Doncel",
+   "tel": "34656392838"
+  },
+  {
+   "slug": "televenta-nordwik",
+   "nombre": "Televenta Nordwik «Batseba»",
+   "tel": "34692853375"
+  },
+  {
+   "slug": "nacho-penalva",
+   "nombre": "Nacho Penalva",
+   "tel": "34607396557"
+  },
+  {
+   "slug": "david-diaz",
+   "nombre": "David Díaz",
+   "tel": "34615849304"
+  }
+ ],
+ "catalogos": [
+  {
+   "id": "restauracion-2026",
+   "titulo": "Catálogo 2026/2027",
+   "subtitulo": "Restauración y profesionales del sector",
+   "texto": "Ingredientes por familias, salsas, caldos, quinta gama y postres. El cliente marca con ♥ lo que le interesa y te llega la lista.",
+   "portada": "../cotizacion/portada-boton.jpg",
+   "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/cotizacion/{slug}/"
+  }
+ ]
+}

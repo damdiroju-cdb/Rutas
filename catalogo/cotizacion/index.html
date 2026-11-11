@@ -2402,7 +2402,7 @@ a{color:#B93A24}
 </head>
 <body>
 <div class="app">
-<div class="top"><div class="logos"><img class="lp" src="../penalva.png" alt="Alimentación Penalva"><img class="ln" src="../nordwik.png" alt="Helados Nordwik"></div><div class="tools"><button class="tb" id="b-promo" hidden>🔥 Ofertas</button><button class="tb" id="b-search">🔍 Buscar</button></div></div>
+<div class="top"><div class="logos"><img class="lp" src="../penalva.png" alt="Alimentación Penalva"><img class="ln" src="../nordwik.png" alt="Helados Nordwik"></div><div class="tools"><button class="tb" id="b-promo" hidden>🔥 Ofertas</button><button class="tb" id="b-search">🔍 Buscar</button><button class="tb" id="b-lib">📚 Catálogos</button></div></div>
 <div class="stage" id="stage"><div id="wrap"><button class="side l" id="sprev" aria-label="Página anterior"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button><button class="side r" id="snext" aria-label="Página siguiente"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></button><div id="book">
 <div class="page" data-density="hard" aria-label="Portada"><div class="inner" style="background: #EEF3F9; color: #1D1C1A; font-family: Inter, system-ui, sans-serif"><div style="position: absolute; left: 56px; right: 56px; top: 44px; display: flex; justify-content: space-between; align-items: center">
 <img src="../penalva.png" alt="Alimentación Penalva" style="height: 82px">
@@ -2877,6 +2877,7 @@ a{color:#B93A24}
   function openSR(t){ tab=t||'art'; $('sr').classList.add('open'); renderSR(); if(tab==='art') setTimeout(function(){ try{$('sr-q').focus();}catch(e){} },50); }
   function closeSR(){ $('sr').classList.remove('open'); }
   $('b-search').onclick=function(){ openSR('art'); };
+  $('b-lib').onclick=function(){ location.href='../biblioteca/?tel='+encodeURIComponent(tel)+'&volver='+encodeURIComponent(location.pathname+location.search); };
   $('b-promo').onclick=function(){ openSR('pro'); };
   $('sr-x').onclick=closeSR;
   $('st-art').onclick=function(){ tab='art'; renderSR(); }; $('st-pla').onclick=function(){ tab='pla'; renderSR(); }; $('st-pro').onclick=function(){ tab='pro'; renderSR(); };
@@ -2899,7 +2900,7 @@ a{color:#B93A24}
 <script>
 /* Auto-actualización: si hay versión nueva publicada, el catálogo se recarga solo (la lista del cliente no se pierde). Sube CATV en cada cambio. */
 (function(){
-  var CATV=2;
+  var CATV=3;
   function chk(){ try{
     fetch(location.pathname+'?_='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){
       var m=t.match(/var CATV=(\d+);/); if(!m||+m[1]<=CATV) return;
