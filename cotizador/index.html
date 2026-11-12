@@ -166,6 +166,26 @@ a.btn{color:var(--ink)}
 .imp-step{background:#1F8F4E;color:#fff;border-radius:10px;padding:8px 12px;font-size:13.5px;line-height:1.4;margin-bottom:10px}
 .imp-step b{font-size:15px}
 .sendTop{min-height:40px;font-weight:800}
+.wa-btn{white-space:nowrap;background:#1F8F4E!important;border-color:#1F8F4E!important;color:#fff!important;font-weight:800;min-height:40px}
+.tabbar .tb-wa{background:#1F8F4E;border-color:#1F8F4E;color:#fff;font-weight:800;flex:1.15;line-height:1.15;padding:8px 6px}
+@media (max-width:980px){#waTop{display:none}}
+.cs-wrap{position:relative}
+.cs-res{display:flex;flex-direction:column;gap:6px;margin-top:6px;max-height:300px;overflow:auto}
+.cs-it{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:var(--panel);cursor:pointer;text-align:left;width:100%;font:inherit;color:var(--ink)}
+.cs-it:active{transform:scale(.99)}
+.cs-it .t{flex:1;min-width:0}.cs-it .t b{display:block;font-size:15px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cs-it .t span{font-size:12.5px;color:var(--muted)}
+.cs-it .ph{font-weight:800;color:#17733F;white-space:nowrap;font-size:14px}.cs-it .ph.no{color:var(--muted);font-weight:500;font-size:12.5px}
+.cs-hint{font-size:13.5px;color:var(--muted);padding:6px 2px;line-height:1.45}.cs-hint a{color:var(--accent);font-weight:700}
+.cs-pin{display:flex;gap:8px;margin-top:6px}.cs-pin input{flex:1;font-size:20px;letter-spacing:.3em;text-align:center;padding:8px;border:1px solid var(--line);border-radius:10px;min-width:0}
+.wa-sel{display:flex;align-items:center;gap:10px;background:#E3F4EA;color:#10351f;border-radius:12px;padding:10px 12px}
+.wa-sel .t{flex:1;min-width:0}.wa-sel b{display:block;font-size:16px}.wa-sel span{font-size:14px}
+.wa-go{display:block;text-align:center;background:#1F8F4E;color:#fff;text-decoration:none;font-weight:900;font-size:18px;border-radius:14px;padding:16px 12px;box-shadow:0 3px 10px rgba(31,143,78,.35)}
+.wa-go small{display:block;font-weight:500;font-size:12.5px;opacity:.9;margin-top:2px}
+.wa-med{display:block;width:100%;border:2px solid #1F8F4E;background:var(--panel);color:#17733F;font-weight:800;font-size:15.5px;border-radius:14px;padding:12px;cursor:pointer}
+.wa-med small{display:block;font-weight:500;font-size:12px;color:var(--muted);margin-top:2px}
+.wa-tel{width:100%;font-size:22px;font-weight:800;text-align:center;letter-spacing:.04em;padding:10px;border:2px solid #1F8F4E;border-radius:12px;background:var(--panel);color:var(--ink)}
+.wa-or{font-size:12.5px;color:var(--muted);text-align:center}
 .qs-search{width:100%;font-size:16px;padding:12px;border:1px solid var(--line);border-radius:10px;box-sizing:border-box;margin:6px 0 10px}
 .qs-list{display:flex;flex-direction:column;gap:8px;max-height:min(60vh,520px);overflow:auto}
 .qs-it{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
@@ -365,15 +385,17 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
   </section>
 
   <aside class="card" id="prop" aria-label="Cotización">
-    <div class="ph"><h2>Cotización</h2><span class="pill" id="nSel">0</span><span class="mono" style="color:var(--muted);font-size:12px" id="propNo"></span><span style="flex:1"></span><button class="btn primary sendTop" type="button" id="sendTop">Enviar</button></div>
+    <div class="ph"><h2>Cotización</h2><span class="pill" id="nSel">0</span><span class="mono" style="color:var(--muted);font-size:12px" id="propNo"></span><span style="flex:1"></span><button class="btn wa-btn" type="button" id="waTop" hidden>📲 WhatsApp</button><button class="btn primary sendTop" type="button" id="sendTop">Enviar</button></div>
     <div class="qbtns"><button class="btn imp-btn" type="button" id="impBtn">📋 Lista del cliente (WhatsApp)</button><button class="btn" type="button" id="qsFind">Buscar cotización de un cliente</button><button class="btn" type="button" id="qsAll">Todas las cotizaciones</button></div>
     <div class="scroll">
       <details class="blk" id="cliBlk" open>
         <summary><span class="t">Cliente</span><span class="s" id="cliSum">Sin datos</span></summary>
         <div style="padding:0 14px 10px"><div class="seg" id="cliTipo" role="group" aria-label="Tipo de cliente"><button type="button" data-v="ex" aria-pressed="true">Cliente actual</button><button type="button" data-v="nu" aria-pressed="false">Futuro cliente</button></div></div>
         <div class="form" id="formEx">
+          <div class="field full cs-wrap"><label for="cBus">Buscar en mis clientes</label><input type="search" id="cBus" class="cs-q" placeholder="🔍 Nombre del bar, nº o pueblo" autocomplete="off" enterkeyhint="search"><div class="cs-res" id="cBusRes" hidden></div></div>
           <div class="field"><label for="cCod">Código cliente</label><input type="text" id="cCod" inputmode="numeric"></div>
           <div class="field"><label for="cNom">Nombre</label><input type="text" id="cNom"></div>
+          <div class="field full"><label for="cMov">Móvil (WhatsApp)</label><input type="tel" id="cMov" inputmode="tel" placeholder="Sale solo al elegir el cliente"></div>
         </div>
         <div class="form" id="formNu" hidden>
           <div class="field full"><label for="nRaz">Nombre / razón social</label><input type="text" id="nRaz"></div>
@@ -415,6 +437,7 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
 <nav class="tabbar" aria-label="Vista">
   <button type="button" data-view="cat" aria-pressed="true">Artículos</button>
   <button type="button" data-view="prop" aria-pressed="false">Cotización (<span id="nSel2">0</span>)</button>
+  <button type="button" class="tb-wa" id="waTab" hidden>📲 Enviar WhatsApp</button>
 </nav>
 
 <div class="modal" id="startModal" hidden>
@@ -444,6 +467,7 @@ body[data-mode=cot] .installbar{bottom:calc(84px + env(safe-area-inset-bottom,0p
 <div id="zv" hidden role="dialog" aria-modal="true" aria-label="Foto en grande"><div class="zb"><button type="button" id="zvX">Cerrar foto</button></div><div class="zi"><img id="zvImg" alt="Foto del producto"></div></div>
 <div class="modal" id="qsModal" hidden><div class="box" id="qsBox"></div></div>
 <div class="modal" id="cntModal" hidden><div class="box wide" id="cntBox"></div></div>
+<div class="modal" id="waModal" hidden role="dialog" aria-modal="true" aria-label="Enviar por WhatsApp"><div class="box" id="waBox"></div></div>
 
 <div class="modal" id="repModal" hidden>
   <form class="box" id="repForm">
@@ -668,11 +692,11 @@ $('pdModal').addEventListener('click',e=>{
   if(a==='ok'){const v=$('pdDto').value,d=pct(v)?String(pct(v)):'';const l=lineOf(c);if(l)l.dto=d;else S.lines.push({c,dto:d});save();$('pdModal').hidden=true;renderProp();refreshItem(c);flash((l?'Actualizado: ':'Añadido: ')+cleanDesc(BY[c].d)+(d?' (−'+d+' %)':''),'ok')}
   if(a==='del'){S.lines=S.lines.filter(x=>x.c!==c);save();$('pdModal').hidden=true;renderProp();refreshItem(c)}
 });
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('zv').hidden){$('zv').hidden=true;return}['pdModal','repModal','cntModal'].forEach(id=>$(id).hidden=true)}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('zv').hidden){$('zv').hidden=true;return}['pdModal','repModal','cntModal','waModal'].forEach(id=>$(id).hidden=true)}});
 
 // cotización
 function renderProp(){
-  const n=S.lines.length;$('nSel').textContent=n;$('nSel2').textContent=n;$('propNo').textContent=S.no;
+  const n=S.lines.length;$('waTop').hidden=$('waTab').hidden=!n;$('nSel').textContent=n;$('nSel2').textContent=n;$('propNo').textContent=S.no;
   if(!n)$('lines').innerHTML='<div class="empty-st"><b>Cotización vacía</b>Toca un artículo de la lista, ponle descuento si quieres y aparecerá aquí.</div>';
   else $('lines').innerHTML=S.lines.map((l,i)=>{const r=BY[l.c],nt=net(r,l.dto);return `<div class="line" data-i="${i}">${thumb(r)}<div style="min-width:0"><div class="d">${esc(r.d)}</div><div class="c-code" style="font-size:12px">${r.c} · ${esc(fmtLbl(r.f))}${r.w?' · '+esc(r.w):''}</div></div><button class="x" type="button" aria-label="Quitar ${esc(r.d)}" data-del>×</button>
     <div class="kv"><div><span>Tarifa</span><b class="num">${eur(r.p)}</b></div><div><span>Dto %</span><input type="number" min="0" max="100" step="0.5" inputmode="decimal" data-k="dto" value="${esc(l.dto)}" placeholder="0" aria-label="Descuento"></div><div class="hl"><span>Neto</span><b class="num" data-nf>${eur(nt.f)}</b></div><div><span>Neto und.</span><b class="num" data-nu>${pUnit(r,nt.u)}</b></div><div><span>Und/caja</span><b class="num">${undC(r)}</b></div></div></div>`}).join('');
@@ -686,7 +710,7 @@ $('clearWrap').addEventListener('click',e=>{const id=e.target.id;
   if(id==='clearBtn'){if(S.lines.length)$('clearWrap').innerHTML=CONF;return}
   if(id==='clrYes'){const old=S.lines.map(l=>l.c);S.lines=[];save();renderProp();old.forEach(refreshItem)}
   if(id==='clrYes'||id==='clrNo')$('clearWrap').innerHTML=CLR});
-const CF={cCod:'cod',cNom:'nom',nRaz:'raz',nCom:'com',nCon:'con',nTel:'tel',nPob:'pob'};
+const CF={cCod:'cod',cNom:'nom',cMov:'mov',nRaz:'raz',nCom:'com',nCon:'con',nTel:'tel',nPob:'pob'};
 Object.entries(CF).forEach(([id,k])=>$(id).addEventListener('input',()=>{S.cli[k]=$(id).value;save();summaries()}));
 segBind('cliTipo',v=>{S.tipo=v;showTipo();save();summaries()});
 function showTipo(){$('formEx').hidden=S.tipo!=='ex';$('formNu').hidden=S.tipo!=='nu';segSet('cliTipo',S.tipo)}
@@ -695,7 +719,7 @@ $('oFotos').addEventListener('change',()=>{S.opts.fotos=$('oFotos').checked;save
 $('oVal').addEventListener('change',()=>{S.opts.val=$('oVal').value;save();summaries()});
 $('oIva').addEventListener('change',()=>{S.opts.iva=$('oIva').value;save()});
 $('oNotas').addEventListener('input',()=>{S.opts.notas=$('oNotas').value;save()});
-function summaries(){$('cliSum').textContent=cliLabel()||'Sin datos';$('optSum').textContent=(S.opts.fotos?'Con fotos':'Sin fotos')+(S.opts.val?' · hasta '+fmtDate(S.opts.val):'')}
+function summaries(){const t=cliTel();$('cliSum').textContent=(cliLabel()||'Sin datos')+(t?' · 📱 '+fmtTel(t):'');$('optSum').textContent=(S.opts.fotos?'Con fotos':'Sin fotos')+(S.opts.val?' · hasta '+fmtDate(S.opts.val):'')}
 function fmtDate(iso){if(!iso)return'';const[y,m,d]=iso.split('-');return `${d}/${m}/${y}`}
 function loadForm(){Object.entries(CF).forEach(([id,k])=>$(id).value=S.cli[k]||'');showTipo();$('oFotos').checked=S.opts.fotos!==false;$('oVal').value=S.opts.val||'';$('oIva').value=S.opts.iva||'sin';$('oNotas').value=S.opts.notas||''}
 function savedList(){return store('pnv_saved2')||[]}
@@ -745,7 +769,7 @@ if(LINKED){$('rSel').disabled=true}
 function repOpen(){const known=REPS.includes(REP.nom);$('rSel').value=REP.nom?(known?REP.nom:'__otro'):'';$('rNomWrap').hidden=!(REP.nom&&!known);$('rNom').value=REP.nom||'';$('rTel').value=REP.tel||'';$('rMail').value=REP.mail||'';$('repModal').hidden=false;$('rNom').focus()}
 $('repChip').addEventListener('click',repOpen);$('repCancel').addEventListener('click',()=>$('repModal').hidden=true);
 $('repForm').addEventListener('submit',e=>{e.preventDefault();const nm=$('rSel').value==='__otro'?$('rNom').value.trim():$('rSel').value;if(!nm){$('rSel').focus();return}REP={nom:nm,tel:$('rTel').value.trim(),mail:$('rMail').value.trim()};store('pnv_rep',REP);repRender();$('repModal').hidden=true});
-document.querySelector('.tabbar').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setView(b.dataset.view)});
+document.querySelector('.tabbar').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.id==='waTab')return waOpen();setView(b.dataset.view)});
 function setView(v){document.body.dataset.view=v;document.querySelectorAll('.tabbar button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.view===v));window.scrollTo(0,0)}
 function flash(t,k){const m=$('msg');m.textContent=t;m.className='msg '+(k||'');clearTimeout(flash.t);flash.t=setTimeout(()=>{m.textContent='';m.className='msg'},5000)}
 
@@ -918,18 +942,111 @@ $('cntChip').addEventListener('click',()=>{
 $('cntModal').addEventListener('click',e=>{if(e.target===$('cntModal')||e.target.closest('[data-close]'))$('cntModal').hidden=true});
 paintCount();
 
+// ===== Mis clientes (mismos datos que el Cuadro de ventas) + envío directo por WhatsApp
+function fmtTel(t){t=String(t||'').replace(/\D/g,'');return t.length===9?t.replace(/(\d{3})(\d{3})(\d{3})/,'$1 $2 $3'):t}
+function cliTel(){return String((S.tipo==='ex'?S.cli.mov:S.cli.tel)||'').replace(/\D/g,'')}
+function waNum(t){t=String(t||'').replace(/\D/g,'');if(t.indexOf('00')===0)t=t.slice(2);if(t.length===9&&/^[6789]/.test(t))return '34'+t;if(t.length===11&&t.indexOf('34')===0)return t;return null}
+const VSLUG={'Abraam':'abraham-megias','Antonio Aguado':'antonio-aguado','Antonio Ayala':'antonio-ayala','Avidad':'jose-manuel-avidad','Batseva':'televenta-nordwik','David Díaz':'todos','David Guadix':'david-sierra','Jorge':'jorge-ortega','Jose Manuel Herrera':'jose-manuel-herrera','Juanma Cabrerizo':'juan-manuel-cabrerizo','Juanma Nordwik':'juan-manuel-martin','Manolo Borrego':'manuel-borrego','Nacho Penalva':'nacho-penalva','Sebastián':'sebastian-doncel','Televenta Nordwik':'televenta-nordwik'};
+const lsG=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lsP=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+function vSlug(){return REP.nom?(VSLUG[REP.nom]||slug(REP.nom).replace(/^-|-$/g,'')):''}
+let CLI=null,CLI_P=null;
+function nucleo(){return window.NV?Promise.resolve():new Promise((ok,ko)=>{const sc=document.createElement('script');sc.src='../ventas/nucleo.js?v=5';sc.onload=ok;sc.onerror=ko;document.head.appendChild(sc)})}
+function dashKey(s){const o=lsG('pnv_open_'+s)||lsG('pnv_open_todos')||lsG('pnv_vdash');if(o)return Promise.resolve(NV.unb64(decodeURIComponent(o)));
+  const cl=lsG('pnv_vclave');if(cl)return NV.claves(cl).then(K=>K.dash);return null}
+// devuelve la lista de clientes del comercial; si falta el acceso, lanza {pin:true} o {acc:true}
+function loadCli(){const s=vSlug();if(!s)return Promise.reject({rep:true});if(CLI)return Promise.resolve(CLI);if(CLI_P)return CLI_P;
+  CLI_P=nucleo().then(()=>{const d=dashKey(s);if(!d)throw(lsG('pnv_pin_'+s)?{pin:true}:{acc:true});
+    return d.then(raw=>NV.abrirDatos(raw,'../ventas/'))}).then(st=>{if(!st)throw{err:true};const all=s==='todos';
+    CLI=st.cli.filter(c=>{const cs=NV.slug(c.com||'');return all||cs===s||(s==='televenta-nordwik'&&!c.com)})
+      .map(c=>({c:String(c.c),n:(c.n||'').replace(/\*+$/,'').trim(),pob:c.pob||'',tel:String(c.tel||'').replace(/\D/g,''),k:NV.norm((c.n||'')+' '+c.c+' '+(c.pob||'')).toLowerCase()}));
+    return CLI}).finally(()=>{CLI_P=null});
+  return CLI_P}
+// pinta los resultados de búsqueda en "box"; onPick(cliente)
+function cliSearch(q,box,onPick){
+  box.hidden=false;box.innerHTML='<div class="cs-hint">Cargando tus clientes…</div>';
+  loadCli().then(L=>{const t=norm(q).toLowerCase().trim();
+    if(!t){box.innerHTML=`<div class="cs-hint">Escribe el nombre del bar, el nº de cliente o el pueblo. Tienes ${L.length} clientes.</div>`;return}
+    const ws=t.split(/\s+/),f=L.filter(c=>ws.every(w=>c.k.includes(w))).slice(0,30);
+    if(!f.length){box.innerHTML=`<div class="cs-hint">No encuentro «${esc(q)}». Si es nuevo, escribe su móvil a mano.</div>`;return}
+    box.innerHTML='';f.forEach(c=>{const b=document.createElement('button');b.type='button';b.className='cs-it';
+      b.innerHTML=`<span class="t"><b>${esc(c.n)}</b><span>Nº ${esc(c.c)}${c.pob?' · '+esc(c.pob):''}</span></span><span class="ph${c.tel?'':' no'}">${c.tel?'📱 '+fmtTel(c.tel):'sin móvil'}</span>`;
+      b.addEventListener('click',()=>onPick(c));box.appendChild(b)})
+  }).catch(e=>{const s=vSlug();
+    if(e&&e.rep){box.innerHTML='<div class="cs-hint">Pon primero tus datos de comercial (arriba, «Mis datos») para ver tus clientes.</div>';return}
+    if(e&&e.pin){box.innerHTML=`<div class="cs-hint">🔒 Para ver tus clientes, pon tu <b>PIN del Cuadro de ventas</b>:</div><div class="cs-pin"><input type="password" inputmode="numeric" maxlength="4" placeholder="····" aria-label="PIN"><button class="btn primary" type="button">Ver mis clientes</button></div><div class="cs-hint cs-err"></div>`;
+      const inp=box.querySelector('input'),go=()=>{const v=inp.value.trim();if(!/^\d{4}$/.test(v)){box.querySelector('.cs-err').textContent='El PIN son 4 números';return}
+        NV.pinAbrir(v,s,NV.unb64(lsG('pnv_pin_'+s))).then(d=>{lsP('pnv_open_'+s,d);lsP('pnv_lastc',s);cliSearch(q,box,onPick)},()=>{box.querySelector('.cs-err').textContent='PIN incorrecto'})};
+      box.querySelector('button').addEventListener('click',go);inp.addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();go()}});setTimeout(()=>{try{inp.focus()}catch(x){}},60);return}
+    if(e&&e.acc){box.innerHTML=`<div class="cs-hint">🔒 Para buscar tus clientes, entra <b>una vez</b> en tu Cuadro de ventas desde este móvil (con tu PIN): <a href="../ventas/?c=${encodeURIComponent(s)}" target="_blank" rel="noopener">Abrir mi Cuadro de ventas</a>. Mientras, escribe el móvil a mano.</div>`;return}
+    box.innerHTML='<div class="cs-hint">No he podido cargar tus clientes. Revisa la cobertura o escribe el móvil a mano.</div>'})}
+function pickCli(c){S.tipo='ex';S.cli.cod=c.c;S.cli.nom=c.n;S.cli.mov=c.tel?fmtTel(c.tel):'';save();loadForm();summaries()}
+// buscador dentro del bloque Cliente
+$('cBus').addEventListener('input',()=>{const v=$('cBus').value;if(!v.trim()&&!CLI){$('cBusRes').hidden=true;return}cliSearch(v,$('cBusRes'),c=>{pickCli(c);$('cBus').value='';$('cBusRes').hidden=true;flash(c.tel?`${c.n} · 📱 ${fmtTel(c.tel)}`:`${c.n}: no tiene móvil en gsBase, escríbelo tú`,c.tel?'ok':'err');if(!c.tel)setTimeout(()=>$('cMov').focus(),60)})});
+$('cBus').addEventListener('focus',()=>{if(!$('cBus').value.trim())cliSearch('',$('cBusRes'),()=>{})});
+
+// texto de la propuesta para WhatsApp
+function waText(){const c=S.cli,name=S.tipo==='ex'?(c.nom||''):(c.com||c.raz||'');
+  const L=['*Propuesta comercial · '+COMPANY.name.replace(/, S\.A\.$/,'')+'*'];if(name)L.push('Para: *'+name+'*');L.push('Nº '+S.no,'');
+  S.lines.forEach(l=>{const r=BY[l.c];if(!r)return;const nt=net(r,l.dto),d=pct(l.dto);
+    let t='▪️ *'+cleanDesc(r.d)+'*\n   '+fmtLbl(r.f)+(r.k?' ('+r.k+' ud)':'')+': *'+eur(nt.f)+'*';
+    if(d&&r.p>=0.01)t+=' _(tarifa '+eur(r.p)+', −'+d.toLocaleString('es-ES')+' %)_';
+    const pu=pUnit(r,nt.u);if(pu!=='—'&&r.k)t+='\n   '+pu;L.push(t)});
+  L.push('');const n=[];if(S.opts.iva==='sin')n.push('Precios sin IVA');if(S.opts.iva==='con')n.push('IVA incluido');if(S.opts.val)n.push('válida hasta el '+fmtDate(S.opts.val));
+  if(n.length)L.push(n.join(' · ')+'.');if(S.opts.notas)L.push(S.opts.notas);
+  if(REP.nom)L.push('','Un saludo,\n*'+REP.nom+'*'+(REP.tel?' · '+REP.tel:'')+'\n'+COMPANY.name);
+  return L.join('\n')}
+let WA={sel:null};
+function waOpen(){if(!S.lines.length)return flash('Añade al menos un artículo.','err');
+  const t=cliTel(),nm=S.tipo==='ex'?(S.cli.nom||''):(S.cli.com||S.cli.raz||'');
+  WA={sel:t?{n:nm||fmtTel(t),tel:t}:null};waRender()}
+function waRender(){const n=S.lines.length,sel=WA.sel;
+  $('waBox').innerHTML=`<h3>📲 Enviar por WhatsApp</h3><p>${n} artículo${n===1?'':'s'} · Nº ${esc(S.no)}</p>
+   <div id="waCli">${sel?`<div class="wa-sel"><span class="t"><b>${esc(sel.n)}</b><span>📱 ${esc(fmtTel(sel.tel))}</span></span><button class="btn" type="button" id="waChg">Cambiar</button></div>`
+    :`<input class="qs-search" id="waQ" type="search" placeholder="🔍 Busca el cliente: nombre, nº o pueblo" autocomplete="off" style="margin:0"><div class="cs-res" id="waRes" hidden></div>
+      <div class="wa-or">o escribe el móvil</div><input class="wa-tel" id="waTel" type="tel" inputmode="tel" placeholder="600 000 000" autocomplete="off" aria-label="Móvil del cliente">`}</div>
+   <a class="wa-go" id="waGo" href="#" target="_top"></a>
+   <button type="button" class="wa-med" id="waMed">🖼 Mandar imagen + PDF<small>Se abre WhatsApp y eliges el chat${sel?' de '+esc(sel.n):''}</small></button>
+   ${n>40?'<div class="cs-hint">Son muchos artículos: si el mensaje no entra, manda la imagen + PDF.</div>':''}
+   <div class="acts"><button class="btn" type="button" data-close>Cerrar</button></div>`;
+  $('waModal').hidden=false;waUpd();
+  if(sel)$('waChg').addEventListener('click',()=>{WA.sel=null;waRender();setTimeout(()=>$('waQ').focus(),60)});
+  else{$('waQ').addEventListener('input',()=>cliSearch($('waQ').value,$('waRes'),c=>{
+      if(c.tel){pickCli(c);WA.sel={n:c.n,tel:c.tel};waRender()}else{pickCli(c);$('waRes').hidden=true;$('waQ').value=c.n;flash('Este cliente no tiene móvil en gsBase: escríbelo abajo','err');$('waTel').focus()}}));
+    $('waTel').addEventListener('input',waUpd);setTimeout(()=>{try{$('waQ').focus()}catch(e){}},80)}
+  $('waGo').addEventListener('click',e=>{if(!waNum(WA.sel?WA.sel.tel:$('waTel').value)&&$('waTel')&&$('waTel').value.replace(/\D/g,'').length){e.preventDefault();return flash('Revisa el número: móvil de 9 cifras','err')}
+    const raw=$('waTel')?$('waTel').value.replace(/\D/g,''):'';if(!WA.sel&&waNum(raw)&&S.tipo==='ex'&&!S.cli.mov){S.cli.mov=fmtTel(raw.slice(-9));save();loadForm();summaries()}
+    logEnvio();setTimeout(()=>{$('waModal').hidden=true},700)});
+  $('waMed').addEventListener('click',waMedia)}
+function waUpd(){const sel=WA.sel,num=waNum(sel?sel.tel:($('waTel')?$('waTel').value:'')),txt=encodeURIComponent(waText());
+  $('waGo').href=num?'https://wa.me/'+num+'?text='+txt:'https://wa.me/?text='+txt;
+  $('waGo').innerHTML=num?`📲 ENVIAR A ${esc((sel?sel.n:fmtTel(num.slice(2))).toUpperCase())}<small>Le llega el mensaje con los precios</small>`:'📲 ENVIAR POR WHATSAPP<small>Eliges el chat en WhatsApp</small>'}
+async function waMedia(){
+  if(!(REP.nom&&REP.tel)){$('waModal').hidden=true;flash('Primero pon tu nombre y teléfono de comercial.','err');return repOpen()}
+  if(!window.jspdf)return flash('No se ha podido cargar el generador de PDF. Recarga la página.','err');
+  const b=$('waMed');b.disabled=true;b.innerHTML='Preparando imagen y PDF…';
+  try{const blob=await buildPDF();const fn=('Cotizacion_'+(cliLabel()||'cliente')+'_'+S.no).replace(/[^\wÁÉÍÓÚÑáéíóúñ\- ]+/g,'').replace(/\s+/g,'_').slice(0,90)+'.pdf';
+    let imgs=[];try{imgs=await buildImages()}catch(e){console.warn('imagen',e)}
+    const pdf=new File([blob],fn,{type:'application/pdf'}),base=fn.replace(/\.pdf$/,'');
+    const files=[...imgs.map((x,i)=>new File([x],base+(imgs.length>1?'_'+(i+1):'')+'.jpg',{type:'image/jpeg'})),pdf];
+    let ok=false;try{ok=!!(navigator.canShare&&navigator.canShare({files}))}catch(e){}
+    logEnvio();
+    if(!ok){$('waModal').hidden=true;showPdf(blob,fn,imgs,false);return}
+    b.disabled=false;b.innerHTML='📤 Toca aquí para abrir WhatsApp<small>Imagen + PDF de una vez</small>';
+    b.onclick=async ev=>{ev.stopImmediatePropagation();try{await navigator.share({files});$('waModal').hidden=true}catch(e){if(!(e&&e.name==='AbortError')){$('waModal').hidden=true;showPdf(blob,fn,imgs,false)}}};
+    b.removeEventListener('click',waMedia);
+  }catch(err){console.error(err);b.disabled=false;b.innerHTML='🖼 Mandar imagen + PDF';flash('Error al preparar el PDF: '+((err&&err.message)||err),'err')}}
+$('waTop').addEventListener('click',waOpen);
+$('waModal').addEventListener('click',e=>{if(e.target===$('waModal')||e.target.closest('[data-close]'))$('waModal').hidden=true});
 $('logoImg').src=LOGO;if(T.fecha){$('tarDate').textContent='Precios del '+new Date(T.fecha).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}$('nRef').textContent=R.length.toLocaleString('es-ES');
 fillFam();fillSub();loadForm();repRender();renderSaved();renderProp();
 document.body.dataset.view='cat';setMode('con');sizeBars();$('startModal').hidden=false;
 // ---------- novedades: se enseñan una sola vez por versión ----------
 // Para la próxima versión: cambia APP_VER, la lista NOVEDADES y sube APPV (más abajo) para que los móviles se recarguen solos. Volverá a salir una vez a todos.
-const APP_VER='V0.6';
+const APP_VER='V0.7';
 const NOVEDADES=[
- ['📚 Biblioteca de catálogos','Arriba tienes el botón rojo «📚 Catálogos» con todos los catálogos. Eliges uno, pulsas ENVIAR, escribes el móvil del cliente y se abre WhatsApp. No hace falta guardar el contacto.'],
- ['WhatsApp siempre a mano','Arriba tienes siempre el botón verde «📋 WhatsApp» para meter la lista que te manda el cliente, estés donde estés.'],
- ['Lista del cliente en un toque','Cuando un cliente te mande su lista desde el catálogo, toca el enlace del final del mensaje (o copia el mensaje y dale a «📋 Lista del cliente»). Los artículos entran solos en la cotización.'],
- ['Descuento artículo por artículo','Te va enseñando cada artículo de la lista con lo que gastaría el cliente a la semana y te pregunta el descuento. «Cancelar» lo salta.'],
- ['Ofertas del catálogo','Si el cliente marcó un artículo en oferta, te sale avisado para que lo tengas en cuenta en el precio.']
+ ['📲 WhatsApp con un solo artículo','En cuanto tengas un artículo en la cotización te sale el botón verde «📲 WhatsApp». Eliges el cliente y le llega el mensaje con los precios directamente a su chat. Sin vueltas.'],
+ ['Tus clientes con su móvil','En «Cliente» busca por nombre, nº o pueblo: se rellenan el código, el nombre y su móvil solos.'],
+ ['Imagen + PDF de una vez','Desde el mismo botón verde puedes mandar la imagen y el PDF juntos.']
 ];
 $('appVer').textContent=APP_VER.toLowerCase();
 function showNews(){
@@ -1063,7 +1180,7 @@ $('gDone').addEventListener('click',()=>{put('pnv_inst_done','1');closeGuide()})
 addEventListener('appinstalled',()=>{put('pnv_inst_done','1');closeGuide()});
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{try{r.update()}catch(e){}}).catch(()=>{});
 // auto-actualización: al abrir o volver a la app, mira si hay versión nueva y se recarga sola
-const APPV=18;
+const APPV=19;
 async function checkUpd(){if(!$('cntModal').hidden)return;try{const t=await (await fetch('index.html?_='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const APPV=(\d+);/);
   if(m&&+m[1]>APPV){try{const r=await navigator.serviceWorker.getRegistration();if(r)await r.update()}catch(e){}if(!sessionStorage.getItem('pnv_upd'+m[1])){sessionStorage.setItem('pnv_upd'+m[1],'1');location.reload()}}}catch(e){}}
 setTimeout(checkUpd,2500);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkUpd()});
