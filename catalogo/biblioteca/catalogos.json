@@ -73,6 +73,14 @@
  ],
  "catalogos": [
   {
+   "id": "presentacion-2026",
+   "titulo": "Presentación Penalva × Nordwik",
+   "subtitulo": "Para clientes nuevos o a recuperar",
+   "texto": "Tarjeta «¿Cuánto de cerca está tu proveedor?». El cliente la abre y llama con un toque a televenta o a la oficina.",
+   "portada": "../presentacion/portada.jpg",
+   "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/presentacion/"
+  },
+  {
    "id": "restauracion-2026",
    "titulo": "Catálogo 2026/2027",
    "subtitulo": "Restauración y profesionales del sector",
