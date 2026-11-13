@@ -3,75 +3,99 @@
   {
    "slug": "antonio-aguado",
    "nombre": "Antonio Aguado",
-   "tel": "34609253986"
+   "tel": "34609253986",
+   "cot": "antonio-aguado"
   },
   {
    "slug": "abraham-megias",
    "nombre": "Abraham Megías",
-   "tel": "34627483661"
+   "tel": "34627483661",
+   "cot": "abraam"
   },
   {
    "slug": "david-sierra",
    "nombre": "David Sierra",
-   "tel": "34625400548"
+   "tel": "34625400548",
+   "cot": "david-guadix"
   },
   {
    "slug": "jorge-ortega",
    "nombre": "Jorge Ortega",
-   "tel": "34685330838"
+   "tel": "34685330838",
+   "cot": "jorge"
   },
   {
    "slug": "antonio-ayala",
    "nombre": "Antonio Ayala",
-   "tel": "34615849309"
+   "tel": "34615849309",
+   "cot": "antonio-ayala"
   },
   {
    "slug": "jose-manuel-herrera",
    "nombre": "José Manuel Herrera",
-   "tel": "34695229073"
+   "tel": "34695229073",
+   "cot": "jose-manuel-herrera"
   },
   {
    "slug": "jose-manuel-avidad",
    "nombre": "José Manuel Avidad",
-   "tel": "34664549032"
+   "tel": "34664549032",
+   "cot": "avidad"
   },
   {
    "slug": "juan-manuel-cabrerizo",
    "nombre": "Juan Manuel Cabrerizo",
-   "tel": "34655334450"
+   "tel": "34655334450",
+   "cot": "juanma-cabrerizo"
   },
   {
    "slug": "juan-manuel-martin",
    "nombre": "Juan Manuel Martín",
-   "tel": "34615849308"
+   "tel": "34615849308",
+   "cot": "juanma-nordwik"
   },
   {
    "slug": "manuel-borrego",
    "nombre": "Manuel Borrego",
-   "tel": "34627483672"
+   "tel": "34627483672",
+   "cot": "manolo-borrego"
   },
   {
    "slug": "sebastian-doncel",
    "nombre": "Sebastián Doncel",
-   "tel": "34656392838"
+   "tel": "34656392838",
+   "cot": "sebastian"
   },
   {
    "slug": "televenta-nordwik",
    "nombre": "Televenta Nordwik «Batseba»",
-   "tel": "34692853375"
+   "tel": "34692853375",
+   "cot": "batseva"
   },
   {
    "slug": "nacho-penalva",
    "nombre": "Nacho Penalva",
-   "tel": "34607396557"
+   "tel": "34607396557",
+   "cot": "nacho-penalva"
   },
   {
    "slug": "david-diaz",
    "nombre": "David Díaz",
-   "tel": "34615849304"
+   "tel": "34615849304",
+   "cot": "david-diaz"
   }
  ],
  "catalogos": [
+  {
+   "id": "cotizador",
+   "interno": true,
+   "titulo": "Cotizador Penalva",
+   "subtitulo": "Solo para el equipo · no se manda al cliente",
+   "texto": "La tarifa al día: eliges productos, aplicas descuento y le mandas al cliente la propuesta en PDF por WhatsApp.",
+   "portada": "../cotizador-app/portada.jpg",
+   "boton": "💶 ABRIR EL COTIZADOR",
+   "url": "https://damdiroju-cdb.github.io/Rutas/cotizador/?c={cot}#k=Penalva26"
+  },
   {
    "id": "alta-cliente",
    "titulo": "Alta de cliente",
@@ -79,7 +103,8 @@
    "texto": "Tú rellenas la ficha del cliente nuevo desde el móvil y llega a la oficina para darlo de alta.",
    "portada": "../alta-cliente/portada.jpg",
    "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/alta-cliente/",
-   "interno": true
+   "interno": true,
+   "boton": "📝 ABRIR LA FICHA"
   },
   {
    "id": "presentacion-2026",
