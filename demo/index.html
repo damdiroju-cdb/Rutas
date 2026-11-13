@@ -36,6 +36,13 @@
   <a class="tile" href="panel.html"><div class="ic" style="background:#7c3aed">▮</div><b>Contador</b><small>Propuestas y pedidos de cada comercial, al día.</small></a>
   <a class="tile wide" href="biblioteca.html"><div class="ic" style="background:#e5484d">❏</div><div><b>Biblioteca de materiales</b><br><small>Catálogos, promos, fichas y alta de cliente en un solo acceso.</small></div></a>
 </div>
+<div class="foot" id="inst" hidden style="margin-top:14px;margin-bottom:0">
+  <div class="card" style="display:flex;gap:12px;align-items:center">
+    <img src="icon-192.png" alt="" style="width:52px;height:52px;border-radius:14px">
+    <div style="flex:1"><b>Ponla en tu móvil</b><div class="muted" id="instTx">Un icono en la pantalla de inicio, como una app.</div></div>
+    <button class="btn g" id="instBtn" style="padding:12px 16px">Instalar</button>
+  </div>
+</div>
 <div class="foot">
   <div class="card">
     <b>¿Lo vemos con tu tarifa real?</b>
@@ -48,5 +55,16 @@
 <script>
 $('#tel').textContent=KIT.contacto.tel;
 $('#wa').href='https://wa.me/'+KIT.contacto.wa+'?text='+encodeURIComponent('Hola David, he visto la demo del Kit Comercial Digital y me interesa verlo con mi tarifa.');
+const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+const IOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+let dp=null;
+if(!standalone){$('#inst').hidden=false}
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e});
+addEventListener('appinstalled',()=>{$('#inst').hidden=true;toast('¡Instalada! Ya la tienes en la pantalla de inicio')});
+$('#instBtn').onclick=async()=>{
+  if(dp){dp.prompt();try{await dp.userChoice}catch(e){}dp=null;return}
+  if(IOS)$('#instTx').innerHTML='En Safari, toca <b>Compartir</b> (el cuadrado con la flecha) y luego <b>Añadir a pantalla de inicio</b>.';
+  else $('#instTx').innerHTML='Toca los <b>tres puntos ⋮</b> de Chrome, arriba a la derecha, y luego <b>Añadir a pantalla de inicio</b> o <b>Instalar aplicación</b>.';
+};
 </script>
 </body></html>

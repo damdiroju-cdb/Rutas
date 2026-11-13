@@ -19,7 +19,7 @@
 <body>
 <div class="w">
   <h1>Catálogo 2026/27</h1>
-  <p class="sub">Con precios y pedido directo. El pedido llega a la oficina con el nombre del cliente.</p>
+  <p class="sub">Con precios y pedido directo. Toca la foto para ver la ficha completa. El pedido llega a la oficina con el nombre del cliente.</p>
   <div class="chips" id="fams"></div>
   <div class="g" id="g"></div>
 </div>
@@ -44,9 +44,10 @@ $('#fams').innerHTML=KIT.familias.map((f,i)=>`<button class="chip${i===0?' on':'
 $('#fams').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;fam=+b.dataset.f;$$('#fams .chip').forEach(x=>x.classList.toggle('on',x===b));draw()};
 $('#clis').innerHTML=KIT.clientes.map(c=>`<option value="${esc(c[0])}">`).join('');
 const byCod=c=>P.find(p=>p[0]===c);
-function draw(){$('#g').innerHTML=P.filter(p=>p[3]===fam).map(p=>`<div class="p">${cart[p[0]]?`<div class="q">${cart[p[0]]}</div>`:''}<img src="${prodImg(p)}" alt=""><b>${esc(p[1])}</b><small>${esc(p[2])}</small><div class="pr">${eur(p[4])}</div><div class="ctl"><button class="plus" data-c="${p[0]}" aria-label="Añadir">+</button></div></div>`).join('');sum()}
+function draw(){$('#g').innerHTML=P.filter(p=>p[3]===fam).map(p=>`<div class="p">${cart[p[0]]?`<div class="q">${cart[p[0]]}</div>`:''}<img src="${prodImg(p)}" alt="${esc(p[1])}" data-f="${p[0]}"><b>${esc(p[1])}</b><small>${esc(p[2])}</small><div class="pr">${eur(p[4])}</div><div class="ctl"><button class="plus" data-c="${p[0]}" aria-label="Añadir">+</button></div></div>`).join('');sum()}
 function sum(){let t=0,n=0;Object.entries(cart).forEach(([k,q])=>{t+=byCod(k)[4]*q;n+=q});$('#bN').textContent=n?n+(n===1?' caja':' cajas'):'Carrito vacío';$('#bT').textContent=eur(t);$('#pedir').disabled=!n;return t}
-$('#g').onclick=e=>{const b=e.target.closest('[data-c]');if(!b)return;cart[b.dataset.c]=(cart[b.dataset.c]||0)+1;store.set('pedido',cart);draw()};
+function addP(c){cart[c]=(cart[c]||0)+1;store.set('pedido',cart);draw()}
+$('#g').onclick=e=>{const im=e.target.closest('img[data-f]');if(im){ficha(byCod(im.dataset.f),addP);return}const b=e.target.closest('[data-c]');if(!b)return;addP(b.dataset.c)};
 function lines(){$('#lines').innerHTML=Object.entries(cart).map(([k,q])=>{const p=byCod(k);return `<div class="row"><img src="${prodImg(p)}" alt=""><div class="nm">${esc(p[1])}<small>${esc(p[2])}</small></div><div class="step"><button data-m="${k}">−</button><span>${q}</span><button data-p="${k}">+</button></div></div>`}).join('');$('#mT').textContent=eur(sum())}
 $('#lines').onclick=e=>{const m=e.target.dataset.m,p=e.target.dataset.p;if(p)cart[p]++;else if(m){cart[m]--;if(cart[m]<=0)delete cart[m]}else return;store.set('pedido',cart);if(!Object.keys(cart).length){$('#m').hidden=true;draw()}else lines()};
 $('#pedir').onclick=()=>{lines();$('#m').hidden=false};

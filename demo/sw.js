@@ -1,5 +1,5 @@
 // Demo: primero la red, y si no hay cobertura, lo último guardado
-const C='kitdemo-v1';
+const C='kitdemo-v2';
 self.addEventListener('install',e=>self.skipWaiting());
 self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
 self.addEventListener('fetch',e=>{if(e.request.method!=='GET'||!e.request.url.startsWith(self.location.origin))return;

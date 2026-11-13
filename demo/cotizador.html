@@ -23,7 +23,7 @@
 <body>
 <div class="w">
   <h1>Cotizador</h1>
-  <p class="sub">Elige productos, pon el descuento (el cliente no lo ve) y manda la propuesta por WhatsApp.</p>
+  <p class="sub">Elige productos, pon el descuento (el cliente no lo ve) y manda la propuesta por WhatsApp. Toca la foto para ver la ficha.</p>
   <div class="card who">
     <div><label for="com">Comercial</label><select id="com" class="inp"></select></div>
     <div><label for="cli">Cliente</label><input id="cli" class="inp" list="clis" placeholder="Nombre del cliente" autocomplete="off"><datalist id="clis"></datalist></div>
@@ -68,10 +68,11 @@ const lineTot=(p,l)=>p[4]*l.q*(1-(l.d||0)/100);
 function draw(){
   const q=$('#q').value.trim().toLowerCase();
   const L=P.filter(p=>(fam<0||p[3]===fam)&&(!q||(p[1]+' '+p[2]).toLowerCase().includes(q)));
-  $('#list').innerHTML=L.length?L.map(p=>{const l=cart[p[0]];return `<div class="row${l?' sel':''}"><img src="${prodImg(p)}" alt=""><div class="nm">${esc(p[1])}<small>${esc(p[2])}</small></div><div class="pr">${eur(p[4])}<br><small class="muted">caja</small></div>${l?`<div class="inq" data-add="${p[0]}">${l.q}</div>`:''}<button class="add" data-add="${p[0]}" aria-label="Añadir">+</button></div>`}).join(''):'<div class="empty">No hay productos con ese nombre.</div>';
+  $('#list').innerHTML=L.length?L.map(p=>{const l=cart[p[0]];return `<div class="row${l?' sel':''}"><img src="${prodImg(p)}" alt="${esc(p[1])}" data-f="${p[0]}"><div class="nm">${esc(p[1])}<small>${esc(p[2])}</small></div><div class="pr">${eur(p[4])}<br><small class="muted">caja</small></div>${l?`<div class="inq" data-add="${p[0]}">${l.q}</div>`:''}<button class="add" data-add="${p[0]}" aria-label="Añadir">+</button></div>`}).join(''):'<div class="empty">No hay productos con ese nombre.</div>';
   sum();
 }
-$('#list').onclick=e=>{const b=e.target.closest('[data-add]');if(!b)return;const c=b.dataset.add;cart[c]=cart[c]||{q:0,d:0};cart[c].q++;save();draw()};
+function addC(c){cart[c]=cart[c]||{q:0,d:0};cart[c].q++;save();draw()}
+$('#list').onclick=e=>{const im=e.target.closest('img[data-f]');if(im){ficha(byCod(im.dataset.f),addC);return}const b=e.target.closest('[data-add]');if(!b)return;addC(b.dataset.add)};
 function save(){store.set('cart',cart)}
 function sum(){const ks=Object.keys(cart);let t=0,n=0;ks.forEach(k=>{const p=byCod(k);if(p){t+=lineTot(p,cart[k]);n+=cart[k].q}});
   $('#bN').textContent=n+(n===1?' caja':' cajas')+' · '+ks.length+(ks.length===1?' artículo':' artículos');$('#bT').textContent=eur(t);$('#ver').disabled=!ks.length;return t}
