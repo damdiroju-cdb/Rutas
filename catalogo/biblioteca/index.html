@@ -160,7 +160,9 @@ h1{font-size:24px;margin:4px 0 4px}
           '<a class="go" style="background:#0B2545" target="_top">'+esc(cat.boton||'ABRIR')+'</a></div>';
         d.querySelector('.go').href=linkOf(cat)||'#'; l.appendChild(d); });
       var h2=document.createElement('h3'); h2.className='sec'; h2.textContent='📲 Para mandar al cliente'; l.appendChild(h2); }
+    var lastG=null;
     EXT.forEach(function(cat){
+      if((cat.grupo||null)!==lastG){ lastG=cat.grupo||null; if(lastG==='familias'){ var hg=document.createElement('h3'); hg.className='sec'; hg.textContent='🛒 Catálogos por familia, con precios'; l.appendChild(hg); } }
       var d=document.createElement('div'); d.className='cat';
       d.innerHTML=(cat.portada?'<img alt="" src="'+esc(cat.portada)+'">':'')+'<div class="in"><h2>'+esc(cat.titulo)+'</h2>'+(cat.subtitulo?'<div class="s2">'+esc(cat.subtitulo)+'</div>':'')+(cat.texto?'<p>'+esc(cat.texto)+'</p>':'<p></p>')+
         '<button class="go">📲 ENVIAR</button><a class="see" target="_top">👁 Ver el catálogo</a></div>';

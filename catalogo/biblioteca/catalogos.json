@@ -131,6 +131,96 @@
    "texto": "Ingredientes por familias, salsas, caldos, quinta gama y postres. El cliente marca con ♥ lo que le interesa y te llega la lista.",
    "portada": "../cotizacion/portada-boton.jpg",
    "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/cotizacion/{slug}/"
+  },
+  {
+   "id": "fam-pescado",
+   "grupo": "familias",
+   "titulo": "Pescados y mariscos",
+   "subtitulo": "182 artículos con precio · el cliente pide desde aquí",
+   "texto": "El cliente añade lo que quiere y el pedido te llega a ti por WhatsApp.",
+   "portada": "../familias/pescado/portada.jpg",
+   "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/familias/pescado/?c={slug}"
+  },
+  {
+   "id": "fam-carne",
+   "grupo": "familias",
+   "titulo": "Carnes",
+   "subtitulo": "66 artículos con precio · el cliente pide desde aquí",
+   "texto": "El cliente añade lo que quiere y el pedido te llega a ti por WhatsApp.",
+   "portada": "../familias/carne/portada.jpg",
+   "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/familias/carne/?c={slug}"
+  },
+  {
+   "id": "fam-precocinados",
+   "grupo": "familias",
+   "titulo": "Precocinados, panadería y bollería",
+   "subtitulo": "445 artículos con precio · el cliente pide desde aquí",
+   "texto": "El cliente añade lo que quiere y el pedido te llega a ti por WhatsApp.",
+   "portada": "../familias/precocinados/portada.jpg",
+   "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/familias/precocinados/?c={slug}"
+  },
+  {
+   "id": "fam-postres",
+   "grupo": "familias",
+   "titulo": "Postres",
+   "subtitulo": "22 artículos con precio · el cliente pide desde aquí",
+   "texto": "El cliente añade lo que quiere y el pedido te llega a ti por WhatsApp.",
+   "portada": "../familias/postres/portada.jpg",
+   "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/familias/postres/?c={slug}"
+  },
+  {
+   "id": "fam-tartas",
+   "grupo": "familias",
+   "titulo": "Tartas y planchas",
+   "subtitulo": "36 artículos con precio · el cliente pide desde aquí",
+   "texto": "El cliente añade lo que quiere y el pedido te llega a ti por WhatsApp.",
+   "portada": "../familias/tartas/portada.jpg",
+   "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/familias/tartas/?c={slug}"
+  },
+  {
+   "id": "fam-helados-nordwik",
+   "grupo": "familias",
+   "titulo": "Helados Nordwik",
+   "subtitulo": "252 artículos con precio · el cliente pide desde aquí",
+   "texto": "El cliente añade lo que quiere y el pedido te llega a ti por WhatsApp.",
+   "portada": "../familias/helados-nordwik/portada.jpg",
+   "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/familias/helados-nordwik/?c={slug}"
+  },
+  {
+   "id": "fam-helados-frigo",
+   "grupo": "familias",
+   "titulo": "Helados Frigo",
+   "subtitulo": "158 artículos con precio · el cliente pide desde aquí",
+   "texto": "El cliente añade lo que quiere y el pedido te llega a ti por WhatsApp.",
+   "portada": "../familias/helados-frigo/portada.jpg",
+   "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/familias/helados-frigo/?c={slug}"
+  },
+  {
+   "id": "fam-v-gama",
+   "grupo": "familias",
+   "titulo": "V gama y verduras",
+   "subtitulo": "183 artículos con precio · el cliente pide desde aquí",
+   "texto": "El cliente añade lo que quiere y el pedido te llega a ti por WhatsApp.",
+   "portada": "../familias/v-gama/portada.jpg",
+   "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/familias/v-gama/?c={slug}"
+  },
+  {
+   "id": "fam-seco",
+   "grupo": "familias",
+   "titulo": "Productos de seco",
+   "subtitulo": "508 artículos con precio · el cliente pide desde aquí",
+   "texto": "El cliente añade lo que quiere y el pedido te llega a ti por WhatsApp.",
+   "portada": "../familias/seco/portada.jpg",
+   "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/familias/seco/?c={slug}"
+  },
+  {
+   "id": "fam-refrigerados",
+   "grupo": "familias",
+   "titulo": "Refrigerados",
+   "subtitulo": "94 artículos con precio · el cliente pide desde aquí",
+   "texto": "El cliente añade lo que quiere y el pedido te llega a ti por WhatsApp.",
+   "portada": "../familias/refrigerados/portada.jpg",
+   "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/familias/refrigerados/?c={slug}"
   }
  ]
 }
