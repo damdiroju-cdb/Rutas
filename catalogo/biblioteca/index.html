@@ -7,6 +7,23 @@
 <meta name="theme-color" content="#D2000F">
 <title>Biblioteca de catálogos · Penalva</title>
 <link rel="icon" href="../penalva.png">
+<link rel="manifest" id="mf" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Catálogos">
+<meta property="og:title" content="Catálogos Penalva · instálala en tu móvil">
+<meta property="og:description" content="Tus catálogos en un toque: instala la biblioteca y manda cualquier catálogo por WhatsApp.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://damdiroju-cdb.github.io/Rutas/catalogo/biblioteca/img/portada-app.jpg">
+<meta property="og:image:secure_url" content="https://damdiroju-cdb.github.io/Rutas/catalogo/biblioteca/img/portada-app.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<script>try{var c0=new URLSearchParams(location.search).get("c")||localStorage.getItem("pen_lib_who");if(c0&&/^[a-z0-9-]+$/.test(c0))document.getElementById("mf").href="m/"+c0+".webmanifest"}catch(e){}</script>
+
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;background:#EEF3F9;color:#1D1C1A;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -54,6 +71,20 @@ h1{font-size:24px;margin:4px 0 4px}
 .pinb button,.pinb a{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 18px;border-radius:12px;border:none;background:#1D1C1A;color:#fff;font:800 16px system-ui,sans-serif;text-decoration:none;cursor:pointer;margin-top:4px}
 .hint{color:#545A63;font-size:13.5px;text-align:center;padding:10px}
 .empty{background:#fff;border-radius:14px;padding:20px;text-align:center;color:#545A63}
+.inst{display:flex;align-items:center;gap:12px;background:#fff;border:2px solid #D2000F;border-radius:16px;padding:12px 14px;margin-bottom:14px;cursor:pointer;text-align:left;width:100%;font:inherit;color:inherit}
+.inst img{width:48px;height:48px;border-radius:12px}.inst b{display:block;font-size:17px}.inst span{font-size:13.5px;color:#545A63}
+.ig{position:fixed;inset:0;background:rgba(20,24,30,.6);display:none;align-items:flex-end;justify-content:center;z-index:30}
+.ig.open{display:flex}
+.igb{background:#fff;width:100%;max-width:520px;border-radius:22px 22px 0 0;padding:20px 18px 26px;text-align:center}
+.igb .ap{width:84px;height:84px;border-radius:20px;box-shadow:0 6px 16px rgba(210,0,15,.3)}
+.igb h3{font-size:23px;margin:12px 0 4px}.igb .t{color:#545A63;font-size:15px;margin:0 0 14px}
+.big{display:flex;align-items:center;justify-content:center;width:100%;min-height:66px;border:none;border-radius:18px;background:#1F8F4E;color:#fff;font:800 22px system-ui,sans-serif;cursor:pointer;text-decoration:none}
+.steps{text-align:left;display:grid;gap:10px;margin:6px 0 14px}
+.st{display:flex;align-items:center;gap:12px;background:#F3F6FB;border-radius:14px;padding:12px 14px;font-size:16.5px;line-height:1.35}
+.st .n{flex:none;width:34px;height:34px;border-radius:50%;background:#D2000F;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}
+.st .k{display:inline-flex;align-items:center;gap:4px;background:#fff;border:1px solid #C9D3DF;border-radius:8px;padding:1px 8px;font-weight:700;white-space:nowrap}
+.arrow{position:fixed;left:50%;bottom:6px;transform:translateX(-50%);font-size:42px;z-index:31;display:none;animation:b 1s infinite}
+@keyframes b{50%{transform:translate(-50%,8px)}}
 </style>
 </head>
 <body>
@@ -61,6 +92,7 @@ h1{font-size:24px;margin:4px 0 4px}
 <div class="w">
   <h1>📚 Catálogos</h1>
   <p class="sub">Elige un catálogo y pulsa <b>ENVIAR</b>. Busca el cliente por su nombre y se abre WhatsApp con el catálogo listo. No hace falta tener al cliente guardado.</p>
+  <button class="inst" id="instB" hidden><img src="img/icon-192.png" alt=""><div><b>📲 Instálala en tu móvil</b><span>Un icono en tu pantalla y abres los catálogos de un toque.</span></div></button>
   <div id="whoBox"></div>
   <div id="list"></div>
 </div>
@@ -101,7 +133,7 @@ h1{font-size:24px;margin:4px 0 4px}
     var b=$('whoBox');
     if(WHO){ b.innerHTML='<div class="who">Catálogos de: <b>'+esc(WHO.nombre)+'</b><button id="chg">Cambiar</button></div>'; $('chg').onclick=function(){WHO=null;try{localStorage.removeItem('pen_lib_who')}catch(e){}renderWho();renderList()}; return; }
     b.innerHTML='<p class="sub" style="margin-top:4px"><b>¿Quién eres?</b> Así el cliente te manda a ti lo que marque.</p><div class="pick" id="pick"></div>';
-    CFG.comerciales.forEach(function(c){ var x=document.createElement('button'); x.textContent=c.nombre; x.onclick=function(){WHO=c;try{localStorage.setItem('pen_lib_who',c.slug)}catch(e){}renderWho();renderList();window.scrollTo(0,0)}; $('pick').appendChild(x); });
+    CFG.comerciales.forEach(function(c){ var x=document.createElement('button'); x.textContent=c.nombre; x.onclick=function(){WHO=c;try{localStorage.setItem('pen_lib_who',c.slug);$('mf').href='m/'+c.slug+'.webmanifest'}catch(e){}renderWho();renderList();window.scrollTo(0,0)}; $('pick').appendChild(x); });
   }
   function renderList(){
     var l=$('list'); l.innerHTML='';
@@ -184,6 +216,46 @@ h1{font-size:24px;margin:4px 0 4px}
     if(WHO){try{localStorage.setItem('pen_lib_who',WHO.slug)}catch(e){}}
     renderWho(); renderList();
   }).catch(function(){ $('list').innerHTML='<div class="empty">No se ha podido cargar la biblioteca. Revisa la cobertura y vuelve a entrar.</div>'; });
+})();
+</script>
+
+<div class="ig" id="ig" role="dialog" aria-modal="true"><div class="igb" id="igb"></div></div>
+<div class="arrow" id="arr">⬇️</div>
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  var ua=navigator.userAgent, IOS=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  var SAFARI=IOS&&!/CriOS|FxiOS|EdgiOS|GSA|Instagram|FBAN|FBAV|WhatsApp/.test(ua)&&/Safari/.test(ua);
+  var standalone=function(){return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true};
+  var deferred=null;
+  if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).catch(function(){});
+  addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;if($('ig').classList.contains('open'))show()});
+  addEventListener('appinstalled',function(){done()});
+  function close(){$('ig').classList.remove('open');$('arr').style.display='none'}
+  function done(){ $('igb').innerHTML='<img class="ap" src="img/icon-192.png" alt=""><h3>✅ ¡Instalada!</h3><p class="t">Ya tienes el icono <b>Catálogos</b> en la pantalla del móvil. Ábrela siempre desde ahí.</p><button class="big" id="igX">Entendido</button>'; $('igX').onclick=close; $('instB').hidden=true; }
+  function show(){
+    var b=$('igb'), h='<img class="ap" src="img/icon-192.png" alt=""><h3>Instala «Catálogos»</h3>';
+    if(deferred){
+      h+='<p class="t">Un toque y la tienes en la pantalla del móvil, como WhatsApp.</p><button class="big" id="igGo">📲 INSTALAR</button>';
+    } else if(IOS&&!SAFARI){
+      h+='<p class="t">En iPhone solo se puede instalar desde <b>Safari</b>.</p><div class="steps"><div class="st"><span class="n">1</span><span>Toca <span class="k">Copiar enlace</span> aquí abajo</span></div><div class="st"><span class="n">2</span><span>Abre <b>Safari</b> (la brújula azul), pega el enlace arriba y entra</span></div><div class="st"><span class="n">3</span><span>Te saldrán aquí mismo los pasos para instalarla</span></div></div><button class="big" id="igCp">📋 Copiar enlace</button>';
+    } else if(IOS){
+      h+='<p class="t">3 toques y listo:</p><div class="steps"><div class="st"><span class="n">1</span><span>Toca el botón <span class="k">Compartir <svg width="16" height="18" viewBox="0 0 16 18"><path d="M8 1v11M4 5l4-4 4 4M2 9v8h12V9" fill="none" stroke="#0A84FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span> abajo del todo (o arriba en iPad)</span></div><div class="st"><span class="n">2</span><span>Baja y toca <span class="k">➕ Añadir a pantalla de inicio</span></span></div><div class="st"><span class="n">3</span><span>Arriba a la derecha, toca <span class="k">Añadir</span></span></div></div><button class="big" id="igX" style="background:#1D1C1A">Vale, voy</button>';
+      $('arr').style.display='block'; $('igb').style.paddingBottom='64px';
+    } else {
+      h+='<p class="t">2 toques y listo:</p><div class="steps"><div class="st"><span class="n">1</span><span>Toca los <span class="k">⋮</span> tres puntos de arriba a la derecha de Chrome</span></div><div class="st"><span class="n">2</span><span>Toca <span class="k">Instalar aplicación</span> o <span class="k">Añadir a pantalla de inicio</span></span></div></div><p class="t" style="font-size:13.5px">Si lo has abierto desde WhatsApp, primero toca ⋮ y «Abrir en Chrome».</p><button class="big" id="igX" style="background:#1D1C1A">Vale, voy</button>';
+    }
+    h+='<button class="x" id="igL" style="margin-top:8px">Ahora no</button>';
+    b.innerHTML=h; $('ig').classList.add('open');
+    if($('igGo')) $('igGo').onclick=function(){deferred.prompt();deferred.userChoice.then(function(r){deferred=null;if(r.outcome==='accepted')done();else close()})};
+    if($('igCp')) $('igCp').onclick=function(){var u=location.href;(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(function(){$('igCp').textContent='✅ Copiado. Ahora abre Safari'},function(){prompt('Copia este enlace y pégalo en Safari:',u)})};
+    if($('igX')) $('igX').onclick=close; $('igL').onclick=close;
+  }
+  $('ig').addEventListener('click',function(e){if(e.target===$('ig'))close()});
+  if(!standalone()){
+    $('instB').hidden=false; $('instB').onclick=show;
+    if(new URLSearchParams(location.search).get('instalar')==='1') setTimeout(show,500);
+  }
 })();
 </script>
 </body>

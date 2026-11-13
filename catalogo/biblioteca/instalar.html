@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#D2000F">
+<title>Mandar la app Catálogos a los comerciales</title>
+<link rel="icon" href="img/icon-192.png">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#EEF3F9;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#1D1C1A}
+.w{max-width:620px;margin:0 auto;padding:16px}
+.hd{display:flex;align-items:center;gap:12px;margin:6px 0 10px}.hd img{width:56px;height:56px;border-radius:14px}
+h1{font-size:23px;margin:0}.sub{color:#545A63;font-size:14.5px;line-height:1.45;margin:0 0 14px}
+.r{background:#fff;border:1px solid #DCE4EE;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.r .t{flex:1;min-width:0}.r b{display:block;font-size:17px}.r span{font-size:13px;color:#545A63}
+.r a{flex:none;display:inline-flex;align-items:center;min-height:46px;padding:0 16px;border-radius:12px;background:#1F8F4E;color:#fff;font-weight:800;text-decoration:none}
+.r a.ok{background:#9AA6B5}
+.r .cp{flex:none;appearance:none;border:1px solid #9AA6B5;background:#fff;border-radius:12px;min-height:46px;padding:0 12px;font:700 14px system-ui,sans-serif;cursor:pointer}
+</style>
+</head>
+<body><div class="w">
+<div class="hd"><img src="img/icon-192.png" alt=""><div><h1>App «Catálogos»</h1><div class="sub" style="margin:0">Mándasela a cada comercial</div></div></div>
+<p class="sub">Pulsa <b>ENVIAR</b> en cada comercial: se abre WhatsApp con su enlace personal. Cuando lo abra, el móvil le dice cómo instalarla (en Android es un botón; en iPhone, 3 toques guiados). La app ya sabe quién es, no tiene que elegirse.</p>
+<div id="list">Cargando…</div>
+</div>
+<script>
+var BASE='https://damdiroju-cdb.github.io/Rutas/catalogo/biblioteca/';
+function link(s){return BASE+'?c='+s+'&instalar=1'}
+fetch('catalogos.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){
+  var L=document.getElementById('list');L.innerHTML='';
+  j.comerciales.forEach(function(c){
+    var nom=c.nombre.split(/[ «]/)[0];
+    var msg='Hola '+nom+' 👋 Te paso la app de *Catálogos Penalva*. Ábrela y sigue los pasos para instalarla en el móvil: tendrás todos los catálogos en un icono para mandarlos por WhatsApp a tus clientes.\n\n'+link(c.slug);
+    var d=document.createElement('div');d.className='r';
+    d.innerHTML='<div class="t"><b></b><span></span></div><button class="cp">Copiar</button><a target="_blank">📲 ENVIAR</a>';
+    d.querySelector('b').textContent=c.nombre;d.querySelector('span').textContent='+'+c.tel;
+    var a=d.querySelector('a');a.href='https://wa.me/'+c.tel+'?text='+encodeURIComponent(msg);
+    a.addEventListener('click',function(){setTimeout(function(){a.classList.add('ok');a.textContent='✓ Enviado'},800)});
+    d.querySelector('.cp').onclick=function(){var b=this;navigator.clipboard.writeText(link(c.slug)).then(function(){b.textContent='✓'})};
+    L.appendChild(d);
+  });
+});
+</script>
+</body></html>
