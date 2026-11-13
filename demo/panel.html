@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex"><meta name="theme-color" content="#123a6b">
+<title>Contador · Demo</title>
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg"><link rel="apple-touch-icon" href="icon-180.png">
+<link rel="stylesheet" href="kit.css">
+<style>
+.kp{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.kp .card{text-align:center;padding:14px 8px}
+.kp b{display:block;font-size:26px;font-weight:900}
+.kp small{color:#6b7a90;font-size:12px;font-weight:600}
+.br{display:flex;align-items:center;gap:10px;margin:12px 0}
+.br .n{width:62px;font-weight:700}
+.br .t{flex:1;height:28px;background:#eef1f5;border-radius:9px;overflow:hidden}
+.br .t i{display:block;height:100%;background:#123a6b;border-radius:9px;transition:width .6s}
+.br .v{width:40px;text-align:right;font-weight:900;font-size:18px}
+.br .plus{font-size:11px;color:#16a34a;font-weight:800}
+.act{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #eef1f5;font-size:14px}
+.act .dot{width:34px;height:34px;border-radius:10px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900}
+</style></head>
+<body>
+<div class="w">
+  <h1>Contador de propuestas</h1>
+  <p class="sub">Lo que ve el jefe de ventas cada mañana. Cada propuesta enviada desde el cotizador suma sola.</p>
+  <div class="kp"><div class="card"><b id="kP">0</b><small>Propuestas mes</small></div><div class="card"><b id="kH">0</b><small>Hoy (demo)</small></div><div class="card"><b id="kC">0</b><small>Pedidos catálogo</small></div></div>
+  <div class="card"><div class="muted" style="font-weight:700;letter-spacing:.5px" id="mes"></div><div id="bars"></div></div>
+  <h2>Actividad en directo</h2>
+  <div class="card" id="act"></div>
+  <button class="btn l block" id="reset" style="margin-top:16px">Reiniciar la demo</button>
+</div>
+<script src="kit.js"></script>
+<script>
+header('Contador de propuestas');
+$('#mes').textContent='PROPUESTAS ENVIADAS · '+new Date().toLocaleDateString('es-ES',{month:'long'}).toUpperCase();
+function draw(){const rows=KIT.comerciales.map(c=>{const hoy=store.get('cnt_'+c,0);return{c,hoy,tot:KIT.baseMes[c]+hoy}}).sort((a,b)=>b.tot-a.tot);
+  const max=Math.max(...rows.map(r=>r.tot),1);
+  $('#bars').innerHTML=rows.map((r,i)=>`<div class="br"><div class="n">${r.c}${r.hoy?`<div class="plus">+${r.hoy} hoy</div>`:''}</div><div class="t"><i style="width:${r.tot/max*100}%;${i===0?'background:#22c55e':''}"></i></div><div class="v">${r.tot}</div></div>`).join('');
+  const A=store.get('actividad',[]);
+  $('#kP').textContent=rows.reduce((a,b)=>a+b.tot,0);$('#kH').textContent=rows.reduce((a,b)=>a+b.hoy,0);$('#kC').textContent=A.filter(a=>a.tipo==='pedido').length;
+  const ic={propuesta:['€','#22c55e'],pedido:['▦','#2563eb'],visita:['✓','#f59e0b'],alta:['+','#0891b2']};
+  $('#act').innerHTML=A.length?A.slice(0,15).map(a=>`<div class="act"><div class="dot" style="background:${ic[a.tipo][1]}">${ic[a.tipo][0]}</div><div><b>${esc(a.texto)}</b><div class="muted">${a.comercial?esc(a.comercial)+' · ':''}${new Date(a.t).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}</div></div></div>`).join(''):'<div class="empty">Todavía no hay actividad. Envía una propuesta desde el cotizador o un pedido desde el catálogo y aparecerá aquí.</div>'}
+$('#reset').onclick=()=>{if(!confirmReset())return;Object.keys(localStorage).filter(k=>k.startsWith('kitdemo_')).forEach(k=>localStorage.removeItem(k));draw();toast('Demo reiniciada')};
+let armed=0;function confirmReset(){if(Date.now()-armed<3000)return true;armed=Date.now();toast('Pulsa otra vez para borrar la actividad de la demo');return false}
+draw();addEventListener('storage',draw);document.addEventListener('visibilitychange',()=>{if(!document.hidden)draw()});
+</script>
+</body></html>

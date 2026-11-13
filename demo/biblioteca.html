@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex"><meta name="theme-color" content="#123a6b">
+<title>Biblioteca · Demo</title>
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg"><link rel="apple-touch-icon" href="icon-180.png">
+<link rel="stylesheet" href="kit.css">
+<style>
+.it{display:flex;align-items:center;gap:12px;background:#fff;border-radius:18px;padding:12px;margin-bottom:10px;box-shadow:0 1px 6px rgba(18,32,51,.07)}
+.it .ic{width:52px;height:52px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px}
+.it .tx{flex:1;min-width:0}.it .tx b{display:block;font-size:15.5px}.it .tx small{color:#6b7a90;font-size:13px}
+.it .bt{display:flex;gap:6px}
+.it .bt button,.it .bt a{border:0;border-radius:12px;padding:10px 12px;font-weight:800;font-size:13px;cursor:pointer;text-decoration:none}
+.ver{background:#e3e8ef;color:#123a6b}.env{background:#22c55e;color:#fff}
+#promo{display:block;width:100%;border-radius:16px;margin-top:10px}
+</style></head>
+<body>
+<div class="w">
+  <h1>Biblioteca</h1>
+  <p class="sub">Todo lo que el comercial manda a sus clientes, en un solo acceso. Un toque y sale por WhatsApp.</p>
+  <div id="items"></div>
+  <div class="modal" id="m" hidden><div class="sheet"><div style="display:flex;justify-content:space-between;align-items:center"><h3 id="mt"></h3><button class="btn l" id="cerrar" style="padding:8px 14px">Cerrar</button></div><div id="mb"></div></div></div>
+</div>
+<script src="kit.js"></script>
+<script>
+header('Biblioteca de materiales');
+const here=location.href.replace(/[^/]*$/,'');
+const I=[
+ {t:'Catálogo 2026/27',d:'Con precios y pedido directo',c:'#2563eb',i:'▦',url:'catalogo.html'},
+ {t:'Promos del mes',d:'Cartel listo para WhatsApp',c:'#e5484d',i:'%',promo:1},
+ {t:'Tarifa y cotizador',d:'Para el comercial',c:'#22c55e',i:'€',url:'cotizador.html'},
+ {t:'Alta de cliente',d:'Ficha que llega a la oficina',c:'#0891b2',i:'+',alta:1},
+ {t:'Fichas técnicas',d:'Alérgenos y conservación',c:'#7c3aed',i:'i',fichas:1},
+ {t:'Contacto del comercial',d:'Tarjeta para guardar',c:'#475569',i:'☎',vcard:1}
+];
+$('#items').innerHTML=I.map((x,k)=>`<div class="it"><div class="ic" style="background:${x.c}">${x.i}</div><div class="tx"><b>${x.t}</b><small>${x.d}</small></div><div class="bt"><button class="ver" data-v="${k}">Ver</button><button class="env" data-e="${k}">Enviar</button></div></div>`).join('');
+const open=(t,h)=>{$('#mt').textContent=t;$('#mb').innerHTML=h;$('#m').hidden=false};
+$('#cerrar').onclick=()=>$('#m').hidden=true;
+function promoCanvas(){const c=document.createElement('canvas');c.width=1080;c.height=1350;const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,1080,1350);g.addColorStop(0,'#123a6b');g.addColorStop(1,'#0d1626');x.fillStyle=g;x.fillRect(0,0,1080,1350);
+  x.fillStyle='#f59e0b';x.font='800 40px system-ui,sans-serif';x.fillText('PROMO DEL MES · '+KIT.marca,70,120);
+  x.fillStyle='#fff';x.font='900 120px system-ui,sans-serif';x.fillText('Aceite de',70,330);x.fillText('oliva virgen',70,460);x.fillText('extra 5 L',70,590);
+  x.fillStyle='#22c55e';x.beginPath();x.arc(820,880,210,0,7);x.fill();x.fillStyle='#fff';x.textAlign='center';x.font='900 110px system-ui,sans-serif';x.fillText('-10%',820,900);x.font='700 40px system-ui,sans-serif';x.fillText('por caja de 3',820,960);
+  x.textAlign='left';x.font='600 46px system-ui,sans-serif';x.fillStyle='#cfd9e8';x.fillText('Hasta fin de mes.',70,800);x.fillText('Pídelo a tu comercial',70,870);x.fillText('o desde el catálogo.',70,940);
+  x.font='500 30px system-ui,sans-serif';x.fillStyle='#8aa0bd';x.fillText('Promoción de ejemplo · demo con datos ficticios',70,1270);return c}
+async function share(k){const x=I[k];
+  if(x.promo){const c=promoCanvas();c.toBlob(async b=>{const f=new File([b],'promo.jpg',{type:'image/jpeg'});if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],text:'Promo del mes de '+KIT.marca})}catch(e){}}else{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='promo.jpg';a.click();toast('Cartel descargado')}},'image/jpeg',.9);return}
+  let txt;if(x.url)txt=x.t+' de '+KIT.marca+': '+here+x.url;else if(x.alta)txt='Para darte de alta como cliente de '+KIT.marca+', rellena esta ficha: '+here+'biblioteca.html#alta';else if(x.vcard)txt=KIT.contacto.nombre+' · '+KIT.marca+' · '+KIT.contacto.tel;else txt='Fichas técnicas de '+KIT.marca+': '+here+'biblioteca.html#fichas';
+  window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank')}
+function view(k){const x=I[k];
+  if(x.url){location.href=x.url;return}
+  if(x.promo){open(x.t,'');const c=promoCanvas();c.id='promo';$('#mb').appendChild(c);c.style.width='100%';return}
+  if(x.alta){open(x.t,`<p class="sub">El cliente la rellena y llega a la oficina con todos los datos.</p><input class="inp" id="aN" placeholder="Nombre del negocio"><input class="inp" id="aC" placeholder="CIF" style="margin-top:8px"><input class="inp" id="aT" placeholder="Teléfono" inputmode="tel" style="margin-top:8px"><input class="inp" id="aD" placeholder="Dirección de entrega" style="margin-top:8px"><button class="btn g block" id="aOk" style="margin-top:12px">Enviar ficha</button>`);
+    $('#aOk').onclick=()=>{const n=$('#aN').value.trim();if(!n){toast('Falta el nombre del negocio');return}logAct('alta','Alta de cliente: '+n);const t='*ALTA DE CLIENTE · '+KIT.marca+'*\nNegocio: '+n+'\nCIF: '+$('#aC').value+'\nTel.: '+$('#aT').value+'\nDirección: '+$('#aD').value;window.open('https://wa.me/'+KIT.contacto.wa+'?text='+encodeURIComponent(t),'_blank');$('#m').hidden=true;toast('Ficha enviada ✓')};return}
+  if(x.fichas){open(x.t,KIT.productos.slice(0,8).map(p=>`<div class="row"><img src="${prodImg(p)}" alt=""><div class="nm">${esc(p[1])}<small>${esc(p[2])} · Conservar en lugar fresco y seco · Alérgenos: ver etiqueta</small></div></div>`).join('')+'<p class="muted">Fichas de ejemplo.</p>');return}
+  if(x.vcard){open(x.t,`<div class="card" style="text-align:center"><b style="font-size:20px">${KIT.contacto.nombre}</b><p class="sub">${KIT.marca}</p><a class="btn g block" href="tel:${KIT.contacto.tel.replace(/\s/g,'')}">Llamar · ${KIT.contacto.tel}</a></div>`)}}
+$('#items').onclick=e=>{const v=e.target.dataset.v,s=e.target.dataset.e;if(v!=null)view(+v);else if(s!=null)share(+s)};
+if(location.hash==='#alta')view(3);if(location.hash==='#fichas')view(4);
+</script>
+</body></html>

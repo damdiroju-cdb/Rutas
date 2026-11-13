@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex"><meta name="theme-color" content="#123a6b">
+<title>Rutas · Demo</title>
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg"><link rel="apple-touch-icon" href="icon-180.png">
+<link rel="stylesheet" href="kit.css">
+<style>
+.ck{width:40px;height:40px;border-radius:20px;border:3px solid #b8c2d1;flex:none;background:#fff;cursor:pointer;color:#fff;font-weight:900;font-size:20px}
+.row.ok .ck{background:#22c55e;border-color:#22c55e}
+.row.ok .nm{opacity:.55}
+.prog{height:14px;background:#e3e8ef;border-radius:7px;overflow:hidden;margin:8px 0 16px}
+.prog i{display:block;height:100%;background:#22c55e;width:0;transition:.3s}
+.leg{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.acts{display:flex;gap:6px}
+.acts a{width:38px;height:38px;border-radius:12px;background:#eef2f7;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:17px}
+</style></head>
+<body>
+<div class="w">
+  <h1>Mi ruta</h1>
+  <div class="card" style="display:flex;gap:10px;align-items:center"><span style="font-weight:700">Comercial</span><select id="com" class="inp" style="flex:1"></select></div>
+  <div class="chips" id="dias" style="margin-top:12px"></div>
+  <div style="display:flex;justify-content:space-between;font-weight:700"><span>Atendidos hoy</span><span id="cnt"></span></div>
+  <div class="prog"><i id="bar"></i></div>
+  <div class="leg" id="leg"></div>
+  <div id="list"></div>
+  <p class="muted">Toca el círculo cuando atiendas al cliente. Lo ve también el jefe de ventas.</p>
+</div>
+<script src="kit.js"></script>
+<script>
+header('Rutas por día y canal');
+const D=['Lun','Mar','Mié','Jue','Vie'];let d=Math.min(4,Math.max(0,(new Date().getDay()+6)%7));
+$('#com').innerHTML=KIT.comerciales.map(c=>`<option>${c}</option>`).join('');$('#com').value=store.get('com','Marta');
+$('#com').onchange=()=>{store.set('com',$('#com').value);draw()};
+$('#dias').innerHTML=D.map((x,i)=>`<button class="chip" data-d="${i}">${x}</button>`).join('');
+$('#dias').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;d=+b.dataset.d;draw()};
+$('#leg').innerHTML=Object.values(KIT.canal).map(c=>`<span class="badge" style="background:${c[1]};color:${c[2]}">${c[0]}</span>`).join('');
+// reparto fijo y repetible de clientes por comercial y día
+function ruta(com,dia){const ci=KIT.comerciales.indexOf(com);const out=[];for(let k=0;k<6;k++)out.push(KIT.clientes[(ci*3+dia*5+k*2)%KIT.clientes.length]);return [...new Map(out.map(c=>[c[0],c])).values()]}
+function draw(){$$('#dias .chip').forEach((b,i)=>b.classList.toggle('on',i===d));
+  const com=$('#com').value,key='ruta_'+com+'_'+d,hechos=store.get(key,[]);const R=ruta(com,d);
+  $('#list').innerHTML=R.map(c=>{const ch=KIT.canal[c[1]],ok=hechos.includes(c[0]);return `<div class="row${ok?' ok':''}"><button class="ck" data-c="${esc(c[0])}" aria-label="Marcar atendido">${ok?'✓':''}</button><div class="nm">${esc(c[0])}<small>${esc(c[2])} · <span class="badge" style="background:${ch[1]};color:${ch[2]}">${ch[0]}</span></small></div><div class="acts"><a href="#" data-x="tel" aria-label="Llamar">☎</a><a href="#" data-x="wa" aria-label="WhatsApp">✉</a></div></div>`}).join('');
+  const n=R.filter(c=>hechos.includes(c[0])).length;$('#cnt').textContent=n+' / '+R.length;$('#bar').style.width=(n/R.length*100)+'%'}
+$('#list').onclick=e=>{const a=e.target.closest('[data-x]');if(a){e.preventDefault();toast('En la demo no se llama a nadie: con tus clientes, este botón abre la llamada o el WhatsApp.');return}
+  const b=e.target.closest('[data-c]');if(!b)return;const com=$('#com').value,key='ruta_'+com+'_'+d;let h=store.get(key,[]);const c=b.dataset.c;
+  if(h.includes(c))h=h.filter(x=>x!==c);else{h.push(c);logAct('visita','Atendido: '+c,com)}store.set(key,h);draw()};
+draw();
+</script>
+</body></html>

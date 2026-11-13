@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="es"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex"><meta name="theme-color" content="#123a6b">
+<title>Cotizador · Demo</title>
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg"><link rel="apple-touch-icon" href="icon-180.png">
+<link rel="stylesheet" href="kit.css">
+<style>
+.who{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.who label{font-size:12px;font-weight:700;color:#56657a;display:block;margin-bottom:4px}
+.add{width:40px;height:40px;border-radius:20px;border:0;background:#22c55e;color:#fff;font-size:24px;font-weight:800;cursor:pointer;flex:none}
+.inq{min-width:40px;height:40px;border-radius:20px;background:#f59e0b;color:#2a1700;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none;padding:0 8px}
+.row.sel{border-color:#22c55e}
+.line{border-bottom:1px solid #eef1f5;padding:12px 0}
+.line .t{display:flex;justify-content:space-between;gap:10px;font-weight:700}
+.line .c{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;flex-wrap:wrap}
+.dto{display:flex;align-items:center;gap:6px;background:#fff7e6;border:1.5px dashed #f59e0b;border-radius:12px;padding:4px 8px}
+.dto input{width:52px;border:0;background:transparent;font-weight:800;font-size:16px;text-align:right;outline:none}
+.dto small{font-size:11px;font-weight:700;color:#b45309}
+.tot{display:flex;justify-content:space-between;font-size:20px;font-weight:900;padding:14px 0 6px}
+.note{background:#fff7e6;color:#7a4b00;border-radius:12px;padding:10px 12px;font-size:13px;margin:8px 0 14px}
+</style></head>
+<body>
+<div class="w">
+  <h1>Cotizador</h1>
+  <p class="sub">Elige productos, pon el descuento (el cliente no lo ve) y manda la propuesta por WhatsApp.</p>
+  <div class="card who">
+    <div><label for="com">Comercial</label><select id="com" class="inp"></select></div>
+    <div><label for="cli">Cliente</label><input id="cli" class="inp" list="clis" placeholder="Nombre del cliente" autocomplete="off"><datalist id="clis"></datalist></div>
+  </div>
+  <div style="margin:14px 0 4px"><input id="q" class="inp" type="search" placeholder="Buscar producto…" autocomplete="off"></div>
+  <div class="chips" id="fams"></div>
+  <div id="list"></div>
+</div>
+
+<div class="bar"><div class="in">
+  <div style="flex:1"><div class="muted" id="bN">0 artículos</div><div style="font-weight:900;font-size:19px" id="bT">0,00 €</div></div>
+  <button class="btn g" id="ver" disabled>Ver propuesta</button>
+</div></div>
+
+<div class="modal" id="m" hidden><div class="sheet">
+  <div style="display:flex;justify-content:space-between;align-items:center"><h3>Propuesta</h3><button class="btn l" id="cerrar" style="padding:8px 14px">Cerrar</button></div>
+  <div class="muted" id="mFor"></div>
+  <div class="note">Los descuentos en naranja <b>solo los ves tú</b>. Al cliente le llega el precio final.</div>
+  <div id="lines"></div>
+  <div class="tot"><span>Total</span><span id="mT"></span></div>
+  <div class="muted" style="margin-bottom:14px">Precios por caja, IVA no incluido.</div>
+  <button class="btn g block" id="send">Enviar imagen + PDF por WhatsApp</button>
+  <button class="btn l block" id="dl" style="margin-top:10px">Solo descargar PDF</button>
+</div></div>
+
+<script src="jspdf.umd.min.js"></script>
+<script src="kit.js"></script>
+<script>
+header('Cotizador');
+const P=KIT.productos;let fam=-1,cart=store.get('cart',{});
+const qs=new URLSearchParams(location.search);
+$('#com').innerHTML=KIT.comerciales.map(c=>`<option>${c}</option>`).join('');
+const c0=qs.get('c')||store.get('com','Marta');$('#com').value=KIT.comerciales.find(c=>c.toLowerCase()===String(c0).toLowerCase())||'Marta';
+$('#com').onchange=()=>store.set('com',$('#com').value);
+$('#clis').innerHTML=KIT.clientes.map(c=>`<option value="${esc(c[0])}">`).join('');
+$('#cli').value=store.get('cli','');$('#cli').oninput=()=>store.set('cli',$('#cli').value);
+$('#fams').innerHTML=['Todo',...KIT.familias].map((f,i)=>`<button class="chip${i===0?' on':''}" data-f="${i-1}">${f}</button>`).join('');
+$('#fams').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;fam=+b.dataset.f;$$('#fams .chip').forEach(x=>x.classList.toggle('on',x===b));draw()};
+$('#q').oninput=draw;
+const byCod=c=>P.find(p=>p[0]===c);
+const lineTot=(p,l)=>p[4]*l.q*(1-(l.d||0)/100);
+function draw(){
+  const q=$('#q').value.trim().toLowerCase();
+  const L=P.filter(p=>(fam<0||p[3]===fam)&&(!q||(p[1]+' '+p[2]).toLowerCase().includes(q)));
+  $('#list').innerHTML=L.length?L.map(p=>{const l=cart[p[0]];return `<div class="row${l?' sel':''}"><img src="${prodImg(p)}" alt=""><div class="nm">${esc(p[1])}<small>${esc(p[2])}</small></div><div class="pr">${eur(p[4])}<br><small class="muted">caja</small></div>${l?`<div class="inq" data-add="${p[0]}">${l.q}</div>`:''}<button class="add" data-add="${p[0]}" aria-label="Añadir">+</button></div>`}).join(''):'<div class="empty">No hay productos con ese nombre.</div>';
+  sum();
+}
+$('#list').onclick=e=>{const b=e.target.closest('[data-add]');if(!b)return;const c=b.dataset.add;cart[c]=cart[c]||{q:0,d:0};cart[c].q++;save();draw()};
+function save(){store.set('cart',cart)}
+function sum(){const ks=Object.keys(cart);let t=0,n=0;ks.forEach(k=>{const p=byCod(k);if(p){t+=lineTot(p,cart[k]);n+=cart[k].q}});
+  $('#bN').textContent=n+(n===1?' caja':' cajas')+' · '+ks.length+(ks.length===1?' artículo':' artículos');$('#bT').textContent=eur(t);$('#ver').disabled=!ks.length;return t}
+function drawLines(){
+  $('#mFor').textContent='Para: '+($('#cli').value||'(sin cliente)')+' · Comercial: '+$('#com').value;
+  $('#lines').innerHTML=Object.keys(cart).map(k=>{const p=byCod(k),l=cart[k];return `<div class="line"><div class="t"><span>${esc(p[1])}<br><small class="muted">${esc(p[2])} · ${eur(p[4])}/caja</small></span><span>${eur(lineTot(p,l))}</span></div>
+   <div class="c"><div class="step"><button data-m="${k}">−</button><span>${l.q}</span><button data-p="${k}">+</button></div>
+   <label class="dto"><small>DTO. OCULTO</small><input inputmode="decimal" data-d="${k}" value="${l.d||''}" placeholder="0"><b>%</b></label></div></div>`}).join('');
+  $('#mT').textContent=eur(sum());
+}
+$('#ver').onclick=()=>{drawLines();$('#m').hidden=false};
+$('#cerrar').onclick=()=>{$('#m').hidden=true;draw()};
+$('#lines').onclick=e=>{const m=e.target.dataset.m,p=e.target.dataset.p;if(p){cart[p].q++}else if(m){cart[m].q--;if(cart[m].q<=0)delete cart[m]}else return;save();if(!Object.keys(cart).length){$('#m').hidden=true;draw()}else drawLines()};
+$('#lines').oninput=e=>{const k=e.target.dataset.d;if(!k)return;let v=parseFloat(String(e.target.value).replace(',','.'))||0;v=Math.max(0,Math.min(60,v));cart[k].d=v;save();
+  const box=e.target.closest('.line');const p=byCod(k);box.querySelector('.t span:last-child').textContent=eur(lineTot(p,cart[k]));$('#mT').textContent=eur(sum())};
+
+// --- propuesta para el cliente (solo precios finales)
+function datos(){const ls=Object.keys(cart).map(k=>{const p=byCod(k),l=cart[k];const unit=p[4]*(1-(l.d||0)/100);return{n:p[1],f:p[2],q:l.q,u:unit,t:unit*l.q}});
+  return{cli:$('#cli').value||'Cliente',com:$('#com').value,fecha:new Date().toLocaleDateString('es-ES'),ls,tot:ls.reduce((a,b)=>a+b.t,0)}}
+function pdfBlob(d){const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});
+  doc.setFillColor(18,58,107);doc.rect(0,0,210,34,'F');doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(18);doc.text(KIT.marca,14,16);
+  doc.setFontSize(10);doc.setFont('helvetica','normal');doc.text('Propuesta comercial · '+d.fecha,14,25);
+  doc.setTextColor(18,32,51);doc.setFontSize(13);doc.setFont('helvetica','bold');doc.text('Para: '+d.cli,14,48);
+  doc.setFont('helvetica','normal');doc.setFontSize(10);doc.text('Comercial: '+d.com,14,55);
+  let y=68;doc.setFont('helvetica','bold');doc.text('Producto',14,y);doc.text('Cajas',128,y,{align:'right'});doc.text('Precio/caja',162,y,{align:'right'});doc.text('Importe',196,y,{align:'right'});
+  doc.setDrawColor(220);doc.line(14,y+2,196,y+2);doc.setFont('helvetica','normal');y+=9;
+  d.ls.forEach(l=>{doc.text(doc.splitTextToSize(l.n+' · '+l.f,100),14,y);doc.text(String(l.q),128,y,{align:'right'});doc.text(eur(l.u),162,y,{align:'right'});doc.text(eur(l.t),196,y,{align:'right'});y+=10;if(y>260){doc.addPage();y=20}});
+  doc.line(14,y-4,196,y-4);doc.setFont('helvetica','bold');doc.setFontSize(14);doc.text('Total: '+eur(d.tot),196,y+4,{align:'right'});
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(110);doc.text('Precios por caja, IVA no incluido. Documento de demostración con datos ficticios.',14,282);
+  return doc.output('blob')}
+function imgBlob(d){return new Promise(res=>{const W=1080,H=420+d.ls.length*96;const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  x.fillStyle='#fff';x.fillRect(0,0,W,H);x.fillStyle='#123a6b';x.fillRect(0,0,W,170);
+  x.fillStyle='#fff';x.font='800 46px system-ui,sans-serif';x.fillText(KIT.marca,60,82);x.font='500 30px system-ui,sans-serif';x.fillText('Propuesta para '+d.cli,60,132);
+  let y=240;x.fillStyle='#6b7a90';x.font='600 26px system-ui,sans-serif';x.fillText('Producto',60,y);x.textAlign='right';x.fillText('Importe',W-60,y);x.textAlign='left';y+=30;
+  d.ls.forEach(l=>{x.strokeStyle='#e3e8ef';x.beginPath();x.moveTo(60,y);x.lineTo(W-60,y);x.stroke();y+=50;x.fillStyle='#122033';x.font='700 30px system-ui,sans-serif';x.fillText(l.n.slice(0,34),60,y);
+    x.textAlign='right';x.fillText(eur(l.t),W-60,y);x.textAlign='left';x.fillStyle='#6b7a90';x.font='500 24px system-ui,sans-serif';x.fillText(l.q+' × '+eur(l.u)+' · '+l.f,60,y+34);y+=46});
+  x.fillStyle='#22c55e';x.fillRect(60,y+20,W-120,90);x.fillStyle='#fff';x.font='900 38px system-ui,sans-serif';x.fillText('TOTAL',90,y+78);x.textAlign='right';x.fillText(eur(d.tot),W-90,y+78);
+  c.toBlob(res,'image/jpeg',.92)})}
+function dlBlob(b,name){const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
+function enviada(d){const k='cnt_'+d.com;store.set(k,store.get(k,0)+1);logAct('propuesta','Propuesta a '+d.cli+' · '+eur(d.tot),d.com);
+  cart={};save();store.set('cli','');$('#cli').value='';$('#m').hidden=true;draw();toast('Propuesta enviada ✓ Empezamos una nueva')}
+$('#send').onclick=async()=>{const d=datos();const base='Propuesta_'+d.cli.replace(/[^\wáéíóúñ]+/gi,'_');
+  const pdf=new File([pdfBlob(d)],base+'.pdf',{type:'application/pdf'});const img=new File([await imgBlob(d)],base+'.jpg',{type:'image/jpeg'});
+  const txt='Hola, te paso la propuesta de '+KIT.marca+'. Total: '+eur(d.tot)+' (IVA no incluido).';
+  if(navigator.canShare&&navigator.canShare({files:[img,pdf]})){try{await navigator.share({files:[img,pdf],text:txt});enviada(d)}catch(e){if(e.name!=='AbortError')toast('No se pudo compartir')}}
+  else{dlBlob(img,img.name);dlBlob(pdf,pdf.name);window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank');enviada(d)}};
+$('#dl').onclick=()=>{const d=datos();dlBlob(pdfBlob(d),'Propuesta_'+d.cli.replace(/\W+/g,'_')+'.pdf')};
+draw();
+</script>
+</body></html>
