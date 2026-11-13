@@ -52,3 +52,27 @@ h2.sec small{font-weight:500;color:#545A63;font-size:14px}
 #toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:#1D1C1A;color:#fff;padding:10px 16px;border-radius:12px;font-size:15px;z-index:50;opacity:0;transition:opacity .2s;pointer-events:none}
 #toast.on{opacity:1}
 .com[hidden]{display:none}
+
+.it{cursor:pointer}
+.dv .shb{max-height:94vh}
+.dvt{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;font-size:14px;color:#545A63}
+.dvx{border:1px solid #C9D3DF;background:#fff;border-radius:999px;padding:9px 14px;font:700 15px system-ui,sans-serif;color:#1D1C1A;cursor:pointer}
+.dvi{width:100%;aspect-ratio:4/3;border:1px solid #DCE4EE;border-radius:16px;background:#fff center/contain no-repeat;display:flex;align-items:center;justify-content:center;font-size:64px;color:#9AA6B5;cursor:zoom-in}
+.dvh{text-align:center;font-size:13px;color:#545A63;margin:6px 0 8px}
+.dvs{font:800 13px system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--c)}
+.dvn{font-size:24px;line-height:1.15;margin:4px 0 6px}
+.dvf{font-size:15px;color:#33373D}
+.dvp{margin-top:8px;font-size:22px;font-weight:800;color:var(--c)}
+.dvq{margin-top:14px;display:flex;align-items:center;gap:12px}
+.dvq .dvadd{width:100%;min-height:56px;font-size:18px;border-radius:14px}
+.stp.big button{width:52px;height:52px;font-size:26px}.stp.big b{min-width:90px;font-size:17px}
+.dvin{color:#1F8F4E;font-weight:800}
+.dvnav{display:flex;justify-content:space-between;margin-top:12px}
+.dvnav button{border:1px solid #C9D3DF;background:#fff;border-radius:999px;padding:10px 16px;font:700 15px system-ui,sans-serif;cursor:pointer;color:#1D1C1A}
+.dvnav button:disabled{opacity:.35}
+.zv{position:fixed;inset:0;z-index:60;background:#000;display:none;flex-direction:column}
+.zv.open{display:flex}
+.zv .dvx{align-self:flex-end;margin:calc(10px + env(safe-area-inset-top)) 10px 6px}
+.zv .zi{flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;touch-action:pinch-zoom pan-x pan-y}
+.zv img{max-width:100%;max-height:100%;background:#fff}
+.it .ph img{width:100%;height:100%;object-fit:contain;display:block;border-radius:10px}
