@@ -13,7 +13,7 @@
       if(document.getElementById('pen-home')) return;
       var rep=me&&me.getAttribute('data-replace'), bef=me&&me.getAttribute('data-before');
       var r=rep&&document.getElementById(rep);
-      if(r){ r.textContent='🏠 Inicio'; r.id='pen-home'; r.addEventListener('click',go,true); r.onclick=go; return; }
+      if(r){ r.textContent=(me.getAttribute('data-short')?'🏠':'🏠 Inicio'); r.title='Volver a la biblioteca'; r.id='pen-home'; r.addEventListener('click',go,true); r.onclick=go; return; }
       var b=bef&&document.getElementById(bef);
       var a=document.createElement('a'); a.id='pen-home'; a.href=home; a.target='_top'; a.textContent='🏠 Inicio';
       if(b){

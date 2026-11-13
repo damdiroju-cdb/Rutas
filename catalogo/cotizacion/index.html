@@ -2300,6 +2300,7 @@ a{color:#B93A24}
 .pd-add{flex:1;appearance:none;border:none;background:#D2000F;color:#fff;border-radius:12px;height:52px;font:800 16px Inter,sans-serif;cursor:pointer}
 .pd-ok{font-size:14px;font-weight:700;color:#1F8F4E;min-height:18px}
 .pd-see{appearance:none;border:1px solid #1F8F4E;background:#fff;color:#1F8F4E;border-radius:12px;height:46px;font:700 15px Inter,sans-serif;cursor:pointer}
+@media (max-width:480px){.tl{display:none}}
 </style>
 <style>
 .pc{position:relative;cursor:pointer}
@@ -2402,7 +2403,7 @@ a{color:#B93A24}
 </head>
 <body>
 <div class="app">
-<div class="top"><div class="logos"><img class="lp" src="../penalva.png" alt="Alimentación Penalva"><img class="ln" src="../nordwik.png" alt="Helados Nordwik"></div><div class="tools"><button class="tb" id="b-promo" hidden>🔥 Ofertas</button><button class="tb" id="b-search">🔍 Buscar</button><button class="tb" id="b-lib">📚 Catálogos</button></div></div>
+<div class="top"><div class="logos"><img class="lp" src="../penalva.png" alt="Alimentación Penalva"><img class="ln" src="../nordwik.png" alt="Helados Nordwik"></div><div class="tools"><button class="tb" id="b-promo" hidden>🔥 Ofertas</button><button class="tb" id="b-search" title="Buscar">🔍<span class="tl"> Buscar</span></button><button class="tb" id="b-idx">📑 Índice</button><button class="tb" id="b-lib" title="Catálogos">📚<span class="tl"> Catálogos</span></button></div></div>
 <div class="stage" id="stage"><div id="wrap"><button class="side l" id="sprev" aria-label="Página anterior"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button><button class="side r" id="snext" aria-label="Página siguiente"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></button><div id="book">
 <div class="page" data-density="hard" aria-label="Portada"><div class="inner" style="background: #EEF3F9; color: #1D1C1A; font-family: Inter, system-ui, sans-serif"><div style="position: absolute; left: 56px; right: 56px; top: 44px; display: flex; justify-content: space-between; align-items: center">
 <img src="../penalva.png" alt="Alimentación Penalva" style="height: 82px">
@@ -2673,6 +2674,9 @@ a{color:#B93A24}
   if(window.ResizeObserver){ new ResizeObserver(scale).observe(document.getElementById('book')); }
   window.addEventListener('resize',function(){ fit(); setTimeout(function(){ try{ book.update(); }catch(e){} ui(); },80); });
   function goPrev(){ var i=book.getCurrentPageIndex(); if(i<=0) return; if(MOB){ try{ book.flip(i-1,'top'); }catch(err){} setTimeout(function(){ if(book.getCurrentPageIndex()!==i-1){ book.turnToPage(i-1); ui(); } },800); } else book.flipPrev(); }
+  var IDX=Array.prototype.findIndex.call(document.querySelectorAll(PSEL),function(p){return !!p.querySelector('.goto')||p.textContent.indexOf('Índice')>=0;});
+  var bIdx=document.getElementById('b-idx');
+  if(IDX<0){ bIdx.hidden=true; } else { bIdx.onclick=function(e){ e.stopPropagation(); try{ if(typeof closeSR==='function') closeSR(); }catch(er){} book.turnToPage(IDX); ui(); }; }
   document.getElementById('prev').onclick=function(){goPrev();};
   document.getElementById('next').onclick=function(){book.flipNext();};
   document.getElementById('sprev').onclick=function(e){e.stopPropagation();goPrev();};
@@ -2912,6 +2916,6 @@ a{color:#B93A24}
   document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible') chk(); });
 })();
 </script>
-<script src="../inicio.js" data-replace="b-lib"></script>
+<script src="../inicio.js" data-replace="b-lib" data-short="1"></script>
 </body>
 </html>
