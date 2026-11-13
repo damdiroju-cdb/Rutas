@@ -87,6 +87,17 @@ h1{font-size:24px;margin:4px 0 4px}
 .arrow{position:fixed;left:50%;bottom:6px;transform:translateX(-50%);font-size:42px;z-index:31;display:none;animation:b 1s infinite}
 @keyframes b{50%{transform:translate(-50%,8px)}}
 .sec{font-size:15px;color:#545A63;margin:18px 2px 8px;text-transform:uppercase;letter-spacing:.04em}
+.nw{position:fixed;inset:0;background:rgba(20,24,30,.6);display:none;align-items:center;justify-content:center;z-index:40;padding:14px}
+.nw.open{display:flex}
+.nwb{background:#fff;width:100%;max-width:520px;max-height:92vh;overflow:auto;border-radius:22px;padding:18px 16px 16px}
+.nwb .tg{display:inline-block;background:#D2000F;color:#fff;font-weight:800;font-size:12.5px;letter-spacing:.05em;padding:5px 10px;border-radius:8px}
+.nwb h3{font-size:22px;margin:10px 0 4px}.nwb .in{color:#545A63;font-size:14.5px;margin:0 0 10px}
+.ni{border:1px solid #DCE4EE;border-radius:14px;padding:10px 12px;margin-bottom:8px}
+.ni>b{display:block;font-size:16.5px;margin-bottom:3px}.ni p{margin:0;font-size:14.5px;line-height:1.4;color:#33373D}
+.ni .cl{margin-top:5px;font-size:13.5px;color:#146C3B;background:#EAF6EF;border-radius:8px;padding:5px 8px}
+.ni .cl.no{color:#8A1C1C;background:#FBECEC}
+.nwok{display:flex;align-items:center;justify-content:center;width:100%;min-height:56px;border:none;border-radius:16px;background:#1F8F4E;color:#fff;font:800 19px system-ui,sans-serif;margin-top:8px;cursor:pointer}
+.nwlink{background:none;border:none;color:#1F4AA8;font:700 14px system-ui,sans-serif;text-decoration:underline;cursor:pointer;padding:4px 0;margin:-6px 0 10px}
 </style>
 </head>
 <body>
@@ -94,6 +105,7 @@ h1{font-size:24px;margin:4px 0 4px}
 <div class="w">
   <h1>📚 Biblioteca Penalva</h1>
   <p class="sub">Aquí lo tienes todo junto: el <b>Cotizador</b>, el <b>Cuadro de ventas</b>, la ficha de <b>Alta de clientes</b> y <b>todos los catálogos</b> que tenemos hasta ahora. Los catálogos se mandan al cliente con <b>ENVIAR</b>: lo buscas por su nombre y se abre WhatsApp con todo listo.</p>
+  <button class="nwlink" id="nwL">ℹ️ Qué hay en la biblioteca</button>
   <button class="inst" id="instB" hidden><img src="img/icon-192.png" alt=""><div><b>📲 Instálala en tu móvil</b><span>Un solo icono con el Cotizador, el Cuadro de ventas, el alta de clientes y los catálogos.</span></div></button>
   <div id="whoBox"></div>
   <div id="list"></div>
@@ -265,6 +277,31 @@ h1{font-size:24px;margin:4px 0 4px}
     $('instB').hidden=false; $('instB').onclick=show;
     if(new URLSearchParams(location.search).get('instalar')==='1') setTimeout(show,500);
   }
+})();
+</script>
+
+<div class="nw" id="nw" role="dialog" aria-modal="true"><div class="nwb">
+<span class="tg">NOVEDADES · BIBLIOTECA PENALVA</span>
+<h3>Todo tu trabajo, en un solo sitio</h3>
+<p class="in">Esto es lo que tienes aquí, para qué sirve y qué ve el cliente:</p>
+<div class="ni"><b>💶 Cotizador</b><p>Eliges productos, aplicas descuento y sacas la propuesta en PDF o imagen para mandarla por WhatsApp.</p><div class="cl">👀 El cliente ve: su propuesta con los productos y el <b>precio final</b>, con tus datos. El descuento no lo ve.</div></div>
+<div class="ni"><b>📊 Cuadro de ventas</b><p>Tus clientes y lo que compran. Desde la ficha de cada cliente le mandas el recordatorio de su pedido por WhatsApp.</p><div class="cl">👀 El cliente ve: un enlace con <b>todo lo que ha comprado</b>, para que repita el pedido.</div></div>
+<div class="ni"><b>📝 Alta de clientes</b><p>La ficha para dar de alta a un cliente nuevo. La rellenas tú desde el móvil y llega a la oficina.</p><div class="cl no">🔒 El cliente no ve nada: es <b>solo para ti</b>.</div></div>
+<div class="ni"><b>📚 Catálogos</b> <p>Catálogo 2026/2027 y Presentación Penalva × Nordwik. Pulsa <b>ENVIAR</b>, busca al cliente por su nombre y se abre WhatsApp con todo listo.</p><div class="cl">👀 El cliente ve: una <b>tarjeta grande con la portada</b>. Al tocarla, pasa páginas, usa el 📑 Índice y el buscador, y te marca lo que le interesa. En la presentación tiene botones para llamarnos.</div></div>
+<div class="ni"><b>🏠 Inicio</b><p>Desde el Cotizador, el Cuadro de ventas o un catálogo, el botón rojo <b>🏠 Inicio</b> te devuelve aquí. El cliente no lo ve.</p></div>
+<button class="nwok" id="nwOk">Entendido 👍</button>
+</div></div>
+<script>
+(function(){
+  var V='2026-11-13', nw=document.getElementById('nw');
+  function open(){ nw.classList.add('open'); }
+  function close(){ nw.classList.remove('open'); try{localStorage.setItem('pen_lib_news',V)}catch(e){} }
+  document.getElementById('nwOk').onclick=close;
+  nw.addEventListener('click',function(e){ if(e.target===nw) close(); });
+  document.getElementById('nwL').onclick=open;
+  var seen=null; try{seen=localStorage.getItem('pen_lib_news')}catch(e){}
+  var inst=new URLSearchParams(location.search).get('instalar')==='1' && !(matchMedia('(display-mode: standalone)').matches||navigator.standalone===true);
+  if(seen!==V && !inst) setTimeout(open,700);
 })();
 </script>
 </body>
