@@ -128,7 +128,7 @@
    "id": "restauracion-2026",
    "titulo": "Catálogo 2026/2027",
    "subtitulo": "Restauración y profesionales del sector",
-   "texto": "Ingredientes por familias, salsas, caldos, quinta gama y postres. El cliente marca con ♥ lo que le interesa y te llega la lista.",
+   "texto": "Ingredientes por familias, salsas, caldos, quinta gama y postres, con precio. El cliente hace su pedido y te llega por WhatsApp.",
    "portada": "../cotizacion/portada-boton.jpg",
    "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/cotizacion/{slug}/"
   },

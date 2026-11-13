@@ -43,6 +43,12 @@ function bind(){
 }
 function comTel(){ return (COM&&COM.tel)||TEL_DEF }
 function comNom(){ return COM?COM.nombre.split(/[ «]/)[0]:'Penalva' }
+var REG=''; fetch('../../cotizacion/config.json',{cache:'no-cache'}).then(function(r){return r.json()}).then(function(c){REG=(c&&c.registro)||''}).catch(function(){});
+function registro(neg,cx,tt){ if(!REG) return; try{
+  var d={fecha:new Date().toISOString(),catalogo:'Catálogos por familia',comercial:COM?COM.nombre.replace(/\s*«.*»/,''):'Televenta (sin comercial)',tel:comTel(),negocio:neg,comentario:cx,importe:Math.round(tt*100)/100,
+    articulos:Object.keys(CART).map(function(k){ var x=CART[k]; return {ref:k,nombre:x.d,formato:'',familia:x.fam||'',cantidad:x.q,unidad:un(x.f),precio:Math.round(x.p*100)/100,importe:Math.round(x.q*x.p*100)/100,oferta:''}; })};
+  var body=JSON.stringify(d); if(navigator.sendBeacon) navigator.sendBeacon(REG,new Blob([body],{type:'text/plain'})); else fetch(REG,{method:'POST',mode:'no-cors',body:body,keepalive:true});
+}catch(e){} }
 function openCart(){
   var ks=Object.keys(CART), tot=0, h='<h3>🛒 Mi pedido</h3><p class="sub">Revisa las cantidades y mándaselo a '+(COM?'<b>'+esc(comNom())+'</b>, tu comercial':'<b>Penalva</b>')+' por WhatsApp.</p>';
   if(!ks.length) h+='<p class="sub">Todavía no has añadido nada.</p>';
@@ -68,7 +74,7 @@ function openCart(){
     Object.keys(CART).forEach(function(k){ var x=CART[k]; tt+=x.q*x.p; t+='• '+x.q+' '+un(x.f)+(x.q>1&&un(x.f)!=='kg'?'s':'')+' — '+x.d+' (Ref. '+k+')\n'; });
     t+='\nImporte orientativo: '+eur(tt)+' (tarifa, sin IVA'+(Object.keys(CART).some(function(k){return CART[k].w})?'; lo de peso según peso real':'')+')';
     var cx=$('cx').value.trim(); if(cx) t+='\n📝 '+cx;
-    location.href='https://wa.me/'+comTel()+'?text='+encodeURIComponent(t);
+    registro(neg,cx,tt); location.href='https://wa.me/'+comTel()+'?text='+encodeURIComponent(t);
     setTimeout(function(){ $('shb').innerHTML='<h3>✅ ¡Pedido preparado!</h3><p class="sub">Se ha abierto WhatsApp con tu pedido. Solo falta darle a <b>enviar</b>.</p><button class="send" id="ok1">Ya lo he enviado · vaciar pedido</button><button class="lnk" id="ok2">Todavía no, mantener el pedido</button>';
       $('ok1').onclick=function(){ CART={}; save(); render(); $('sh').classList.remove('open'); toast('¡Gracias por tu pedido!'); }; $('ok2').onclick=function(){ $('sh').classList.remove('open') }; },700);
   };
