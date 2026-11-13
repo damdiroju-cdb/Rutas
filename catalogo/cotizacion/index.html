@@ -2732,7 +2732,7 @@ a{color:#B93A24}
     if(!corto&&r[5]&&r[4]&&un(r[4])!==pu) t+=' · '+eur(r[5])+'/'+un(r[4]); if(!corto&&r[9]) t+=' (caja de '+String(r[9]).replace('.',',')+' kg aprox.)'; else if(!corto&&r[6]&&r[6]>1&&r[2]!=='UN') t+=' · '+r[6]+' ud/'+pu; return t; }
   function uq(c,n){ var r=PR[c], u=r?un(r[2]):'caja'; return n+' '+u+(n>1&&u!=='kg'?'s':''); }
   function prPaint(){ document.querySelectorAll('.pc[data-c]').forEach(function(el){ if(el.querySelector('.ppr')) return; var t=prTxt(el.getAttribute('data-c'),true); if(!t) return; var d=document.createElement('div'); d.className='ppr'; d.textContent=t; (el.lastElementChild||el).appendChild(d); }); }
-  Promise.all(['pescado','carne','precocinados','postres','tartas','helados-nordwik','helados-frigo','v-gama','seco','refrigerados'].map(function(f){ return fetch('../familias/data/'+f+'.json',{cache:'no-cache'}).then(function(r){return r.json()}).catch(function(){return null}); }))
+  Promise.all(['pescado','carne','precocinados','pan-bolleria','postres','tartas','helados-nordwik','helados-frigo','v-gama','verduras','seco','refrigerados','navidad'].map(function(f){ return fetch('../familias/data/'+f+'.json',{cache:'no-cache'}).then(function(r){return r.json()}).catch(function(){return null}); }))
   .then(function(ds){ ds.forEach(function(d){ if(d) d.secciones.forEach(function(s){ s.a.forEach(function(r){ PR[r[0]]=r; }); }); }); prPaint(); if(cur) show(cur); if($('fp').classList.contains('open')) render(); });
   var CFG={}, PROMO={}, PROMOS=null;
   function save(){ try{ localStorage.setItem(K,JSON.stringify(fav)); localStorage.setItem(K+'_q',JSON.stringify(qty)); }catch(e){} }
@@ -2917,7 +2917,7 @@ a{color:#B93A24}
 <script>
 /* Auto-actualización: si hay versión nueva publicada, el catálogo se recarga solo (la lista del cliente no se pierde). Sube CATV en cada cambio. */
 (function(){
-  var CATV=4;
+  var CATV=5;
   function chk(){ try{
     fetch(location.pathname+'?_='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){
       var m=t.match(/var CATV=(\d+);/); if(!m||+m[1]<=CATV) return;

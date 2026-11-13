@@ -161,11 +161,20 @@
   {
    "id": "fam-precocinados",
    "grupo": "familias",
-   "titulo": "Precocinados, panadería y bollería",
-   "subtitulo": "445 artículos con precio · el cliente pide desde aquí",
+   "titulo": "Precocinados",
+   "subtitulo": "259 artículos con precio · el cliente pide desde aquí",
    "texto": "El cliente añade lo que quiere y el pedido te llega a ti por WhatsApp.",
    "portada": "../familias/precocinados/portada.jpg",
    "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/familias/precocinados/?c={slug}"
+  },
+  {
+   "id": "fam-pan-bolleria",
+   "grupo": "familias",
+   "titulo": "Pan y bollería",
+   "subtitulo": "200 artículos con precio · el cliente pide desde aquí",
+   "texto": "El cliente añade lo que quiere y el pedido te llega a ti por WhatsApp.",
+   "portada": "../familias/pan-bolleria/portada.jpg",
+   "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/familias/pan-bolleria/?c={slug}"
   },
   {
    "id": "fam-postres",
@@ -206,17 +215,26 @@
   {
    "id": "fam-v-gama",
    "grupo": "familias",
-   "titulo": "V gama y verduras",
-   "subtitulo": "183 artículos con precio · el cliente pide desde aquí",
+   "titulo": "V gama",
+   "subtitulo": "97 artículos con precio · el cliente pide desde aquí",
    "texto": "El cliente añade lo que quiere y el pedido te llega a ti por WhatsApp.",
    "portada": "../familias/v-gama/portada.jpg",
    "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/familias/v-gama/?c={slug}"
   },
   {
+   "id": "fam-verduras",
+   "grupo": "familias",
+   "titulo": "Verduras y patatas",
+   "subtitulo": "86 artículos con precio · el cliente pide desde aquí",
+   "texto": "El cliente añade lo que quiere y el pedido te llega a ti por WhatsApp.",
+   "portada": "../familias/verduras/portada.jpg",
+   "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/familias/verduras/?c={slug}"
+  },
+  {
    "id": "fam-seco",
    "grupo": "familias",
    "titulo": "Productos de seco",
-   "subtitulo": "508 artículos con precio · el cliente pide desde aquí",
+   "subtitulo": "494 artículos con precio · el cliente pide desde aquí",
    "texto": "El cliente añade lo que quiere y el pedido te llega a ti por WhatsApp.",
    "portada": "../familias/seco/portada.jpg",
    "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/familias/seco/?c={slug}"

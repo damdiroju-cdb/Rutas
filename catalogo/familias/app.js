@@ -3,7 +3,7 @@ var $=function(i){return document.getElementById(i)};
 var FAM=document.body.getAttribute('data-f');
 var P=new URLSearchParams(location.search), CS=P.get('c')||'';
 var TEL_DEF='34692853375', COM=null, DATA=null, CART={};
-var FAMS=[['navidad','🎄 Especial Navidad'],['pescado','🐟 Pescados'],['carne','🥩 Carnes'],['precocinados','🍤 Precocinados'],['postres','🍮 Postres'],['tartas','🍰 Tartas'],['helados-nordwik','🍦 Helados Nordwik'],['helados-frigo','🍨 Helados Frigo'],['v-gama','🥘 V gama'],['seco','🥫 Seco'],['refrigerados','🧀 Refrigerados']];
+var FAMS=[['navidad','🎄 Especial Navidad'],['pescado','🐟 Pescados'],['carne','🥩 Carnes'],['precocinados','🍤 Precocinados'],['pan-bolleria','🥐 Pan y bollería'],['postres','🍮 Postres'],['tartas','🍰 Tartas'],['helados-nordwik','🍦 Helados Nordwik'],['helados-frigo','🍨 Helados Frigo'],['v-gama','🥘 V gama'],['verduras','🥦 Verduras y patatas'],['seco','🥫 Seco'],['refrigerados','🧀 Refrigerados']];
 var U={CJ:'caja',UN:'ud',KG:'kg',BT:'bote',LT:'litro',L:'litro',BOL:'bolsa',EST:'estuche'};
 function un(x){return U[x]||(/^C\d+$/.test(x||'')?'caja':(x||'ud').toLowerCase())}
 function eur(v){return v.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' €'}
