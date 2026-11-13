@@ -73,6 +73,14 @@
  ],
  "catalogos": [
   {
+   "id": "alta-cliente",
+   "titulo": "Alta de cliente",
+   "subtitulo": "Ficha para clientes nuevos",
+   "texto": "El cliente rellena sus datos desde el móvil en 2 minutos y nos llega la ficha de alta.",
+   "portada": "../alta-cliente/portada.jpg",
+   "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/alta-cliente/"
+  },
+  {
    "id": "presentacion-2026",
    "titulo": "Presentación Penalva × Nordwik",
    "subtitulo": "Para clientes nuevos o a recuperar",
