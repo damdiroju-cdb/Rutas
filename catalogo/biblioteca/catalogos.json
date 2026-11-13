@@ -75,10 +75,11 @@
   {
    "id": "alta-cliente",
    "titulo": "Alta de cliente",
-   "subtitulo": "Ficha para clientes nuevos",
-   "texto": "El cliente rellena sus datos desde el móvil en 2 minutos y nos llega la ficha de alta.",
+   "subtitulo": "Solo para el equipo · no se manda al cliente",
+   "texto": "Tú rellenas la ficha del cliente nuevo desde el móvil y llega a la oficina para darlo de alta.",
    "portada": "../alta-cliente/portada.jpg",
-   "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/alta-cliente/"
+   "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/alta-cliente/",
+   "interno": true
   },
   {
    "id": "presentacion-2026",

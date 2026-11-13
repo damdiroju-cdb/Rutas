@@ -85,6 +85,7 @@ h1{font-size:24px;margin:4px 0 4px}
 .st .k{display:inline-flex;align-items:center;gap:4px;background:#fff;border:1px solid #C9D3DF;border-radius:8px;padding:1px 8px;font-weight:700;white-space:nowrap}
 .arrow{position:fixed;left:50%;bottom:6px;transform:translateX(-50%);font-size:42px;z-index:31;display:none;animation:b 1s infinite}
 @keyframes b{50%{transform:translate(-50%,8px)}}
+.sec{font-size:15px;color:#545A63;margin:18px 2px 8px;text-transform:uppercase;letter-spacing:.04em}
 </style>
 </head>
 <body>
@@ -139,7 +140,14 @@ h1{font-size:24px;margin:4px 0 4px}
     var l=$('list'); l.innerHTML='';
     if(!WHO){ return; }
     if(!CFG.catalogos.length){ l.innerHTML='<div class="empty">Todavía no hay catálogos.</div>'; return; }
-    CFG.catalogos.forEach(function(cat){
+    var INT=CFG.catalogos.filter(function(c){return c.interno}), EXT=CFG.catalogos.filter(function(c){return !c.interno});
+    if(INT.length){ var h=document.createElement('h3'); h.className='sec'; h.textContent='🛠 Para ti · no se manda al cliente'; l.appendChild(h);
+      INT.forEach(function(cat){ var d=document.createElement('div'); d.className='cat';
+        d.innerHTML=(cat.portada?'<img alt="" src="'+esc(cat.portada)+'">':'')+'<div class="in"><h2>'+esc(cat.titulo)+'</h2>'+(cat.subtitulo?'<div class="s2" style="color:#C0101C">'+esc(cat.subtitulo)+'</div>':'')+(cat.texto?'<p>'+esc(cat.texto)+'</p>':'<p></p>')+
+          '<a class="go" style="background:#0B2545" target="_top">📝 ABRIR LA FICHA</a></div>';
+        d.querySelector('.go').href=linkOf(cat)||'#'; l.appendChild(d); });
+      var h2=document.createElement('h3'); h2.className='sec'; h2.textContent='📲 Para mandar al cliente'; l.appendChild(h2); }
+    EXT.forEach(function(cat){
       var d=document.createElement('div'); d.className='cat';
       d.innerHTML=(cat.portada?'<img alt="" src="'+esc(cat.portada)+'">':'')+'<div class="in"><h2>'+esc(cat.titulo)+'</h2>'+(cat.subtitulo?'<div class="s2">'+esc(cat.subtitulo)+'</div>':'')+(cat.texto?'<p>'+esc(cat.texto)+'</p>':'<p></p>')+
         '<button class="go">📲 ENVIAR</button><a class="see" target="_top">👁 Ver el catálogo</a></div>';
