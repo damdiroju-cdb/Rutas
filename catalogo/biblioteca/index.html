@@ -301,7 +301,6 @@ h1{font-size:24px;margin:4px 0 4px}
   document.getElementById('nwL').onclick=open;
   var seen=null; try{seen=localStorage.getItem('pen_lib_news')}catch(e){}
   var inst=new URLSearchParams(location.search).get('instalar')==='1' && !(matchMedia('(display-mode: standalone)').matches||navigator.standalone===true);
-  if(seen!==V && !inst) setTimeout(open,700);
 })();
 </script>
 </body>
