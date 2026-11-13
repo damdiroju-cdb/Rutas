@@ -97,6 +97,16 @@
    "url": "https://damdiroju-cdb.github.io/Rutas/cotizador/?c={cot}#k=Penalva26"
   },
   {
+   "id": "cuadro-ventas",
+   "interno": true,
+   "titulo": "Cuadro de ventas",
+   "subtitulo": "Solo para el equipo · no se manda al cliente",
+   "texto": "Tus clientes y lo que compran. Desde la ficha de cada cliente le mandas por WhatsApp el recordatorio con todo lo que ha comprado.",
+   "portada": "../ventas-app/portada.jpg",
+   "boton": "📊 ABRIR MI CUADRO",
+   "url": "https://damdiroju-cdb.github.io/Rutas/ventas/?c={slug}"
+  },
+  {
    "id": "alta-cliente",
    "titulo": "Alta de cliente",
    "subtitulo": "Solo para el equipo · no se manda al cliente",

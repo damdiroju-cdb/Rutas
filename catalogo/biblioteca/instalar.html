@@ -21,7 +21,7 @@ h1{font-size:23px;margin:0}.sub{color:#545A63;font-size:14.5px;line-height:1.45;
 </head>
 <body><div class="w">
 <div class="hd"><img src="img/icon-192.png" alt=""><div><h1>Biblioteca Penalva</h1><div class="sub" style="margin:0">Mándasela a cada comercial</div></div></div>
-<p class="sub">La app lleva el <b>Cotizador</b>, el <b>Alta de clientes</b> y <b>todos los catálogos</b>. Pulsa <b>ENVIAR</b> en cada comercial: se abre WhatsApp con su enlace personal. Cuando lo abra, el móvil le dice cómo instalarla (en Android es un botón; en iPhone, 3 toques guiados). La app ya sabe quién es, no tiene que elegirse.</p>
+<p class="sub">La app lleva el <b>Cotizador</b>, el <b>Cuadro de ventas</b>, el <b>Alta de clientes</b> y <b>todos los catálogos</b>. Pulsa <b>ENVIAR</b> en cada comercial: se abre WhatsApp con su enlace personal. Cuando lo abra, el móvil le dice cómo instalarla (en Android es un botón; en iPhone, 3 toques guiados). La app ya sabe quién es, no tiene que elegirse.</p>
 <p class="sub" id="pc" hidden>💻 En el ordenador se abre tu <b>WhatsApp de escritorio</b> (el que ya tienes abierto) con el mensaje escrito: solo dale a enviar. Si no tienes la aplicación instalada, usa <b>Copiar</b> y pégalo en WhatsApp Web.</p>
 <div id="list">Cargando…</div>
 </div>
@@ -34,7 +34,7 @@ fetch('catalogos.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return
   var L=document.getElementById('list');L.innerHTML='';
   j.comerciales.forEach(function(c){
     var nom=c.nombre.split(/[ «]/)[0];
-    var msg='Hola '+nom+' 👋 Te paso la *Biblioteca Penalva*. En un solo icono del móvil tienes:\n\n💶 El *Cotizador*, con la tarifa al día\n📝 La ficha de *Alta de clientes*\n📚 *Todos los catálogos* que tenemos hasta ahora, para mandarlos por WhatsApp a tus clientes\n\nÁbrela y sigue los pasos para instalarla en el móvil:\n'+link(c.slug);
+    var msg='Hola '+nom+' 👋 Te paso la *Biblioteca Penalva*. En un solo icono del móvil tienes:\n\n💶 El *Cotizador*, con la tarifa al día\n📊 Tu *Cuadro de ventas*, para mandar a cada cliente el recordatorio de lo que ha comprado\n📝 La ficha de *Alta de clientes*\n📚 *Todos los catálogos* que tenemos hasta ahora, para mandarlos por WhatsApp a tus clientes\n\nÁbrela y sigue los pasos para instalarla en el móvil:\n'+link(c.slug);
     var d=document.createElement('div');d.className='r';
     d.innerHTML='<div class="t"><b></b><span></span></div><button class="cp">Copiar</button><a>📲 ENVIAR</a>';
     d.querySelector('b').textContent=c.nombre;d.querySelector('span').textContent='+'+c.tel;
