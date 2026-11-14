@@ -40,6 +40,12 @@ h1{font-size:24px;margin:4px 0 4px}
 .pick{display:grid;gap:8px;margin:6px 0 16px}
 .pick button{appearance:none;border:1.5px solid #C9D3DF;background:#fff;border-radius:14px;min-height:56px;font:700 18px system-ui,sans-serif;cursor:pointer;text-align:left;padding:0 18px}
 .pick button:active{background:#FFF1F2;border-color:#D2000F}
+.nvb{display:none;background:#D2000F;color:#fff;border-radius:14px;padding:12px 14px;margin:0 0 14px;font-size:15px;line-height:1.45;box-shadow:0 0 0 0 rgba(210,0,15,.6);animation:nvp 1.8s infinite}
+.nvb.on{display:block}.nvb b{color:#FFE27A}.nvb a{color:#fff;font-weight:800;text-decoration:underline;cursor:pointer;display:inline-block;margin-right:10px}
+.cat.nv{border:3px solid #D2000F;position:relative}
+.cat.nv:before{content:"🆕 NUEVO";position:absolute;top:10px;left:10px;z-index:2;background:#D2000F;color:#fff;font:900 14px system-ui,sans-serif;padding:6px 12px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.3);animation:nvp 1.8s infinite}
+@keyframes nvp{0%{box-shadow:0 0 0 0 rgba(210,0,15,.55)}70%{box-shadow:0 0 0 12px rgba(210,0,15,0)}100%{box-shadow:0 0 0 0 rgba(210,0,15,0)}}
+@media (prefers-reduced-motion:reduce){.nvb,.cat.nv:before{animation:none}}
 .cat{background:#fff;border:1px solid #DCE4EE;border-radius:16px;overflow:hidden;margin-bottom:14px;box-shadow:0 2px 8px rgba(20,32,54,.06)}
 .cat img{display:block;width:100%;aspect-ratio:1200/630;object-fit:cover;background:#fff}
 .cat .in{padding:12px 14px 14px}
@@ -107,6 +113,7 @@ h1{font-size:24px;margin:4px 0 4px}
   <p class="sub">Aquí lo tienes todo junto: el <b>Cotizador</b>, el <b>Cuadro de ventas</b>, la ficha de <b>Alta de clientes</b> y <b>todos los catálogos</b> que tenemos hasta ahora. Los catálogos se mandan al cliente con <b>ENVIAR</b>: lo buscas por su nombre y se abre WhatsApp con todo listo.</p>
   <button class="nwlink" id="nwL">ℹ️ Qué hay en la biblioteca</button>
   <button class="inst" id="instB" hidden><img src="img/icon-192.png" alt=""><div><b>📲 Instálala en tu móvil</b><span>Un solo icono con el Cotizador, el Cuadro de ventas, el alta de clientes y los catálogos.</span></div></button>
+  <div class="nvb" id="nvb"></div>
   <div id="whoBox"></div>
   <div id="list"></div>
 </div>
@@ -149,27 +156,40 @@ h1{font-size:24px;margin:4px 0 4px}
     b.innerHTML='<p class="sub" style="margin-top:4px"><b>¿Quién eres?</b> Así el cliente te manda a ti lo que marque.</p><div class="pick" id="pick"></div>';
     CFG.comerciales.forEach(function(c){ var x=document.createElement('button'); x.textContent=c.nombre; x.onclick=function(){WHO=c;try{localStorage.setItem('pen_lib_who',c.slug);$('mf').href='m/'+c.slug+'.webmanifest'}catch(e){}renderWho();renderList();window.scrollTo(0,0)}; $('pick').appendChild(x); });
   }
+  // ===== novedades: catálogos con "nuevo" (últimos 30 días) que este móvil aún no ha abierto
+  function vistos(){ try{return JSON.parse(localStorage.getItem('pen_lib_vistos')||'{}')||{}}catch(e){return {}} }
+  function esNuevo(cat){ if(!cat.nuevo) return false; var dd=(Date.now()-new Date(cat.nuevo+'T00:00:00').getTime())/864e5; return dd<=30 && !vistos()[cat.id]; }
+  function marcar(cat){ var v=vistos(); if(v[cat.id]) return; v[cat.id]=Date.now(); try{localStorage.setItem('pen_lib_vistos',JSON.stringify(v))}catch(e){} novedades(); var el=document.querySelector('.cat[data-id="'+cat.id+'"]'); if(el) el.classList.remove('nv'); }
+  function novedades(){ var N=(CFG.catalogos||[]).filter(esNuevo), b=$('nvb'), n=N.length;
+    try{ if(navigator.setAppBadge){ n?navigator.setAppBadge(n):navigator.clearAppBadge(); } }catch(e){}
+    document.title=(n?'('+n+') 🆕 ':'')+document.title.replace(/^\(\d+\) 🆕 /,'');
+    if(!n||!WHO){ b.classList.remove('on'); return; }
+    b.innerHTML='🔴 <b>'+(n===1?'Hay 1 novedad':'Hay '+n+' novedades')+'</b> desde la última vez que entraste:<br>'+N.map(function(c){return '<a data-go="'+esc(c.id)+'">'+esc(c.titulo)+' ›</a>'}).join('');
+    b.classList.add('on');
+    b.onclick=function(e){ var a=e.target.closest('[data-go]'); if(!a) return; var el=document.querySelector('.cat[data-id="'+a.getAttribute('data-go')+'"]'); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); };
+  }
   function renderList(){
     var l=$('list'); l.innerHTML='';
-    if(!WHO){ return; }
+    if(!WHO){ novedades(); return; }
     if(!CFG.catalogos.length){ l.innerHTML='<div class="empty">Todavía no hay catálogos.</div>'; return; }
     var INT=CFG.catalogos.filter(function(c){return c.interno}), EXT=CFG.catalogos.filter(function(c){return !c.interno});
     if(INT.length){ var h=document.createElement('h3'); h.className='sec'; h.textContent='🛠 Para ti · no se manda al cliente'; l.appendChild(h);
-      INT.forEach(function(cat){ var d=document.createElement('div'); d.className='cat';
+      INT.forEach(function(cat){ var d=document.createElement('div'); d.className='cat'+(esNuevo(cat)?' nv':''); d.setAttribute('data-id',cat.id);
         d.innerHTML=(cat.portada?'<img alt="" src="'+esc(cat.portada)+'">':'')+'<div class="in"><h2>'+esc(cat.titulo)+'</h2>'+(cat.subtitulo?'<div class="s2" style="color:#C0101C">'+esc(cat.subtitulo)+'</div>':'')+(cat.texto?'<p>'+esc(cat.texto)+'</p>':'<p></p>')+
           '<a class="go" style="background:#0B2545" target="_top">'+esc(cat.boton||'ABRIR')+'</a></div>';
-        d.querySelector('.go').href=linkOf(cat)||'#'; l.appendChild(d); });
+        d.querySelector('.go').href=linkOf(cat)||'#'; d.querySelector('.go').addEventListener('click',function(){marcar(cat)}); l.appendChild(d); });
       var h2=document.createElement('h3'); h2.className='sec'; h2.textContent='📲 Para mandar al cliente'; l.appendChild(h2); }
     var lastG=null;
     EXT.forEach(function(cat){
       if((cat.grupo||null)!==lastG){ lastG=cat.grupo||null; if(lastG==='familias'){ var hg=document.createElement('h3'); hg.className='sec'; hg.textContent='🛒 Catálogos por familia, con precios'; l.appendChild(hg); } }
-      var d=document.createElement('div'); d.className='cat';
+      var d=document.createElement('div'); d.className='cat'+(esNuevo(cat)?' nv':''); d.setAttribute('data-id',cat.id);
       d.innerHTML=(cat.portada?'<img alt="" src="'+esc(cat.portada)+'">':'')+'<div class="in"><h2>'+esc(cat.titulo)+'</h2>'+(cat.subtitulo?'<div class="s2">'+esc(cat.subtitulo)+'</div>':'')+(cat.texto?'<p>'+esc(cat.texto)+'</p>':'<p></p>')+
         '<button class="go">📲 ENVIAR</button><a class="see" target="_top">👁 Ver el catálogo</a></div>';
-      d.querySelector('.go').onclick=function(){ openSheet(cat); };
-      d.querySelector('.see').href=linkOf(cat)||'#';
+      d.querySelector('.go').onclick=function(){ marcar(cat); openSheet(cat); };
+      d.querySelector('.see').href=linkOf(cat)||'#'; d.querySelector('.see').addEventListener('click',function(){marcar(cat)});
       l.appendChild(d);
     });
+    novedades();
   }
   // ===== clientes del comercial (mismos datos y misma sesión que el Cuadro de ventas)
   var CLI=null, SEL=null, LOADING=false;

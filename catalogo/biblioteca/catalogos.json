@@ -122,7 +122,8 @@
    "subtitulo": "178 artículos con precio y 3 menús ya montados",
    "texto": "Aperitivos, boladillos de merluza y bacalao, marisco, calamar nacional, carnes de fiesta, preparados de patata, V gama, copas al cava, tartas y la tarta al whisky Nordwik. El cliente pide y te llega por WhatsApp.",
    "portada": "../familias/navidad/portada.jpg",
-   "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/familias/navidad/?c={slug}"
+   "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/familias/navidad/?c={slug}",
+   "nuevo": "2026-11-13"
   },
   {
    "id": "especial-tapas",
@@ -130,7 +131,8 @@
    "subtitulo": "153 artículos con lo que cuesta cada tapa y 8 tapas ya pensadas",
    "texto": "Por una caña, una tapa: pescaíto, croquetas, fritos de barra, plancha, guisos, arroces, embutido y montaditos. Cada artículo dice lo que le cuesta la tapa al bar. El cliente pide y te llega por WhatsApp.",
    "portada": "../familias/tapas/portada.jpg",
-   "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/familias/tapas/?c={slug}"
+   "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/familias/tapas/?c={slug}",
+   "nuevo": "2026-11-14"
   },
   {
    "id": "presentacion-2026",
