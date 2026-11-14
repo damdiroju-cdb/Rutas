@@ -3,7 +3,7 @@ var $=function(i){return document.getElementById(i)};
 var FAM=document.body.getAttribute('data-f');
 var P=new URLSearchParams(location.search), CS=P.get('c')||'';
 var TEL_DEF='34692853375', COM=null, DATA=null, CART={};
-var FAMS=[['navidad','🎄 Especial Navidad'],['pescado','🐟 Pescados'],['carne','🥩 Carnes'],['precocinados','🍤 Precocinados'],['pan-bolleria','🥐 Pan y bollería'],['postres','🍮 Postres'],['tartas','🍰 Tartas'],['helados-nordwik','🍦 Helados Nordwik'],['helados-frigo','🍨 Helados Frigo'],['v-gama','🥘 V gama'],['verduras','🥦 Verduras y patatas'],['seco','🥫 Seco'],['refrigerados','🧀 Refrigerados']];
+var FAMS=[['navidad','🎄 Especial Navidad'],['tapas','🍺 Especial Tapas'],['pescado','🐟 Pescados'],['carne','🥩 Carnes'],['precocinados','🍤 Precocinados'],['pan-bolleria','🥐 Pan y bollería'],['postres','🍮 Postres'],['tartas','🍰 Tartas'],['helados-nordwik','🍦 Helados Nordwik'],['helados-frigo','🍨 Helados Frigo'],['v-gama','🥘 V gama'],['verduras','🥦 Verduras y patatas'],['seco','🥫 Seco'],['refrigerados','🧀 Refrigerados']];
 var U={CJ:'caja',UN:'ud',KG:'kg',BT:'bote',LT:'litro',L:'litro',BOL:'bolsa',EST:'estuche'};
 function un(x){return U[x]||(/^C\d+$/.test(x||'')?'caja':(x||'ud').toLowerCase())}
 function eur(v){return v.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' €'}
@@ -17,10 +17,11 @@ function setQ(r,n){ if(n<=0) delete CART[r[0]]; else CART[r[0]]={q:n,d:r[1],p:r[
 function qtHTML(c){var n=q(c);return n?'<div class="stp"><button data-a="-">−</button><b>'+n+'</b><button data-a="+">+</button></div>':'<button class="add" data-a="+">Añadir</button>'}
 function paintCart(){ var ks=Object.keys(CART), n=ks.reduce(function(a,k){return a+CART[k].q},0);
   var b=$('cartb'); b.classList.toggle('on',ks.length>0); b.innerHTML='🛒 Mi pedido <i>'+ks.length+'</i>'; }
+var MAXT=null; window.PEN={filtro:function(v){MAXT=v;render();}};
 function render(){
   var qs=norm($('q').value).trim(), ws=qs?qs.split(/\s+/):[], L=$('list'), h='', hits=0;
   DATA.secciones.forEach(function(s,si){
-    var rows=s.a.filter(function(r){ if(!ws.length) return true; var k=norm(r[1]+' '+r[0]); return ws.every(function(w){return k.indexOf(w)>=0}); });
+    var rows=s.a.filter(function(r){ if(MAXT!=null&&!(r[12]!=null&&r[12]<=MAXT+1e-9)) return false; if(!ws.length) return true; var k=norm(r[1]+' '+r[0]); return ws.every(function(w){return k.indexOf(w)>=0}); });
     if(!rows.length) return; hits+=rows.length;
     h+='<h2 class="sec" id="s'+si+'">'+esc(s.n)+' <small>· '+rows.length+'</small></h2>';
     rows.forEach(function(r){
@@ -29,7 +30,7 @@ function render(){
       var fmt=[]; if(r[6]&&r[6]>1&&r[2]!=='UN') fmt.push(r[6]+' ud/'+pu); if(r[9]) fmt.push('caja de '+String(r[9]).replace('.',',')+' kg aprox.'); else if(r[7]) fmt.push(r[7]);
       h+='<div class="it" data-c="'+esc(r[0])+'"><div class="ph">'+((r[8]||r[10])?'<img loading="lazy" decoding="async" alt="" src="'+fotoM(r)+'" onerror="this.onerror=null;this.src=\'../img/'+encodeURIComponent(r[0])+'.jpg\'">':'📦')+'</div>'+
         '<div class="tx"><div class="nm">'+esc(r[1])+'</div><div class="cd">Ref. '+esc(r[0])+(fmt.length?' · '+esc(fmt.join(' · ')):'')+'</div>'+
-        '<div class="pr">'+(r[9]?'≈ ':'')+eur(r[3])+' <small>/'+pu+'</small>'+extra+'</div></div><div class="qt">'+qtHTML(r[0])+'</div></div>';
+        '<div class="pr">'+(r[9]?'≈ ':'')+eur(r[3])+' <small>/'+pu+'</small>'+extra+'</div>'+(r[12]!=null?'<div class="tp">🍺 Tapa ≈ <b>'+eur(r[12])+'</b> <small>· '+esc(r[11]||'')+'</small></div>':'')+'</div><div class="qt">'+qtHTML(r[0])+'</div></div>';
     });
   });
   L.innerHTML=hits?h:'<div class="nores">No encuentro «'+esc($('q').value)+'» en este catálogo.<br>Prueba con otra palabra o mira en los demás catálogos de abajo.</div>';
@@ -133,7 +134,7 @@ function dvQ(){ var n=q(DVC), r=BY[DVC], u=un(r[2]);
 function dvOpen(c,push){ var r=BY[c]; if(!r) return; dvMk(); DVC=c;
   var pu=un(r[2]), fmt=[]; if(r[6]&&r[6]>1&&r[2]!=='UN') fmt.push(r[6]+' ud/'+pu); if(r[9]) fmt.push('caja de '+String(r[9]).replace('.',',')+' kg aprox.'); else if(r[7]) fmt.push(r[7]);
   $('dvr').innerHTML='Ref. <b>'+esc(c)+'</b>'; $('dvs').textContent=dvSec(c); $('dvn').textContent=r[1]; $('dvf').textContent=fmt.length?'Formato: '+fmt.join(' · '):'';
-  var pr=(r[9]?'≈ ':'')+eur(r[3])+' /'+pu; if(r[5]&&r[4]&&un(r[4])!==pu&&r[5]>0) pr+=' · '+eur(r[5])+'/'+un(r[4]); $('dvp').textContent=pr;
+  var pr=(r[9]?'≈ ':'')+eur(r[3])+' /'+pu; if(r[5]&&r[4]&&un(r[4])!==pu&&r[5]>0) pr+=' · '+eur(r[5])+'/'+un(r[4]); if(r[12]!=null) pr+='  ·  🍺 Tapa ≈ '+eur(r[12])+' ('+(r[11]||'')+')'; $('dvp').textContent=pr;
   var im=$('dvi'); if(r[8]||r[10]){ im.style.backgroundImage="url('"+dvSrc(r)+"')"; im.textContent=''; $('dvh').style.visibility='visible'; } else { im.style.backgroundImage='none'; im.textContent='📦'; $('dvh').style.visibility='hidden'; }
   var L=dvList(), i=L.indexOf(c); $('dvprev').disabled=i<=0; $('dvnext').disabled=i<0||i>=L.length-1;
   dvQ(); if(!DVE.classList.contains('open')){ DVE.classList.add('open'); if(push){ try{history.pushState({pv:1},'')}catch(e){} } }

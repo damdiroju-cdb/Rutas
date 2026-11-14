@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Especial Tapas · Catálogo Penalva</title>
+<meta name="description" content="Por una caña, una tapa: pescaíto, croquetas, fritos, guisos, plancha, embutido y montaditos con lo que te cuesta cada tapa. Pide por WhatsApp.">
+<meta property="og:title" content="🍺 Especial Tapas · Catálogo Penalva">
+<meta property="og:description" content="Por una caña, una tapa. Lo que te cuesta cada tapa, desde 0,10 €: pescaíto, croquetas, fritos, guisos, plancha y montaditos.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://damdiroju-cdb.github.io/Rutas/catalogo/familias/tapas/">
+<meta property="og:image" content="https://damdiroju-cdb.github.io/Rutas/catalogo/familias/tapas/portada.jpg">
+<meta property="og:image:secure_url" content="https://damdiroju-cdb.github.io/Rutas/catalogo/familias/tapas/portada.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#B5491B">
+<link rel="icon" href="../../penalva.png">
+<link rel="stylesheet" href="../app.css?v=5">
+<style>
+body{background:#FBF4EA}
+.bar{background:#FBF4EA}
+.hero{background:linear-gradient(180deg,#C4542A 0%,#8E2E13 100%);padding-top:26px;padding-bottom:22px;position:relative;overflow:hidden}
+.hero h1,.hero .lm,.hero .lg,.hero .com{position:relative;z-index:2}
+.hero h1{font-size:32px;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.hero h1:before{content:"🍺 "}
+.cana{position:absolute;right:16px;top:14px;font-size:46px;z-index:1;opacity:.9;animation:br 3.2s ease-in-out infinite;transform-origin:50% 90%}
+@keyframes br{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+.cinta{position:absolute;left:0;right:0;bottom:0;height:8px;background:#FFD36B;z-index:2}
+.sec{color:#9A3412}
+.tp{margin-top:4px;display:inline-block;background:#FFF1D6;border:1px solid #F3C978;color:#7A2E0E;border-radius:999px;padding:3px 10px;font-size:13.5px;line-height:1.35}
+.tp b{font-size:15px;color:#9A3412}.tp small{color:#6B4A2E}
+.box{margin:12px 12px 0;background:#fff;border-radius:16px;border:2px solid #F3C978;padding:14px}
+.box h2{font-size:19px;margin:0 0 4px;color:#9A3412}.box .sub{margin:0 0 10px;font-size:14px;color:#545A63;line-height:1.45}
+.calc{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.calc label{font-size:12.5px;font-weight:700;color:#545A63;display:block}
+.calc input{width:100%;box-sizing:border-box;border:2px solid #E7D3B0;border-radius:10px;padding:9px 8px;font:800 17px system-ui,sans-serif;color:#222}
+.res{margin-top:10px;background:#1F5A34;color:#fff;border-radius:12px;padding:11px 13px;font-size:15px;line-height:1.5}
+.res b{color:#FFE27A}
+.cbw{display:grid;grid-template-columns:1fr;gap:10px}
+.cb{background:#FFFBF3;border-radius:14px;border:1px solid #F3C978;padding:12px}
+.cb h3{margin:0 0 3px;font-size:16.5px}.cb p{margin:0 0 8px;font-size:13.5px;color:#545A63}
+.cb .row{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.cb .pz{white-space:nowrap;font-weight:900;color:#9A3412;font-size:17px}
+.cb button{border:none;border-radius:10px;background:#1F8F4E;color:#fff;font:800 14px system-ui,sans-serif;padding:10px 12px;cursor:pointer}
+.flt{display:flex;gap:6px;flex-wrap:wrap;margin:10px 12px 0;align-items:center;font-size:14px;font-weight:700;color:#545A63}
+.flt button{border:2px solid #9A3412;background:#fff;color:#9A3412;border-radius:999px;padding:7px 13px;font:800 14px system-ui,sans-serif;cursor:pointer}
+.flt button.on{background:#9A3412;color:#fff}
+@media (min-width:760px){.cbw{grid-template-columns:repeat(2,1fr)}}
+@media (prefers-reduced-motion:reduce){.cana{animation:none}}
+</style>
+</head>
+<body data-f="tapas">
+<header class="hero">
+<div class="lg"><span><img src="../../penalva.png" alt="Alimentación Penalva"><img src="../../nordwik.png" alt="Helados Nordwik"></span></div>
+<h1 id="h1">Especial Tapas</h1><p class="lm" id="lm"></p>
+<div class="com" id="com" hidden><span id="comn"></span><a id="coml" href="#">💬 Escribirle</a></div>
+<div class="cana" aria-hidden="true">🍺</div><div class="cinta"></div></header>
+<div class="how">👉 En cada artículo te ponemos <b>🍺 lo que te cuesta la tapa</b> con una ración típica de Granada. Toca <b>Añadir</b>, ajusta cajas y pulsa <b>🛒 Mi pedido</b>: le llega a tu comercial por WhatsApp.</div>
+
+<section class="box"><h2>🧮 ¿Cuánto te cuesta tapear?</h2><p class="sub">Pon tus números y mira lo que pesa la tapa en cada caña.</p>
+<div class="calc"><div><label for="kp">Precio caña (€)</label><input id="kp" inputmode="decimal" value="2,50"></div>
+<div><label for="kt">Coste tapa (€)</label><input id="kt" inputmode="decimal" value="0,35"></div>
+<div><label for="kn">Cañas al día</label><input id="kn" inputmode="numeric" value="150"></div></div>
+<div class="res" id="kr"></div></section>
+
+<section class="box"><h2>🍽️ Tapas ya pensadas</h2><p class="sub">Combinaciones que salen solas en la barra, con lo que te cuesta cada una. El botón te mete en el pedido una caja de cada ingrediente.</p>
+<div class="cbw" id="combos"></div></section>
+
+<div class="flt" id="flt">Coste por tapa: <button class="on" data-v="">Todas</button><button data-v="0.3">Hasta 0,30 €</button><button data-v="0.5">Hasta 0,50 €</button></div>
+<div class="bar"><input id="q" type="search" placeholder="🔍 Busca: croqueta, boquerón, lomo…" autocomplete="off"><div class="chips" id="chips"></div></div>
+<main class="wrap"><div id="list"><div class="nores">Cargando catálogo…</div></div>
+<section class="more"><h3>📚 Más catálogos</h3><div class="chips" id="more"></div></section>
+<p class="note">Precios de tarifa, IVA no incluido. El coste por tapa es orientativo: sale del precio de tarifa y de la ración que indicamos (no incluye aceite de fritura, pan ni mano de obra salvo que se diga). Fotos orientativas. Tu comercial te confirma precio, disponibilidad y entrega.</p></main>
+<button class="cartb" id="cartb"></button>
+<div class="sh" id="sh" role="dialog" aria-modal="true"><div class="shb" id="shb"></div></div>
+<div id="toast" aria-live="polite"></div>
+<script>
+(function(){
+function $(i){return document.getElementById(i)}
+function eur(v){return v.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' €'}
+function num(s){return parseFloat(String(s).replace(',','.'))||0}
+function calc(){var p=num($('kp').value),t=num($('kt').value),n=num($('kn').value);
+ if(!p||!t){$('kr').textContent='Pon el precio de la caña y el coste de la tapa.';return}
+ $('kr').innerHTML='La tapa es el <b>'+Math.round(t/p*100)+' %</b> de lo que cobras por la caña.<br>Con <b>'+Math.round(n)+'</b> cañas al día, las tapas te cuestan <b>'+eur(t*n)+'</b> al día y unos <b>'+eur(t*n*26)+'</b> al mes (26 días).<br>Bajar 0,10 € por tapa son <b>'+eur(0.10*n*26)+'</b> al mes en tu bolsillo.'}
+['kp','kt','kn'].forEach(function(i){$(i).addEventListener('input',calc)});calc();
+$('flt').onclick=function(e){var b=e.target.closest('button');if(!b)return;this.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b)});
+ var v=b.getAttribute('data-v');if(window.PEN)window.PEN.filtro(v?parseFloat(v):null)};
+var BY={},CB=[];
+fetch('../data/tapas.json').then(function(r){return r.json()}).then(function(D){
+ D.secciones.forEach(function(s){s.a.forEach(function(r){BY[r[0]]=r})});CB=D.combos||[];
+ $('combos').innerHTML=CB.map(function(c,i){return '<div class="cb"><h3>'+c.t+'</h3><p>'+c.x+'</p><div class="row"><span class="pz">🍺 '+eur(c.c)+' / tapa</span><button data-m="'+i+'">🛒 Añadir ingredientes</button></div></div>'}).join('');
+});
+$('combos').onclick=function(e){var b=e.target.closest('button[data-m]');if(!b)return;var m=CB[+b.getAttribute('data-m')],C={};
+ try{C=JSON.parse(localStorage.getItem('pen_pedido')||'{}')||{}}catch(er){}
+ m.l.forEach(function(k){var r=BY[k];if(!r)return;C[k]={q:(C[k]?C[k].q:0)+1,d:r[1],p:r[3],f:r[2],fam:'tapas',w:r[9]||0}});
+ try{localStorage.setItem('pen_pedido',JSON.stringify(C));sessionStorage.setItem('tap_ok','1')}catch(er){}location.reload()};
+try{if(sessionStorage.getItem('tap_ok')){sessionStorage.removeItem('tap_ok');setTimeout(function(){var c=$('cartb');if(c)c.click()},900)}}catch(e){}
+})();
+</script>
+<script src="../app.js?v=9"></script>
+<script src="../../inicio.js" data-before="__none__"></script>
+</body></html>

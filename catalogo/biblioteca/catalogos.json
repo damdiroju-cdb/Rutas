@@ -125,6 +125,14 @@
    "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/familias/navidad/?c={slug}"
   },
   {
+   "id": "especial-tapas",
+   "titulo": "🍺 Especial Tapas",
+   "subtitulo": "153 artículos con lo que cuesta cada tapa y 8 tapas ya pensadas",
+   "texto": "Por una caña, una tapa: pescaíto, croquetas, fritos de barra, plancha, guisos, arroces, embutido y montaditos. Cada artículo dice lo que le cuesta la tapa al bar. El cliente pide y te llega por WhatsApp.",
+   "portada": "../familias/tapas/portada.jpg",
+   "url": "https://damdiroju-cdb.github.io/Rutas/catalogo/familias/tapas/?c={slug}"
+  },
+  {
    "id": "presentacion-2026",
    "titulo": "Presentación Penalva × Nordwik",
    "subtitulo": "Para clientes nuevos o a recuperar",
